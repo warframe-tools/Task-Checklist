@@ -2,6 +2,10 @@
 
 A simple, client-side web application to help Warframe players track their daily, weekly, and bi-weekly in-game tasks.
 
+## Repository Updates
+
+This repository will be updated (if changes are made) on the weekly reset (00:00 UTC) to avoid resets to the application hosted on Pages. To avoid any accidental resets of your progress, please fork this repository and host it yourself, or download it and use it locally (and make sure to update it weekly with any changes if needed).
+
 ## Description
 
 This tool provides checklists for common recurring activities in Warframe. It saves your progress directly in your browser's local storage, automatically resets daily and weekly tasks based on UTC time, and offers a few customization options.
