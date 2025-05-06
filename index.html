@@ -112,7 +112,7 @@
             margin-left: 0.5rem;
         }
 
-        .checklist-content label { color: var(--text-label); }
+        .checklist-content label, .parent-task-header .task-text { color: var(--text-label); }
         .checklist-content #last-saved-timestamp,
         .checklist-content #storage-notice {
              color: var(--text-muted);
@@ -147,7 +147,7 @@
 
 
         /* --- Collapsible Section Styles --- */
-        .section-content {
+        .section-content, .subtask-list {
             overflow: hidden;
             max-height: 1000px; /* Set a large max-height for expanded state */
             transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out 0.1s, visibility 0s linear 0s;
@@ -155,7 +155,7 @@
             visibility: visible;
             padding-left: 0.5rem; /* Indent content slightly */
         }
-        .section-content.collapsed {
+        .section-content.collapsed, .subtask-list.collapsed {
             max-height: 0;
             opacity: 0;
             visibility: hidden;
@@ -168,8 +168,27 @@
             flex-shrink: 0; /* Prevent icon from shrinking */
             margin-left: 0.5rem; /* Space between text and icon */
         }
-        .section-toggle[aria-expanded="false"] .collapse-icon { /* Rotate when collapsed */
+        .section-toggle[aria-expanded="false"] .collapse-icon,
+        .parent-task-header[aria-expanded="false"] .collapse-icon { /* Rotate when collapsed */
             transform: rotate(-90deg);
+        }
+        .subtask-list {
+            margin-left: 1.5rem; /* Indent subtasks */
+            padding-left: 0; /* Reset padding from .section-content */
+        }
+        .parent-task-header {
+            display: flex;
+            align-items: center; /* Align checkbox and label content */
+            cursor: pointer;
+            /* flex-grow: 1; Let the li handle flex grow if needed */
+        }
+        .parent-task-header .task-text {
+            flex-grow: 1; /* Allow text to take space before icon */
+            margin-left: 0.5rem; /* Same as regular label's ml-2 */
+        }
+        .task-text.checked, label.checked { /* For parent task text strikethrough */
+            text-decoration: line-through;
+            color: var(--text-label-checked);
         }
 
 
@@ -192,10 +211,7 @@
             color: white; font-size: 0.8rem;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
-        label.checked {
-            text-decoration: line-through;
-            color: var(--text-label-checked);
-        }
+        /* label.checked is handled by .task-text.checked for parent or label.checked for normal */
         li { margin-bottom: 0.5rem; }
         #save-status { transition: opacity 0.5s ease-in-out; }
 
@@ -396,10 +412,11 @@
     </div> <script>
         // --- Configuration ---
         const backgroundImages = [
-             'assets/17038288.jpg',
-             'assets/17038307.jpg' // Added second image path
+             'assets/garuda-fortuna.jpg',
+             'assets/gara-eidolon.jpg',
+             'assets/heart-of-deimos-warframe.jpg'
         ];
-        const APP_VERSION = "0.4.0";
+        const APP_VERSION = "1.0.0";
         const WARFRAME_VERSION = "38.5.11";
         const THEME_STORAGE_KEY = 'warframeChecklistTheme';
         const DATA_STORAGE_KEY = `warframeChecklistData_v${APP_VERSION}`;
@@ -412,8 +429,25 @@
                 { id: 'daily_craft_other', text: 'Crafting (Other): Craft other daily resources/items using reusable blueprints (check Foundry/companion app).' },
                 { id: 'daily_syndicate_gain', text: 'Syndicates (Orbiter): Gain daily standing cap with your pledged Syndicate(s).' },
                 { id: 'daily_syndicate_spend', text: 'Syndicates (Orbiter - Spend): If maxed on standing, spend it (Relic packs, Vosfor packs, etc.).' },
+                {
+                    id: 'daily_world_syndicate_parent',
+                    text: 'World Syndicates (Standing)',
+                    isParent: true,
+                    subtasks: [
+                        { id: 'daily_world_syndicate_simaris', text: 'Cephalon Simaris (Relay)' },
+                        { id: 'daily_world_syndicate_ostron', text: 'Ostron (Cetus)' },
+                        { id: 'daily_world_syndicate_quills', text: 'The Quills (Cetus)' },
+                        { id: 'daily_world_syndicate_solaris', text: 'Solaris United (Fortuna)' },
+                        { id: 'daily_world_syndicate_vox', text: 'Vox Solaris (Fortuna)' },
+                        { id: 'daily_world_syndicate_ventkids', text: 'Ventkids (Fortuna)' },
+                        { id: 'daily_world_syndicate_entrati', text: 'Entrati (Necralisk)' },
+                        { id: 'daily_world_syndicate_necraloid', text: 'Necraloid (Necralisk)' },
+                        { id: 'daily_world_syndicate_holdfasts', text: 'The Holdfasts (Chrysalith)' },
+                        { id: 'daily_world_syndicate_cavia', text: 'Cavia (Sanctum Anatomica)' },
+                        { id: 'daily_world_syndicate_hex', text: 'The Hex (Höllvania Central Mall)' }
+                    ]
+                },
                 { id: 'daily_dark_sector', text: 'Dark Sector Mission (Early Game): Complete one Dark Sector mission first for double credits (if needed & pre-Index).' },
-                { id: 'daily_world_syndicate', text: 'World Syndicates (Standing): Gain standing with relevant world Syndicates (Ostron, Solaris, Entrati, Cavia, etc.).' },
                 { id: 'daily_sortie', text: 'Sortie: Complete the 3 daily Sortie missions (requires The War Within).' },
                 { id: 'daily_focus', text: 'Focus: Max out daily Focus gain (e.g., via Sanctuary Onslaught) (requires The Second Dream).' },
                 { id: 'daily_steel_path', text: 'Steel Path Incursions: Complete daily Steel Path missions for Steel Essence (requires Steel Path unlocked).' }
@@ -427,10 +461,10 @@
                 { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.' },
                 { id: 'weekly_acridies', text: 'Acridies (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).' },
                 { id: 'weekly_archon_hunt', text: 'Archon Hunt: Complete the weekly Archon Hunt for a guaranteed Archon Shard (requires The New War).' },
-                { id: 'weekly_duviri_circuit', text: 'Duviri Circuit (Normal): Check weekly Incarnon Adapters & run Circuit if desired (requires Duviri).' },
+                { id: 'weekly_duviri_circuit', text: 'Duviri Circuit (Normal): Check weekly Warframe options & run Circuit if desired (requires Duviri).' },
                 { id: 'weekly_duviri_circuit_sp', text: 'Duviri Circuit (Steel Path): Check weekly Incarnon Adapters & run Circuit if desired (requires Steel Path & Duviri).' },
                 { id: 'weekly_teshin', text: 'Teshin (Steel Path): Check Teshin\'s Steel Essence shop (especially for Umbra Forma rotation - approx. every 8 weeks).' },
-                { id: 'weekly_bird3', text: 'Bird 3 (Cavia Syndicate): Buy the weekly Archon Shard for 30k Cavia Standing (requires Rank 5 Cavia).' },                
+                { id: 'weekly_bird3', text: 'Bird 3 (Cavia Syndicate): Buy the weekly Archon Shard for 30k Cavia Standing (requires Rank 5 Cavia).' },
                 { id: 'weekly_netracells', text: 'Netracells (Tagfer): Complete up to 5 weekly Netracell missions for Archon Shard chances (requires Whispers in the Walls).' },
                 { id: 'weekly_eda', text: 'Elite Deep Archimedea (Necraloid): Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame, requires Whispers in the Walls & Rank 5 Cavia).' },
                 { id: 'weekly_eta', text: 'Elite Temporal Archimedea (Kaya): Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame, requires Warframe 1999 & Rank 5 Hex).' },
@@ -463,6 +497,7 @@
         const appVersionElement = document.querySelector('.version-text');
         const wfVersionElement = document.querySelector('.warframe-version-text');
         let saveStatusTimeout;
+        let countdownInterval;
 
         // --- State Variables ---
         const confirmState = {
@@ -622,29 +657,45 @@
             }
         }
 
-         /** Displays the local equivalent of the UTC reset times */
+        /** Formats milliseconds into HH:MM:SS or D days, HH:MM:SS string */
+        function formatCountdown(ms) {
+            if (ms < 0) return "00:00:00";
+
+            let totalSeconds = Math.floor(ms / 1000);
+            let days = Math.floor(totalSeconds / (24 * 60 * 60));
+            totalSeconds %= (24 * 60 * 60);
+            let hours = Math.floor(totalSeconds / (60 * 60));
+            totalSeconds %= (60 * 60);
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = totalSeconds % 60;
+
+            const pad = (num) => String(num).padStart(2, '0');
+
+            if (days > 0) {
+                return `${days}d ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+            }
+            return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+
+         /** Displays the local equivalent of the UTC reset times as a countdown */
          function displayLocalResetTimes() {
             try {
+                const now = new Date().getTime();
+
                 const nextDailyResetTimestamp = getNextDailyMidnightUTC();
-                const nextDailyResetDateLocal = new Date(nextDailyResetTimestamp);
-                const dailyLocalString = nextDailyResetDateLocal.toLocaleTimeString(undefined, {
-                    hour: 'numeric', minute: '2-digit'
-                });
+                const dailyDiff = nextDailyResetTimestamp - now;
                 if (dailyResetTimeElement) {
-                    dailyResetTimeElement.textContent = `(Resets ${dailyLocalString} Local)`;
+                    dailyResetTimeElement.textContent = `(Resets in ${formatCountdown(dailyDiff)})`;
                 } else { console.warn("Daily reset time element not found."); }
 
-                const nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
-                let targetWeeklyTimestamp = nextWeeklyResetTimestamp;
-                 if (new Date().getTime() >= nextWeeklyResetTimestamp) {
-                     targetWeeklyTimestamp += 7 * 24 * 60 * 60 * 1000;
+                let nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
+                 if (now >= nextWeeklyResetTimestamp) {
+                     nextWeeklyResetTimestamp += 7 * 24 * 60 * 60 * 1000;
                  }
-                const nextWeeklyResetDateLocal = new Date(targetWeeklyTimestamp);
-                const weeklyLocalString = nextWeeklyResetDateLocal.toLocaleTimeString(undefined, {
-                    weekday: 'short', hour: 'numeric', minute: '2-digit'
-                });
+                const weeklyDiff = nextWeeklyResetTimestamp - now;
                  if (weeklyResetTimeElement) {
-                    weeklyResetTimeElement.textContent = `(Resets ${weeklyLocalString} Local)`;
+                    weeklyResetTimeElement.textContent = `(Resets in ${formatCountdown(weeklyDiff)})`;
                 } else { console.warn("Weekly reset time element not found."); }
             } catch (e) {
                 console.error("Error calculating or displaying local reset times:", e);
@@ -668,6 +719,13 @@
                     if (checklistData.progress[task.id]) {
                         checklistData.progress[task.id] = false;
                         didReset = true;
+                    }
+                    if (task.isParent && task.subtasks) {
+                        task.subtasks.forEach(subtask => {
+                            if (checklistData.progress[subtask.id]) {
+                                checklistData.progress[subtask.id] = false;
+                            }
+                        });
                     }
                 });
                 checklistData.lastDailyReset = now.toISOString();
@@ -709,31 +767,124 @@
         }
 
         /** Creates a checklist item (list item with checkbox and label). */
-        function createChecklistItem(task, isChecked) {
+        function createChecklistItem(task, isChecked, isSubtask = false) {
             const listItem = document.createElement('li');
-            listItem.classList.add('flex', 'items-start', 'mb-2');
             const checkbox = document.createElement('input');
+
             checkbox.type = 'checkbox';
             checkbox.id = task.id;
             checkbox.checked = isChecked;
             checkbox.classList.add('mt-1');
-            const label = document.createElement('label');
-            label.htmlFor = task.id;
-            label.textContent = task.text;
-            label.classList.add('ml-2', 'flex-1', 'cursor-pointer');
-            if (isChecked) { label.classList.add('checked'); }
+            if (isSubtask) {
+                checkbox.dataset.parentId = task.parentId;
+            }
 
-            checkbox.addEventListener('change', (event) => {
-                checklistData.progress[task.id] = event.target.checked;
-                saveData();
-                label.classList.toggle('checked', event.target.checked);
-            });
-            label.addEventListener('click', () => {
-                checkbox.checked = !checkbox.checked;
-                checkbox.dispatchEvent(new Event('change'));
-            });
-            listItem.appendChild(checkbox);
-            listItem.appendChild(label);
+            if (task.isParent) {
+                listItem.classList.add('parent-task-container', 'flex', 'flex-col');
+
+                const parentHeaderDiv = document.createElement('div');
+                parentHeaderDiv.classList.add('parent-task-header', 'flex', 'items-center', 'mb-1', 'w-full');
+                parentHeaderDiv.setAttribute('aria-expanded', 'true');
+                parentHeaderDiv.setAttribute('aria-controls', `${task.id}-subtasks`);
+
+                parentHeaderDiv.appendChild(checkbox);
+
+                const taskTextSpan = document.createElement('span');
+                taskTextSpan.textContent = task.text;
+                taskTextSpan.classList.add('task-text', 'ml-2', 'flex-grow', 'cursor-pointer');
+                if (isChecked) taskTextSpan.classList.add('checked');
+
+                const collapseIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                collapseIcon.setAttribute('class', 'collapse-icon');
+                collapseIcon.setAttribute('fill', 'none');
+                collapseIcon.setAttribute('viewBox', '0 0 24 24');
+                collapseIcon.setAttribute('stroke-width', '1.5');
+                collapseIcon.setAttribute('stroke', 'currentColor');
+                collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />';
+
+                parentHeaderDiv.appendChild(taskTextSpan);
+                parentHeaderDiv.appendChild(collapseIcon);
+                listItem.appendChild(parentHeaderDiv);
+
+
+                const subtaskList = document.createElement('ul');
+                subtaskList.id = `${task.id}-subtasks`;
+                subtaskList.classList.add('list-none', 'pl-0', 'mt-1', 'subtask-list');
+                if (task.subtasks && Array.isArray(task.subtasks)) {
+                    task.subtasks.forEach(subtask => {
+                        subtask.parentId = task.id;
+                        const subtaskIsChecked = checklistData.progress[subtask.id] || false;
+                        const subtaskItem = createChecklistItem(subtask, subtaskIsChecked, true);
+                        subtaskList.appendChild(subtaskItem);
+                    });
+                }
+                listItem.appendChild(subtaskList);
+
+                // Event listener for the entire header to toggle subtasks
+                parentHeaderDiv.addEventListener('click', (e) => {
+                    if (e.target !== checkbox && !checkbox.contains(e.target)) {
+                        const isExpanded = parentHeaderDiv.getAttribute('aria-expanded') === 'true';
+                        parentHeaderDiv.setAttribute('aria-expanded', !isExpanded);
+                        subtaskList.classList.toggle('collapsed', isExpanded);
+                    }
+                });
+
+                 checkbox.addEventListener('change', (event) => {
+                    const currentlyChecked = event.target.checked;
+                    checklistData.progress[task.id] = currentlyChecked;
+                    taskTextSpan.classList.toggle('checked', currentlyChecked);
+
+                    task.subtasks.forEach(subtask => {
+                        checklistData.progress[subtask.id] = currentlyChecked;
+                        const subCheckbox = document.getElementById(subtask.id);
+                        const subLabel = document.querySelector(`label[for="${subtask.id}"]`);
+                        if (subCheckbox) subCheckbox.checked = currentlyChecked;
+                        if (subLabel) subLabel.classList.toggle('checked', currentlyChecked);
+                    });
+                    saveData();
+                });
+
+
+            } else { // For regular tasks and subtasks
+                listItem.classList.add('flex', 'items-start', 'mb-2');
+                 if (isSubtask) {
+                    listItem.classList.add('ml-4');
+                }
+
+                const label = document.createElement('label');
+                label.htmlFor = task.id;
+                label.textContent = task.text;
+                label.classList.add('ml-2', 'flex-1', 'cursor-pointer');
+                if (isChecked) { label.classList.add('checked'); }
+
+                listItem.appendChild(checkbox);
+                listItem.appendChild(label);
+
+                checkbox.addEventListener('change', (event) => {
+                    const currentlyChecked = event.target.checked;
+                    checklistData.progress[task.id] = currentlyChecked;
+                    label.classList.toggle('checked', currentlyChecked);
+
+                    if (isSubtask && task.parentId) {
+                        const parentTaskDefinition = tasks.daily.find(t => t.id === task.parentId);
+                        if (parentTaskDefinition && parentTaskDefinition.subtasks) {
+                            const allSubtasksChecked = parentTaskDefinition.subtasks.every(st => checklistData.progress[st.id]);
+                            checklistData.progress[parentTaskDefinition.id] = allSubtasksChecked;
+                            const parentCheckbox = document.getElementById(parentTaskDefinition.id);
+                            const parentTextSpan = document.querySelector(`#${parentTaskDefinition.id}`).closest('.parent-task-container').querySelector('.task-text');
+
+                            if (parentCheckbox) parentCheckbox.checked = allSubtasksChecked;
+                            if (parentTextSpan) parentTextSpan.classList.toggle('checked', allSubtasksChecked);
+                        }
+                    }
+                    saveData();
+                });
+
+                label.addEventListener('click', () => {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                });
+            }
             return listItem;
         }
 
@@ -808,8 +959,11 @@
             const allCheckboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
             allCheckboxes.forEach((checkbox) => {
                 checkbox.checked = false;
-                const label = document.querySelector(`label[for="${checkbox.id}"]`);
+                const listItem = checkbox.closest('li');
+                const label = listItem.querySelector('label');
+                const parentTextSpan = listItem.querySelector('.parent-task-header .task-text');
                 if (label) label.classList.remove('checked');
+                if (parentTextSpan) parentTextSpan.classList.remove('checked');
             });
             updateLastSavedDisplay(null);
             console.log("Checklist reset complete.");
@@ -820,8 +974,22 @@
                 const checkbox = document.getElementById(task.id);
                 if (checkbox) {
                     checkbox.checked = false;
-                    const label = document.querySelector(`label[for="${task.id}"]`);
+                     const listItem = checkbox.closest('li');
+                    const label = listItem.querySelector('label');
+                    const parentTextSpan = listItem.querySelector('.parent-task-header .task-text');
                     if (label) label.classList.remove('checked');
+                    if (parentTextSpan) parentTextSpan.classList.remove('checked');
+                }
+                if (task.isParent && task.subtasks) {
+                    task.subtasks.forEach(subtask => {
+                        checklistData.progress[subtask.id] = false;
+                        const subCheckbox = document.getElementById(subtask.id);
+                        if (subCheckbox) {
+                            subCheckbox.checked = false;
+                            const subLabel = subCheckbox.closest('li').querySelector('label');
+                            if (subLabel) subLabel.classList.remove('checked');
+                        }
+                    });
                 }
             });
             checklistData.lastDailyReset = new Date().toISOString();
@@ -834,7 +1002,7 @@
                 const checkbox = document.getElementById(task.id);
                 if (checkbox) {
                     checkbox.checked = false;
-                    const label = document.querySelector(`label[for="${task.id}"]`);
+                    const label = checkbox.closest('li').querySelector('label');
                     if (label) label.classList.remove('checked');
                 }
             });
@@ -879,7 +1047,10 @@
             }
 
             setDailyBackground();
-            displayLocalResetTimes();
+            displayLocalResetTimes(); // Initial call
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(displayLocalResetTimes, 1000);
+
 
             const needsSaveAfterReset = runAutoResets();
             if (needsSaveAfterReset) {
@@ -894,19 +1065,15 @@
         }
 
         // --- Initialization ---
-        // Wrap the main initialization in a try...catch
         try {
-             // Ensure DOM elements are available before assigning text content
              if(appVersionElement) appVersionElement.textContent = `App Version ${APP_VERSION}`;
              else console.error("App version element not found!");
 
              if(wfVersionElement) wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`;
              else console.error("Warframe version element not found!");
 
-            // Load data and populate UI
             loadAndInitialize();
 
-            // Add event listeners after elements are potentially populated
             if (resetDailyButton) { resetDailyButton.addEventListener('click', () => handleResetConfirmation(resetDailyButton, 'daily', 'Reset Daily Checks', resetDailyAction)); }
             else { console.error("Reset Daily button element not found!"); }
 
@@ -935,14 +1102,13 @@
 
         } catch(error) {
              console.error("Critical Error during initialization:", error);
-             // Attempt to display error even if other elements failed
              const errDisp = document.getElementById('error-display');
              const errMsg = document.getElementById('error-message');
              if(errDisp && errMsg) {
                 errMsg.textContent = "A critical error occurred during startup. Please check the console.";
                 errDisp.classList.add('visible');
              } else {
-                alert("A critical error occurred during startup. Please check the console."); // Fallback alert
+                alert("A critical error occurred during startup. Please check the console.");
              }
         }
     </script>
