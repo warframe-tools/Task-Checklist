@@ -12,27 +12,53 @@ This tool provides checklists for common recurring activities in Warframe. It sa
 
 ## Features
 
-* **Task Tracking:** Check off tasks as you complete them.
-* **Categorized Lists:** Tasks are separated into Daily, Weekly, and Bi-Weekly sections.
-* **Local Storage:** Your checklist progress is automatically saved in your browser's local storage, so it persists between sessions.
-* **Automatic Resets:**
-    * Daily tasks automatically reset after 00:00 UTC each day.
-    * Weekly tasks automatically reset after Monday 00:00 UTC each week.
-    * Local reset times are displayed in section headers for convenience.
-* **Manual Resets:** Buttons are provided to manually reset Daily, Weekly, or All tasks if needed. Includes a confirmation step to prevent accidental resets.
-* **Collapsible Sections:** Each task section (Daily, Weekly, Bi-Weekly) can be collapsed or expanded by clicking its header.
-* **Theme Toggle:** Switch between a dark (default) and light theme for the checklist content area. Your preference is saved locally.
-* **Rotating Background:** Features a daily rotating background image.
-* **Error Handling:** Displays user-friendly error messages within the app (e.g., if saving fails) and allows copying the error details.
-* **Responsive Design:** Basic responsive layout using Tailwind CSS.
+* **Comprehensive Task Lists:** Includes common daily, weekly, and bi-weekly tasks.
+    * **Collapsible Sections:** Each major section (Daily, Weekly, Bi-Weekly) can be expanded or collapsed for a cleaner view.
+    * **Subtasks:** Daily World Syndicate tasks are broken down into collapsible subtasks for specific syndicates (Ostron, Solaris United, Entrati, Cavia, etc.) with linked parent/child checking behavior.
+* **Local Progress Saving:** Your checked tasks are saved directly in your browser's local storage, so your progress persists even if you close the tab or browser.
+* **Automatic Resets with Local Time Display:**
+    * Daily tasks reset automatically after 00:00 UTC.
+    * Weekly tasks reset automatically after Monday 00:00 UTC.
+    * Section headers display a dynamic countdown timer (e.g., "Resets in HH:MM:SS") showing the time remaining until the next reset in your local timezone.
+* **Manual Reset Options:**
+    * Buttons to manually reset "Daily Checks," "Weekly Checks," or "All Checks."
+    * These buttons feature a two-click confirmation ("Are you Sure?") with a 10-second timeout to prevent accidental resets.
+* **Customizable Theme:**
+    * Toggle between a dark mode (default) and a light mode for the main content area.
+    * Theme preference is saved in local storage.
+* **Dynamic Background:**
+    * Features a daily rotating background image (currently includes user-provided images and placeholders, with the ability to add more).
+* **User-Friendly Error Handling:**
+    * Displays clear error messages within the app if issues occur (e.g., problems saving to local storage).
+    * Includes a "Copy" button in the error display to easily copy error details for reporting.
+* **Responsive Design:** Styled with Tailwind CSS for a generally responsive layout on different screen sizes.
+* **Footer Information:** Includes links to relevant resources (GitHub, License, Warframe Hub, Warframe Wiki, FrameHub), app version, and current Warframe version.
 
 ## How to Use
 
-1.  **Download:** Download the `index.html` file and the `assets` folder.
-2.  **Placement:** Ensure the `assets` folder is in the same directory as the `.html` file.
-3.  **Open:** Open the `index.html` file in your web browser.
+There are a few ways to use the Warframe Task Checklist:
 
-Alternatively, if hosted (e.g., on GitHub Pages), simply navigate to the provided URL.
+1.  **Directly from Github Pages on this repository (Recommended for most users):**
+    * Go directly to the Github Page that is run from this repository! https://warframe-tools.github.io/Task-Checklist/
+
+2.  **GitHub Pages:**
+    * The easiest way is to **fork this repository** to your own GitHub account.
+    * Enable GitHub Pages for your forked repository (usually under `Settings > Pages`, select the `main` branch and `/ (root)` folder).
+    * You will then have your own live version of the checklist that you control.
+    * **Update Schedule:** The main `warframe-tools/Task-Checklist` repository will aim to be updated with new tasks or game version changes around the weekly reset (Monday 00:00 UTC) to avoid disrupting users mid-week. You can then pull these updates into your fork.
+
+3.  **Download and Run Locally:**
+    * Download the source package below and unzip it to your desired location.
+    * The structure should be:
+        ```
+        your_folder/
+        ├── index.html
+        └── assets/
+            └── your_image.jpg
+            └── another_image.jpg
+        ```
+    * Open the `index.html` file directly in your web browser.
+    * If you add images, make sure you update the code in the .html file with those image locations!
 
 ## Feedback, Issues & Feature Requests
 
@@ -68,6 +94,7 @@ If you encounter a bug, graphical glitch, or something isn't working as expected
 If you find this tool useful, consider supporting its development!
 
 * **GitHub Sponsors:** You can sponsor this project via the [Sponsor](https://github.com/sponsors/warframe-tools) button on the repository page.
+* **Create a Pull Request:** Do you have a feature you would like added, or a task that you would like added that could benefit other Tenno? Fork the repository, and create a pull request!
 
 ## Credits
 
