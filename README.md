@@ -17,19 +17,25 @@ This tool provides checklists for common recurring activities in Warframe. It sa
 * **Comprehensive Task Lists:** Includes common daily, weekly, and bi-weekly tasks.
     * **Collapsible Sections:** Each major section (Daily, Weekly, Bi-Weekly) can be expanded or collapsed for a cleaner view.
     * **Subtasks:** Daily World Syndicate tasks are broken down into collapsible subtasks for specific syndicates (Ostron, Solaris United, Entrati, Cavia, etc.) with linked parent/child checking behavior.
-* **Local Progress Saving:** Your checked tasks are saved directly in your browser's local storage, so your progress persists even if you close the tab or browser.
+* **Task Visibility Control:**
+    * **Hide Individual Tasks:** Each task has an eye icon to hide it from view. Hidden tasks are saved and persist across sessions.
+    * **Hide Entire Sections:** If all tasks within a section are individually hidden, a "Hide Section" button will appear on the section header, allowing you to hide the entire section.
+* **Local Progress Saving:** Your checked tasks and hidden task preferences are saved directly in your browser's local storage.
+    * **Version-Aware Storage:** Save data for patch/hotfix versions (e.g., v1.1.0, v1.1.1) are compatible, while major version changes (e.g., v1.x.x to v2.0.0) will start fresh.
 * **Automatic Resets with Local Time Display:**
     * Daily tasks reset automatically after 00:00 UTC.
     * Weekly tasks reset automatically after Monday 00:00 UTC.
     * Section headers display a dynamic countdown timer (e.g., "Resets in HH:MM:SS") showing the time remaining until the next reset in your local timezone.
-* **Manual Reset Options:**
-    * Buttons to manually reset "Daily Checks," "Weekly Checks," or "All Checks."
+* **Modal Options Menu:**
+    * A hamburger icon on the top right opens a modal menu for reset options.
+    * **Manual Reset Options:** Buttons to manually reset "Daily Checks," "Weekly Checks," or "All Checks."
     * These buttons feature a two-click confirmation ("Are you Sure?") with a 10-second timeout to prevent accidental resets.
+    * **Unhide All Tasks:** A button in the menu to unhide all individually hidden tasks and manually hidden sections, also with a confirmation step.
 * **Customizable Theme:**
     * Toggle between a dark mode (default) and a light mode for the main content area.
     * Theme preference is saved in local storage.
 * **Dynamic Background:**
-    * Features a daily rotating background image (currently includes user-provided images and placeholders, with the ability to add more).
+    * Features a daily rotating background image.
 * **User-Friendly Error Handling:**
     * Displays clear error messages within the app if issues occur (e.g., problems saving to local storage).
     * Includes a "Copy" button in the error display to easily copy error details for reporting.

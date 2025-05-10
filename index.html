@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- Theme Variables (Applied to .checklist-content) --- */
-        .checklist-content {
+        /* --- Global Theme Variables --- */
+        :root {
             /* Default: Dark Mode */
             --bg-content: rgba(31, 41, 55, 0.95); /* gray-800 with opacity */
             --text-primary: #f3f4f6; /* gray-100 */
@@ -37,38 +37,48 @@
             --error-text: #ffffff; /* white */
             --error-button-bg: rgba(255, 255, 255, 0.1);
             --error-button-hover-bg: rgba(255, 255, 255, 0.2);
-
-            /* Apply variables */
-            background-color: var(--bg-content);
-            color: var(--text-primary);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            --menu-panel-bg: #272e3a; /* Slightly lighter than main dark bg for distinction */
+            --menu-panel-border: #374151; /* gray-700 for dark mode menu border */
+            --menu-title-color: #ffffff; /* White for dark menu title */
+            --menu-close-btn-color: #9ca3af; /* gray-400 */
+            --menu-close-btn-hover-color: #f3f4f6; /* gray-100 */
+            --hide-section-btn-bg: var(--text-muted);
+            --hide-section-btn-hover-bg: var(--text-secondary);
+            --hide-section-btn-text: var(--text-primary);
         }
 
-        .checklist-content.light-mode {
-            /* Light Mode Overrides */
-            --bg-content: rgba(255, 255, 255, 0.95); /* white with opacity */
-            --text-primary: #1f2937; /* gray-800 */
-            --text-secondary: #4b5563; /* gray-600 */
-            --text-muted: #6b7280; /* gray-500 */
-            --text-header: #111827; /* gray-900 */
-            --text-label: #374151; /* gray-700 */
-            --text-label-checked: #6b7280; /* gray-500 */
-            --border-color: #e5e7eb; /* gray-200 */
-            --checkbox-border: #cbd5e1; /* gray-300 */
+        body.light-mode { /* Variables for light mode applied to body */
+            --bg-content: rgba(255, 255, 255, 0.95);
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --text-header: #111827;
+            --text-label: #374151;
+            --text-label-checked: #6b7280;
+            --border-color: #e5e7eb;
+            --checkbox-border: #cbd5e1;
             --checkbox-bg: rgba(0, 0, 0, 0.02);
-            --link-color: #3b82f6; /* blue-500 */
-            --link-hover-color: #2563eb; /* blue-600 */
-            --theme-toggle-border: #d1d5db; /* gray-300 */
+            --link-color: #3b82f6;
+            --link-hover-color: #2563eb;
+            --theme-toggle-border: #d1d5db;
             --theme-toggle-hover-bg: rgba(0, 0, 0, 0.05);
-            --theme-toggle-hover-border: #6b7280; /* gray-500 */
-            --theme-toggle-color: #6b7280; /* gray-500 */
+            --theme-toggle-hover-border: #6b7280;
+            --theme-toggle-color: #6b7280;
             --section-header-hover-bg: rgba(0, 0, 0, 0.03);
-            --error-bg: #fee2e2; /* red-100 */
-            --error-border: #f87171; /* red-400 */
-            --error-text: #b91c1c; /* red-700 */
+            --error-bg: #fee2e2;
+            --error-border: #f87171;
+            --error-text: #b91c1c;
             --error-button-bg: rgba(0, 0, 0, 0.05);
             --error-button-hover-bg: rgba(0, 0, 0, 0.1);
-            /* Confirm colors remain the same */
+            /* Menu Specific Variables for Light Mode */
+            --menu-panel-bg: #f9fafb; /* Solid gray-50 for light mode menu */
+            --menu-panel-border: #e5e7eb; /* gray-200 for light mode menu border */
+            --menu-title-color: #111827; /* Dark for light menu title */
+            --menu-close-btn-color: #6b7280; /* gray-500 */
+            --menu-close-btn-hover-color: #1f2937; /* gray-800 */
+            --hide-section-btn-bg: var(--text-muted);
+            --hide-section-btn-hover-bg: var(--text-secondary);
+            --hide-section-btn-text: var(--text-primary);
         }
 
         /* --- Base Body Styles (Not affected by theme toggle) --- */
@@ -80,6 +90,8 @@
             background-attachment: fixed;
             min-height: 100vh;
             background-color: #111827; /* Always dark gray-900 */
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         body::before {
             content: "";
@@ -90,24 +102,28 @@
         }
 
         /* --- Content Box Element Styling (Using Variables) --- */
+        .checklist-content {
+            background-color: var(--bg-content);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
         .checklist-content h1 { color: var(--text-header); }
-        .checklist-content h2 { /* Section Header */
+        .checklist-content h2 {
              color: var(--text-header);
              cursor: pointer;
              display: flex;
              justify-content: space-between;
              align-items: center;
-             padding: 0.5rem 0.25rem; /* Add some padding for click area */
+             padding: 0.5rem 0.25rem;
              border-radius: 0.25rem;
              transition: background-color 0.15s ease-in-out;
         }
         .checklist-content h2:hover {
             background-color: var(--section-header-hover-bg);
         }
-        /* Style for local reset time text */
         .checklist-content h2 .reset-time-local {
-            font-size: 0.75rem; /* text-xs */
-            font-weight: 400; /* font-normal */
+            font-size: 0.75rem;
+            font-weight: 400;
             color: var(--text-secondary);
             margin-left: 0.5rem;
         }
@@ -116,44 +132,43 @@
         .checklist-content #last-saved-timestamp,
         .checklist-content #storage-notice {
              color: var(--text-muted);
-             font-size: 0.75rem; /* text-xs */
-             margin-top: 0.25rem; /* mt-1 */
+             font-size: 0.75rem;
+             margin-top: 0.25rem;
         }
         .checklist-content .italic { color: var(--text-secondary); }
         .checklist-content .text-xs { color: var(--text-muted); }
         .checklist-content .border-b { border-color: var(--border-color); }
-        .checklist-content .app-description { /* Style for the new description */
+        .checklist-content .app-description {
             color: var(--text-secondary);
-            margin-top: 0.5rem; /* mt-2 */
-            margin-bottom: 1.5rem; /* mb-6 */
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
         }
-        .checklist-content .footer-links { /* Style for footer links */
-             font-size: 0.75rem; /* text-xs */
+        .checklist-content .footer-links {
+             font-size: 0.75rem;
              color: var(--text-muted);
         }
         .checklist-content .footer-links a {
              color: var(--link-color);
              text-decoration: underline;
              transition: color 0.2s ease;
-             margin: 0 0.25rem; /* Add horizontal spacing */
+             margin: 0 0.25rem;
         }
          .checklist-content .footer-links a:hover {
              color: var(--link-hover-color);
          }
-         .checklist-content .footer-links span { /* Style for the separator */
+         .checklist-content .footer-links span {
              color: var(--text-muted);
              margin: 0 0.1rem;
          }
 
-
         /* --- Collapsible Section Styles --- */
         .section-content, .subtask-list {
             overflow: hidden;
-            max-height: 3000px; /* Set a large max-height for expanded state */
+            max-height: 3000px;
             transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out 0.1s, visibility 0s linear 0s;
             opacity: 1;
             visibility: visible;
-            padding-left: 0.5rem; /* Indent content slightly */
+            padding-left: 0.5rem;
         }
         .section-content.collapsed, .subtask-list.collapsed {
             max-height: 0;
@@ -162,33 +177,74 @@
             transition: max-height 0.4s ease-in-out, opacity 0.2s ease-in-out, visibility 0s linear 0.4s;
         }
         .collapse-icon {
-            width: 1rem; /* w-4 */
-            height: 1rem; /* h-4 */
+            width: 1rem; height: 1rem;
             transition: transform 0.3s ease-in-out;
-            flex-shrink: 0; /* Prevent icon from shrinking */
-            margin-left: 0.5rem; /* Space between text and icon */
+            flex-shrink: 0;
+            margin-left: 0.5rem;
         }
         .section-toggle[aria-expanded="false"] .collapse-icon,
-        .parent-task-header[aria-expanded="false"] .collapse-icon { /* Rotate when collapsed */
+        .parent-task-header[aria-expanded="false"] .collapse-icon {
             transform: rotate(-90deg);
         }
         .subtask-list {
-            margin-left: 1.5rem; /* Indent subtasks */
-            padding-left: 0; /* Reset padding from .section-content */
+            margin-left: 1.5rem;
+            padding-left: 0;
+            list-style: none;
         }
         .parent-task-header {
             display: flex;
-            align-items: center; /* Align checkbox and label content */
+            align-items: center;
             cursor: pointer;
-            /* flex-grow: 1; Let the li handle flex grow if needed */
         }
         .parent-task-header .task-text {
-            flex-grow: 1; /* Allow text to take space before icon */
-            margin-left: 0.5rem; /* Same as regular label's ml-2 */
+            flex-grow: 1;
+            margin-left: 0.5rem;
         }
-        .task-text.checked, label.checked { /* For parent task text strikethrough */
+        .task-text.checked, label.checked {
             text-decoration: line-through;
             color: var(--text-label-checked);
+        }
+        .task-item.hidden-task {
+            display: none !important;
+        }
+        .hide-task-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.125rem;
+            margin-left: 0.5rem;
+            opacity: 0.6;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .hide-task-btn svg {
+            width: 1rem;
+            height: 1rem;
+        }
+        .hide-task-btn:hover { opacity: 1; }
+        .section-is-hidden-by-user {
+            display: none !important;
+        }
+        .hide-section-button {
+            background-color: var(--hide-section-btn-bg);
+            color: var(--hide-section-btn-text);
+            border: 1px solid var(--border-color);
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 0.25rem;
+            margin-left: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: none; /* Hidden by default */
+        }
+        .hide-section-button:hover {
+            background-color: var(--hide-section-btn-hover-bg);
+        }
+        .hide-section-button.visible {
+            display: inline-block;
         }
 
 
@@ -201,6 +257,7 @@
             position: relative; top: 0.2rem; margin-right: 0.5rem;
             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
             background-color: var(--checkbox-bg);
+            flex-shrink: 0;
         }
         input[type="checkbox"]:checked {
             background-color: var(--checkbox-checked-bg);
@@ -211,111 +268,176 @@
             color: white; font-size: 0.8rem;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
-        /* label.checked is handled by .task-text.checked for parent or label.checked for normal */
         li { margin-bottom: 0.5rem; }
         #save-status { transition: opacity 0.5s ease-in-out; }
 
         /* --- Buttons (Base styles, colors set below) --- */
-        .reset-btn, #theme-toggle-button {
-             margin-top: 1.5rem; /* mt-6 */
-             margin-right: 0.5rem; /* Add spacing between buttons */
-             color: white;
-             font-weight: 600; /* font-semibold */
-             padding: 0.5rem 1rem; /* py-2 px-4 */
-             border-radius: 0.375rem; /* rounded-md */
+        .menu-btn, #theme-toggle-button, #hamburger-button {
+             font-weight: 600;
+             padding: 0.5rem 1rem;
+             border-radius: 0.375rem;
              transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-             border: 1px solid transparent; /* Base border */
-             cursor: pointer; /* Ensure pointer cursor */
-             line-height: 1.5; /* Ensure consistent height */
+             border: 1px solid transparent;
+             cursor: pointer;
+             line-height: 1.5;
         }
         /* Specific Button Colors (Default State) */
-        #reset-daily-button:not(.confirming) { background-color: #3b82f6; border-color: #3b82f6;}
-        #reset-daily-button:not(.confirming):hover { background-color: #2563eb; border-color: #2563eb;}
-        #reset-weekly-button:not(.confirming) { background-color: #14b8a6; border-color: #14b8a6;}
-        #reset-weekly-button:not(.confirming):hover { background-color: #0d9488; border-color: #0d9488;}
-        #reset-button:not(.confirming) { background-color: #ef4444; border-color: #ef4444;}
-        #reset-button:not(.confirming):hover { background-color: #dc2626; border-color: #dc2626;}
+        #reset-daily-button:not(.confirming) { background-color: #3b82f6; border-color: #3b82f6; color: white;}
+        #reset-daily-button:not(.confirming):hover { background-color: #2563eb; border-color: #2563eb; color: white;}
+        #reset-weekly-button:not(.confirming) { background-color: #14b8a6; border-color: #14b8a6; color: white;}
+        #reset-weekly-button:not(.confirming):hover { background-color: #0d9488; border-color: #0d9488; color: white;}
+        #reset-button:not(.confirming) { background-color: #ef4444; border-color: #ef4444; color: white;}
+        #reset-button:not(.confirming):hover { background-color: #dc2626; border-color: #dc2626; color: white;}
+        #unhide-tasks-button:not(.confirming) { background-color: #8b5cf6; border-color: #8b5cf6; color: white; }
+        #unhide-tasks-button:not(.confirming):hover { background-color: #7c3aed; border-color: #7c3aed; color: white; }
+
 
         /* Confirmation State Styling (Applies to all reset buttons) */
-        .reset-btn.confirming {
+        .menu-btn.confirming {
              background-color: var(--confirm-bg);
              border-color: var(--confirm-bg);
-             color: var(--confirm-text);
+             color: var(--confirm-text) !important; /* Ensure dark text on amber */
         }
-        .reset-btn.confirming:hover {
+        .menu-btn.confirming:hover {
              background-color: var(--confirm-hover-bg);
              border-color: var(--confirm-hover-bg);
         }
 
 
         /* Theme Toggle Button Specifics (Using Variables) */
-        #theme-toggle-button {
+        #theme-toggle-button, #hamburger-button {
             background-color: transparent;
             border: 1px solid var(--theme-toggle-border);
             color: var(--theme-toggle-color);
-            padding: 0.375rem; /* Slightly smaller padding */
-            margin-top: 0; /* Remove top margin */
-            margin-right: 0; /* Remove right margin */
+            padding: 0.375rem;
+            margin-top: 0; /* Reset margin from .menu-btn */
         }
-        #theme-toggle-button:hover {
+        #theme-toggle-button { margin-right: 0.5rem; } /* Keep spacing between theme and hamburger */
+        #hamburger-button { margin-right: 0; } /* Ensure hamburger is last */
+
+        #theme-toggle-button:hover, #hamburger-button:hover {
             background-color: var(--theme-toggle-hover-bg);
             border-color: var(--theme-toggle-hover-border);
         }
-        #theme-toggle-button svg {
-            width: 1.25rem; /* w-5 */
-            height: 1.25rem; /* h-5 */
+        #theme-toggle-button svg, #hamburger-button svg {
+            width: 1.25rem;
+            height: 1.25rem;
             fill: currentColor;
         }
-        /* Hide one icon based on mode */
-        .light-mode #moon-icon { display: none; }
-        .checklist-content:not(.light-mode) #sun-icon { display: none; } /* Target based on content div */
+        body.light-mode #moon-icon { display: none; }
+        body:not(.light-mode) #sun-icon { display: none; }
 
         /* --- Error Display --- */
         #error-display {
             background-color: var(--error-bg);
             color: var(--error-text);
             border: 1px solid var(--error-border);
-            padding: 0.75rem 1rem; /* p-3 px-4 */
-            border-radius: 0.375rem; /* rounded-md */
-            margin-bottom: 1rem; /* mb-4 */
-            display: none; /* Hidden by default */
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            display: none;
             align-items: center;
-            gap: 0.75rem; /* gap-3 */
+            gap: 0.75rem;
         }
-        #error-display.visible {
-            display: flex;
-        }
-        #error-message {
-            flex-grow: 1;
-        }
+        #error-display.visible { display: flex; }
+        #error-message { flex-grow: 1; }
         #error-copy-button {
             background-color: var(--error-button-bg);
             color: var(--error-text);
             border: 1px solid transparent;
-            padding: 0.25rem 0.5rem; /* p-1 px-2 */
-            font-size: 0.75rem; /* text-xs */
-            border-radius: 0.25rem; /* rounded */
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 0.25rem;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0;
         }
-        #error-copy-button:hover {
-             background-color: var(--error-button-hover-bg);
-        }
+        #error-copy-button:hover { background-color: var(--error-button-hover-bg); }
         #error-close-button {
+            background: none; border: none;
+            color: var(--error-text);
+            font-size: 1.5rem; line-height: 1;
+            cursor: pointer; padding: 0 0.5rem;
+            opacity: 0.7; flex-shrink: 0;
+        }
+         #error-close-button:hover { opacity: 1; }
+
+        /* --- Hamburger Menu (Modal Overlay Style) --- */
+        #slideout-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.75);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #slideout-menu-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+        #menu-content-box {
+            background-color: var(--menu-panel-bg);
+            border: 1px solid var(--menu-panel-border);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 300px;
+            overflow-y: auto;
+            max-height: 90vh;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.2s ease-out 0.1s, opacity 0.2s ease-out 0.1s;
+            position: relative;
+        }
+        #slideout-menu-overlay.open #menu-content-box {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--menu-panel-border);
+        }
+        .menu-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--menu-title-color);
+        }
+        #menu-close-button {
             background: none;
             border: none;
-            color: var(--error-text);
-            font-size: 1.5rem; /* text-2xl */
+            font-size: 1.75rem;
             line-height: 1;
+            color: var(--menu-close-btn-color);
             cursor: pointer;
-            padding: 0 0.5rem;
+            padding: 0.25rem 0.5rem;
             opacity: 0.7;
-            flex-shrink: 0; /* Prevent shrinking */
         }
-         #error-close-button:hover {
+        #menu-close-button:hover {
             opacity: 1;
-         }
+            color: var(--menu-close-btn-hover-color);
+        }
+        #slideout-menu-overlay .menu-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0.75rem;
+        }
+        #slideout-menu-overlay .menu-btn:last-child {
+            margin-bottom: 0;
+        }
 
     </style>
 </head>
@@ -327,13 +449,11 @@
             <button id="error-close-button" aria-label="Close error message">&times;</button>
         </div>
 
-        <div class="flex justify-between items-start mb-2">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold">Warframe Task Checklist</h1>
+        <div class="flex flex-wrap justify-between items-center mb-4">
+            <div class="mb-2 sm:mb-0"> <h1 class="text-2xl md:text-3xl font-bold">Warframe Task Checklist</h1>
                 <p class="app-description text-base">Track your daily, weekly, and bi-weekly Warframe tasks.</p>
             </div>
-            <div class="text-right flex flex-col items-end">
-                 <button id="theme-toggle-button" aria-label="Toggle theme" class="absolute top-4 right-4 reset-btn">
+            <div class="flex items-center space-x-2 mt-2 sm:mt-0"> <button id="theme-toggle-button" aria-label="Toggle theme">
                         <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                             <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.166 7.758a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
                         </svg>
@@ -341,15 +461,18 @@
                             <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-3.51 1.713-6.637 4.43-8.565a.75.75 0 01.981.162z" clip-rule="evenodd"/>
                         </svg>
                     </button>
-                 <span id="save-status" class="text-sm text-green-600 opacity-0 mt-10">Saved!</span>
-                 <p id="last-saved-timestamp" class="mt-1">Loading...</p>
-                 <p id="storage-notice" class="mt-1">Your progress is saved locally.</p>
+                    <button id="hamburger-button" aria-label="Open menu">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
             </div>
         </div>
         <div id="checklist-container">
             <section id="daily-tasks-section" class="mb-8">
                 <h2 class="text-xl font-semibold mb-1 border-b pb-2 text-indigo-700 section-toggle" aria-expanded="true" aria-controls="daily-tasks-content">
                     <span class="flex-grow">Daily Tasks <span class="reset-time-local" id="daily-reset-local-time">(Resets ...)</span></span>
+                    <button class="hide-section-button" data-section-id="daily-tasks-section">Hide Section</button>
                     <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
@@ -362,6 +485,7 @@
             <section id="weekly-tasks-section" class="mb-8">
                 <h2 class="text-xl font-semibold mb-1 border-b pb-2 text-teal-700 section-toggle" aria-expanded="true" aria-controls="weekly-tasks-content">
                     <span class="flex-grow">Weekly Tasks <span class="reset-time-local" id="weekly-reset-local-time">(Resets ...)</span></span>
+                    <button class="hide-section-button" data-section-id="weekly-tasks-section">Hide Section</button>
                      <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
@@ -374,6 +498,7 @@
             <section id="bi-weekly-tasks-section" class="mb-8">
                 <h2 class="text-xl font-semibold mb-1 border-b pb-2 text-purple-700 section-toggle" aria-expanded="true" aria-controls="bi-weekly-tasks-content">
                     <span class="flex-grow">Bi-Weekly Task (Every 2 Weeks, Fri-Sun)</span>
+                    <button class="hide-section-button" data-section-id="bi-weekly-tasks-section">Hide Section</button>
                      <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
@@ -384,12 +509,12 @@
             </section>
         </div>
 
+         <div class="mt-4 text-right"> <span id="save-status" class="text-sm text-green-600 opacity-0">Saved!</span>
+             <p id="last-saved-timestamp" class="mt-1">Loading...</p>
+             <p id="storage-notice" class="mt-1">Your progress is saved locally.</p>
+        </div>
+
          <p class="text-sm italic mt-8">*Remember, you don't have to do everything! Prioritize tasks based on your current goals and progress.*</p>
-         <div class="mt-6 flex flex-wrap">
-             <button id="reset-daily-button" class="reset-btn mb-2">Reset Daily Checks</button>
-             <button id="reset-weekly-button" class="reset-btn mb-2">Reset Weekly Checks</button>
-             <button id="reset-button" class="reset-btn mb-2">Reset All Checks</button>
-         </div>
 
          <div class="text-center mt-8 footer-links">
              <a href="https://github.com/warframe-tools/Task-Checklist" target="_blank" rel="noopener noreferrer">Github</a>
@@ -408,18 +533,42 @@
          <p class="text-xs text-center mt-2 px-4 disclaimer-text">
              This is an unofficial fan-made tool. Warframe and all related assets are the intellectual property of Digital Extremes Ltd. This project is not affiliated with, endorsed by, or sponsored by Digital Extremes Ltd.
          </p>
+    </div>
 
-    </div> <script>
+    <div id="slideout-menu-overlay">
+        <div id="menu-content-box">
+            <div class="menu-header">
+                <span class="menu-title">Options</span>
+                <button id="menu-close-button" aria-label="Close menu">&times;</button>
+            </div>
+            <button id="reset-daily-button" class="menu-btn">Reset Daily Checks</button>
+            <button id="reset-weekly-button" class="menu-btn">Reset Weekly Checks</button>
+            <button id="reset-button" class="menu-btn">Reset All Checks</button>
+            <button id="unhide-tasks-button" class="menu-btn">Unhide All Tasks</button>
+        </div>
+    </div>
+
+    <script>
         // --- Configuration ---
         const backgroundImages = [
              'assets/garuda-fortuna.jpg',
              'assets/gara-eidolon.jpg',
              'assets/heart-of-deimos-warframe.jpg'
         ];
-        const APP_VERSION = "1.0.0";
+        const APP_VERSION = "1.1.0";
         const WARFRAME_VERSION = "38.5.11";
         const THEME_STORAGE_KEY = 'warframeChecklistTheme';
-        const DATA_STORAGE_KEY = `warframeChecklistData_v${APP_VERSION}`;
+
+        function getStorageKey(appVersion) {
+            const versionParts = appVersion.split('.');
+            if (versionParts.length >= 1) {
+                const major = versionParts[0];
+                return `warframeChecklistData_v${major}`;
+            }
+            return `warframeChecklistData_v${appVersion.replace(/\./g, '_')}`;
+        }
+        const DATA_STORAGE_KEY = getStorageKey(APP_VERSION);
+
 
         // --- Task Data ---
         const tasks = {
@@ -480,12 +629,17 @@
         const bodyElement = document.body;
         const contentElement = document.querySelector('.checklist-content');
         const themeToggleButton = document.getElementById('theme-toggle-button');
+        const hamburgerButton = document.getElementById('hamburger-button');
+        const slideoutMenuOverlay = document.getElementById('slideout-menu-overlay');
+        const menuContentBox = document.getElementById('menu-content-box');
+        const menuCloseButton = document.getElementById('menu-close-button');
         const dailyList = document.querySelector('#daily-tasks-content ul');
         const weeklyList = document.querySelector('#weekly-tasks-content ul');
         const biWeeklyList = document.querySelector('#bi-weekly-tasks-content ul');
         const resetDailyButton = document.getElementById('reset-daily-button');
         const resetWeeklyButton = document.getElementById('reset-weekly-button');
         const resetButton = document.getElementById('reset-button');
+        const unhideTasksButton = document.getElementById('unhide-tasks-button');
         const lastSavedTimestampElement = document.getElementById('last-saved-timestamp');
         const saveStatusElement = document.getElementById('save-status');
         const sectionToggles = document.querySelectorAll('.section-toggle');
@@ -504,16 +658,21 @@
         const confirmState = {
             all: { timeout: null, isConfirming: false },
             daily: { timeout: null, isConfirming: false },
-            weekly: { timeout: null, isConfirming: false }
+            weekly: { timeout: null, isConfirming: false },
+            unhide: { timeout: null, isConfirming: false }
         };
         let checklistData = {
-            progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null
+            progress: {},
+            lastSaved: null,
+            lastDailyReset: null,
+            lastWeeklyReset: null,
+            hiddenTasks: {},
+            manuallyHiddenSections: {}
         };
         let currentTheme = 'dark';
 
         // --- Function Definitions ---
 
-        /** Displays an error message in the UI */
         function displayError(message) {
             if (!errorDisplayElement || !errorMessageElement) return;
             console.error("Displaying Error:", message);
@@ -521,16 +680,12 @@
             errorDisplayElement.classList.add('visible');
             if (errorCopyButton) errorCopyButton.textContent = 'Copy';
         }
-
-        /** Hides the error message area */
         function hideError() {
              if (!errorDisplayElement) return;
              errorDisplayElement.classList.remove('visible');
              errorMessageElement.textContent = '';
              if (errorCopyButton) errorCopyButton.textContent = 'Copy';
         }
-
-        /** Handles copying the error message to clipboard */
         function copyErrorToClipboard() {
             const errorMessage = errorMessageElement.textContent;
             if (!errorMessage || !navigator.clipboard) {
@@ -549,28 +704,22 @@
                  setTimeout(() => { if (errorCopyButton) errorCopyButton.textContent = 'Copy'; }, 2000);
             });
         }
-
-        /** Applies the theme by adding/removing the light-mode class from the content div */
         function applyTheme(theme) {
-            if (!contentElement) return;
+            if (!bodyElement) return;
             if (theme === 'light') {
-                contentElement.classList.add('light-mode');
+                bodyElement.classList.add('light-mode');
             } else {
-                contentElement.classList.remove('light-mode');
+                bodyElement.classList.remove('light-mode');
             }
             currentTheme = theme;
-            console.log(`Theme applied to content: ${theme}`);
+            console.log(`Theme applied: ${theme}`);
         }
-
-        /** Handles theme toggle button click */
         function handleThemeToggle() {
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             applyTheme(newTheme);
             try { localStorage.setItem(THEME_STORAGE_KEY, newTheme); }
             catch (e) { console.error("Could not save theme preference:", e); }
         }
-
-        /** Loads theme preference from localStorage */
         function loadThemePreference() {
              let savedTheme = 'dark';
              try {
@@ -581,8 +730,6 @@
              }
              applyTheme(savedTheme);
         }
-
-        /** Formats a Date object or timestamp string into a readable format (local time). */
         function formatTimestamp(timestamp) {
             if (!timestamp) return 'Never';
             try {
@@ -591,8 +738,6 @@
                 return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
             } catch (e) { console.error("Error formatting timestamp:", e); return 'Error'; }
         }
-
-        /** Updates the displayed last saved timestamp. */
         function updateLastSavedDisplay(timestamp) {
             if (lastSavedTimestampElement) {
                 lastSavedTimestampElement.textContent = `Last saved: ${formatTimestamp(timestamp)}`;
@@ -600,16 +745,12 @@
                  console.error("lastSavedTimestampElement not found");
             }
         }
-
-        /** Shows a brief "Saved!" message. */
         function showSaveStatus() {
             if (!saveStatusElement) return;
             clearTimeout(saveStatusTimeout);
             saveStatusElement.style.opacity = '1';
             saveStatusTimeout = setTimeout(() => { saveStatusElement.style.opacity = '0'; }, 1500);
         }
-
-        /** Gets the timestamp for the most recent Monday at 00:00:00 UTC. */
         function getMostRecentMondayMidnightUTC() {
             const now = new Date();
             const currentUTCDay = now.getUTCDay();
@@ -619,32 +760,24 @@
             mondayUTC.setUTCHours(0, 0, 0, 0);
             return mondayUTC.getTime();
         }
-
-         /** Gets the timestamp for the next occurrence of 00:00:00 UTC. */
          function getNextDailyMidnightUTC() {
              const now = new Date();
              const tomorrowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
              tomorrowUTC.setUTCHours(0, 0, 0, 0);
              return tomorrowUTC.getTime();
          }
-
-        /** Gets the UTC date string (YYYY-MM-DD) for a given Date object. */
         function getUTCDateString(dateObj) {
             const year = dateObj.getUTCFullYear();
             const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
             const day = dateObj.getUTCDate().toString().padStart(2, '0');
             return `${year}-${month}-${day}`;
         }
-
-        /** Gets the day of the year (1-366) in UTC. */
         function getUTCDayOfYear(date) {
             const startOfYear = Date.UTC(date.getUTCFullYear(), 0, 0);
             const diff = date.getTime() - startOfYear;
             const oneDay = 1000 * 60 * 60 * 24;
             return Math.floor(diff / oneDay);
         }
-
-        /** Sets the daily rotating background image. */
         function setDailyBackground() {
             const now = new Date();
             const dayOfYear = getUTCDayOfYear(now);
@@ -657,8 +790,6 @@
                  console.error("bodyElement not found");
             }
         }
-
-        /** Formats milliseconds into HH:MM:SS or D days, HH:MM:SS string */
         function formatCountdown(ms) {
             if (ms < 0) return "00:00:00";
 
@@ -677,9 +808,6 @@
             }
             return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
         }
-
-
-         /** Displays the local equivalent of the UTC reset times as a countdown */
          function displayLocalResetTimes() {
             try {
                 const now = new Date().getTime();
@@ -704,8 +832,6 @@
                  if (weeklyResetTimeElement) weeklyResetTimeElement.textContent = `(Resets Mon 00:00 UTC)`;
             }
         }
-
-        /** Checks if daily/weekly resets are needed based on UTC time and performs them. */
         function runAutoResets() {
             const now = new Date();
             const nowUTCTimestamp = now.getTime();
@@ -717,13 +843,13 @@
             if (!lastDailyResetUTCString || lastDailyResetUTCString !== todayUTCString) {
                 console.log(`Performing daily auto-reset (UTC). Today: ${todayUTCString}, Last Reset: ${lastDailyResetUTCString}`);
                 tasks.daily.forEach(task => {
-                    if (checklistData.progress[task.id]) {
+                    if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
                         checklistData.progress[task.id] = false;
                         didReset = true;
                     }
                     if (task.isParent && task.subtasks) {
                         task.subtasks.forEach(subtask => {
-                            if (checklistData.progress[subtask.id]) {
+                            if (checklistData.progress[subtask.id] && !checklistData.hiddenTasks[subtask.id]) {
                                 checklistData.progress[subtask.id] = false;
                             }
                         });
@@ -738,7 +864,7 @@
                  if (nowUTCTimestamp >= mostRecentMondayUTCTimestamp) {
                     console.log(`Performing weekly auto-reset (UTC). Current Time: ${nowUTCTimestamp}, Last Reset: ${lastWeeklyResetTimestamp}, Target Monday: ${mostRecentMondayUTCTimestamp}`);
                     tasks.weekly.forEach(task => {
-                        if (checklistData.progress[task.id]) {
+                        if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
                             checklistData.progress[task.id] = false;
                             didReset = true;
                         }
@@ -748,8 +874,6 @@
             }
             return didReset;
         }
-
-        /** Saves the entire current state (checklistData) to localStorage. */
         function saveData(showStatus = true) {
             hideError();
             checklistData.lastSaved = new Date().toISOString();
@@ -766,12 +890,14 @@
                 displayError(userMessage);
             }
         }
-
-        /** Creates a checklist item (list item with checkbox and label). */
         function createChecklistItem(task, isChecked, isSubtask = false) {
             const listItem = document.createElement('li');
-            const checkbox = document.createElement('input');
+            listItem.classList.add('task-item');
+            if (checklistData.hiddenTasks[task.id]) {
+                listItem.classList.add('hidden-task');
+            }
 
+            const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = task.id;
             checkbox.checked = isChecked;
@@ -779,6 +905,20 @@
             if (isSubtask) {
                 checkbox.dataset.parentId = task.parentId;
             }
+
+            const hideButton = document.createElement('button');
+            hideButton.classList.add('hide-task-btn');
+            hideButton.setAttribute('aria-label', `Hide task: ${task.text}`);
+            hideButton.title = `Hide task: ${task.text}`;
+            hideButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
+
+            hideButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                checklistData.hiddenTasks[task.id] = true;
+                listItem.classList.add('hidden-task');
+                updateSectionControls(listItem.closest('section').id);
+                saveData(false);
+            });
 
             if (task.isParent) {
                 listItem.classList.add('parent-task-container', 'flex', 'flex-col');
@@ -805,8 +945,8 @@
 
                 parentHeaderDiv.appendChild(taskTextSpan);
                 parentHeaderDiv.appendChild(collapseIcon);
+                parentHeaderDiv.appendChild(hideButton);
                 listItem.appendChild(parentHeaderDiv);
-
 
                 const subtaskList = document.createElement('ul');
                 subtaskList.id = `${task.id}-subtasks`;
@@ -821,13 +961,18 @@
                 }
                 listItem.appendChild(subtaskList);
 
-                // Event listener for the entire header to toggle subtasks
                 parentHeaderDiv.addEventListener('click', (e) => {
-                    if (e.target !== checkbox && !checkbox.contains(e.target)) {
+                    if (e.target !== checkbox && !checkbox.contains(e.target) && e.target !== hideButton && !hideButton.contains(e.target) && !collapseIcon.contains(e.target)) {
                         const isExpanded = parentHeaderDiv.getAttribute('aria-expanded') === 'true';
                         parentHeaderDiv.setAttribute('aria-expanded', !isExpanded);
                         subtaskList.classList.toggle('collapsed', isExpanded);
                     }
+                });
+                 collapseIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isExpanded = parentHeaderDiv.getAttribute('aria-expanded') === 'true';
+                    parentHeaderDiv.setAttribute('aria-expanded', !isExpanded);
+                    subtaskList.classList.toggle('collapsed', isExpanded);
                 });
 
                  checkbox.addEventListener('change', (event) => {
@@ -845,9 +990,8 @@
                     saveData();
                 });
 
-
-            } else { // For regular tasks and subtasks
-                listItem.classList.add('flex', 'items-start', 'mb-2');
+            } else {
+                listItem.classList.add('flex', 'items-center', 'mb-2');
                  if (isSubtask) {
                     listItem.classList.add('ml-4');
                 }
@@ -860,6 +1004,7 @@
 
                 listItem.appendChild(checkbox);
                 listItem.appendChild(label);
+                listItem.appendChild(hideButton);
 
                 checkbox.addEventListener('change', (event) => {
                     const currentlyChecked = event.target.checked;
@@ -872,7 +1017,8 @@
                             const allSubtasksChecked = parentTaskDefinition.subtasks.every(st => checklistData.progress[st.id]);
                             checklistData.progress[parentTaskDefinition.id] = allSubtasksChecked;
                             const parentCheckbox = document.getElementById(parentTaskDefinition.id);
-                            const parentTextSpan = document.querySelector(`#${parentTaskDefinition.id}`).closest('.parent-task-container').querySelector('.task-text');
+                            const parentContainer = parentCheckbox ? parentCheckbox.closest('.parent-task-container') : null;
+                            const parentTextSpan = parentContainer ? parentContainer.querySelector('.parent-task-header .task-text') : null;
 
                             if (parentCheckbox) parentCheckbox.checked = allSubtasksChecked;
                             if (parentTextSpan) parentTextSpan.classList.toggle('checked', allSubtasksChecked);
@@ -888,8 +1034,6 @@
             }
             return listItem;
         }
-
-        /** Populates a given section (UL element) with checklist items. */
         function populateSection(sectionElement, taskList, progress) {
             if (!sectionElement) {
                 console.error("Section element not found for population:", sectionElement);
@@ -901,9 +1045,10 @@
                 const listItem = createChecklistItem(task, isChecked);
                 sectionElement.appendChild(listItem);
             });
+            if (sectionElement.parentElement && sectionElement.parentElement.id) {
+                 updateSectionControls(sectionElement.parentElement.id);
+            }
         }
-
-        /** Resets the state (text and styling) of a specific reset button */
         function resetSpecificButtonState(buttonElement, defaultText, stateKey) {
             if (!buttonElement || !confirmState[stateKey]) return;
             clearTimeout(confirmState[stateKey].timeout);
@@ -913,8 +1058,6 @@
             buttonElement.classList.remove('confirming');
             console.log(`Button ${buttonElement.id} state reverted.`);
         }
-
-        /** Generic handler for reset button clicks with confirmation */
         function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAction) {
             if (!confirmState[confirmKey]) {
                 console.error("Invalid confirmKey:", confirmKey);
@@ -928,6 +1071,7 @@
                          if (key === 'all') { btnElement = resetButton; btnText = 'Reset All Checks'; }
                          else if (key === 'daily') { btnElement = resetDailyButton; btnText = 'Reset Daily Checks'; }
                          else if (key === 'weekly') { btnElement = resetWeeklyButton; btnText = 'Reset Weekly Checks'; }
+                         else if (key === 'unhide') { btnElement = unhideTasksButton; btnText = 'Unhide All Tasks'; }
                          if(btnElement) {
                             resetSpecificButtonState(btnElement, btnText, key);
                          }
@@ -952,11 +1096,10 @@
                 }, 10000);
             }
         }
-
-        /** Specific Reset Actions */
         function resetAllAction() {
-            checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null };
-            localStorage.removeItem(DATA_STORAGE_KEY);
+            checklistData.progress = {};
+            localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(checklistData));
+
             const allCheckboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
             allCheckboxes.forEach((checkbox) => {
                 checkbox.checked = false;
@@ -966,7 +1109,7 @@
                 if (label) label.classList.remove('checked');
                 if (parentTextSpan) parentTextSpan.classList.remove('checked');
             });
-            updateLastSavedDisplay(null);
+            updateLastSavedDisplay(checklistData.lastSaved);
             console.log("Checklist reset complete.");
         }
         function resetDailyAction() {
@@ -975,7 +1118,7 @@
                 const checkbox = document.getElementById(task.id);
                 if (checkbox) {
                     checkbox.checked = false;
-                     const listItem = checkbox.closest('li');
+                    const listItem = checkbox.closest('li');
                     const label = listItem.querySelector('label');
                     const parentTextSpan = listItem.querySelector('.parent-task-header .task-text');
                     if (label) label.classList.remove('checked');
@@ -1011,8 +1154,6 @@
             saveData();
             console.log("Weekly checks manually reset.");
         }
-
-        /** Handles click on a section header to toggle collapse */
         function handleSectionToggle(event) {
             const header = event.target.closest('.section-toggle');
             if (!header) return;
@@ -1024,8 +1165,64 @@
             contentDiv.classList.toggle('collapsed', isExpanded);
             console.log(`Toggled section ${contentId} to ${!isExpanded ? 'expanded' : 'collapsed'}`);
         }
+        function toggleMenu() {
+            if (slideoutMenuOverlay) {
+                slideoutMenuOverlay.classList.toggle('open');
+            }
+        }
+        function unhideAllAction() {
+            checklistData.hiddenTasks = {};
+            checklistData.manuallyHiddenSections = {};
+            saveData(false);
 
-        /** Loads data from localStorage, performs auto-resets, and saves if resets occurred. */
+            document.querySelectorAll('.task-item.hidden-task').forEach(item => item.classList.remove('hidden-task'));
+            document.querySelectorAll('section.section-is-hidden-by-user').forEach(section => section.classList.remove('section-is-hidden-by-user'));
+
+            populateSection(dailyList, tasks.daily, checklistData.progress);
+            populateSection(weeklyList, tasks.weekly, checklistData.progress);
+            populateSection(biWeeklyList, tasks.biWeekly, checklistData.progress);
+            ['daily-tasks-section', 'weekly-tasks-section', 'bi-weekly-tasks-section'].forEach(updateSectionControls);
+            console.log("All tasks and sections unhidden.");
+            toggleMenu();
+        }
+
+        function updateSectionControls(sectionElementId) {
+            const sectionElement = document.getElementById(sectionElementId);
+            if (!sectionElement) return;
+
+            const hideSectionButton = sectionElement.querySelector('.hide-section-button');
+            if (!hideSectionButton) return;
+
+            if (checklistData.manuallyHiddenSections[sectionElementId]) {
+                sectionElement.classList.add('section-is-hidden-by-user');
+                hideSectionButton.classList.remove('visible');
+                return;
+            } else {
+                sectionElement.classList.remove('section-is-hidden-by-user');
+            }
+
+            const contentUl = sectionElement.querySelector('.section-content ul');
+            if (!contentUl) {
+                hideSectionButton.classList.remove('visible');
+                return;
+            }
+
+            const allTaskItems = Array.from(contentUl.querySelectorAll('li.task-item'));
+            if (allTaskItems.length === 0) {
+                hideSectionButton.classList.remove('visible');
+                return;
+            }
+
+            const allTasksIndividuallyHidden = allTaskItems.every(item => item.classList.contains('hidden-task'));
+
+            if (allTasksIndividuallyHidden) {
+                hideSectionButton.classList.add('visible');
+            } else {
+                hideSectionButton.classList.remove('visible');
+            }
+        }
+
+
         function loadAndInitialize() {
             hideError();
             loadThemePreference();
@@ -1039,19 +1236,20 @@
                         checklistData.lastSaved = parsedData.lastSaved || null;
                         checklistData.lastDailyReset = parsedData.lastDailyReset || null;
                         checklistData.lastWeeklyReset = parsedData.lastWeeklyReset || null;
+                        checklistData.hiddenTasks = parsedData.hiddenTasks || {};
+                        checklistData.manuallyHiddenSections = parsedData.manuallyHiddenSections || {};
                     } else { console.warn("Invalid data format found in localStorage. Starting fresh."); }
                 } catch (e) {
                     console.error("Error parsing saved data:", e);
                     displayError("Failed to load saved progress. Data might be corrupted.");
-                    checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null };
+                    checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {} };
                 }
             }
 
             setDailyBackground();
-            displayLocalResetTimes(); // Initial call
+            displayLocalResetTimes();
             if (countdownInterval) clearInterval(countdownInterval);
             countdownInterval = setInterval(displayLocalResetTimes, 1000);
-
 
             const needsSaveAfterReset = runAutoResets();
             if (needsSaveAfterReset) {
@@ -1063,6 +1261,8 @@
             populateSection(weeklyList, tasks.weekly, checklistData.progress);
             populateSection(biWeeklyList, tasks.biWeekly, checklistData.progress);
             updateLastSavedDisplay(checklistData.lastSaved);
+
+             ['daily-tasks-section', 'weekly-tasks-section', 'bi-weekly-tasks-section'].forEach(updateSectionControls);
         }
 
         // --- Initialization ---
@@ -1084,12 +1284,48 @@
             if (resetButton) { resetButton.addEventListener('click', () => handleResetConfirmation(resetButton, 'all', 'Reset All Checks', resetAllAction)); }
             else { console.error("Reset All button element not found!"); }
 
+            if (unhideTasksButton) { unhideTasksButton.addEventListener('click', () => handleResetConfirmation(unhideTasksButton, 'unhide', 'Unhide All Tasks', unhideAllAction)); }
+            else { console.error("Unhide Tasks button not found!");}
+
             if (themeToggleButton) { themeToggleButton.addEventListener('click', handleThemeToggle); }
             else { console.error("Theme toggle button not found!"); }
+
+            if (hamburgerButton) { hamburgerButton.addEventListener('click', toggleMenu); }
+            else { console.error("Hamburger button not found!"); }
+
+            if (slideoutMenuOverlay) {
+                slideoutMenuOverlay.addEventListener('click', function(event) {
+                    if (event.target === slideoutMenuOverlay) {
+                        toggleMenu();
+                    }
+                });
+            } else { console.error("Slideout menu overlay not found!"); }
+
+            if (menuCloseButton) {
+                menuCloseButton.addEventListener('click', toggleMenu);
+            } else { console.error("Menu close button not found!"); }
+
 
             sectionToggles.forEach(toggle => {
                 toggle.addEventListener('click', handleSectionToggle);
             });
+
+            document.getElementById('checklist-container').addEventListener('click', function(event) {
+                if (event.target.classList.contains('hide-section-button')) {
+                    const sectionId = event.target.dataset.sectionId;
+                    if (sectionId) {
+                        const sectionElement = document.getElementById(sectionId);
+                        if (sectionElement) {
+                            checklistData.manuallyHiddenSections[sectionId] = true;
+                            sectionElement.classList.add('section-is-hidden-by-user');
+                            event.target.classList.remove('visible');
+                            saveData(false);
+                            console.log(`Section ${sectionId} manually hidden.`);
+                        }
+                    }
+                }
+            });
+
 
             if (errorCloseButton) {
                  errorCloseButton.addEventListener('click', hideError);
