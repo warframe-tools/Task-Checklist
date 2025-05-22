@@ -1,0 +1,216 @@
+/* --- NON-CRITICAL CSS --- */
+/* These styles will be loaded from /assets/css/style.css */
+
+/* --- Content Box Element Styling (Non-Critical Parts) --- */
+.checklist-content h2:hover {
+    background-color: var(--section-header-hover-bg);
+}
+.checklist-content label, .parent-task-header .task-text { color: var(--text-label); }
+.checklist-content #last-saved-timestamp,
+.checklist-content #storage-notice {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+.checklist-content .italic { color: var(--text-secondary); }
+.checklist-content .text-xs { color: var(--text-muted); }
+
+.checklist-content .footer-links {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+.checklist-content .footer-links a {
+    color: var(--link-color);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+    margin: 0 0.25rem;
+}
+ .checklist-content .footer-links a:hover {
+    color: var(--link-hover-color);
+ }
+ .checklist-content .footer-links span {
+    color: var(--text-muted);
+    margin: 0 0.1rem;
+ }
+
+/* --- Collapsible Section Styles (Non-Critical Parts) --- */
+.subtask-list {
+    margin-left: 1.5rem; /* Indent subtasks further */
+    padding-left: 0; /* Remove default ul padding */
+    list-style: none;
+}
+.parent-task-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.parent-task-header .task-text {
+    flex-grow: 1;
+    margin-left: 0.5rem; /* Space between checkbox and text */
+}
+.task-text.checked, label.checked {
+    text-decoration: line-through;
+    color: var(--text-label-checked);
+}
+.task-item.hidden-task {
+    display: none !important;
+}
+.hide-task-btn, .notification-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.125rem; /* Small padding */
+    margin-left: 0.25rem;
+    opacity: 0.6;
+    display: inline-flex; /* For centering icon */
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.hide-task-btn svg, .notification-toggle-btn svg {
+    width: 1rem;
+    height: 1rem;
+}
+.hide-task-btn:hover, .notification-toggle-btn:hover { opacity: 1; }
+.notification-toggle-btn.active {
+    color: var(--notification-btn-active-color);
+    opacity: 1;
+}
+.section-is-hidden-by-user {
+    display: none !important;
+}
+.hide-section-button {
+    background-color: var(--hide-section-btn-bg);
+    color: var(--hide-section-btn-text);
+    border: 1px solid var(--border-color);
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+    margin-left: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: none; /* Hidden by default, JS makes it visible */
+}
+.hide-section-button:hover {
+    background-color: var(--hide-section-btn-hover-bg);
+}
+.hide-section-button.visible {
+    display: inline-block;
+}
+.baro-countdown, .eight-hour-countdown {
+    font-size: 0.75rem;
+    color: var(--baro-timer-color);
+    margin-left: 0.25rem;
+}
+
+
+/* --- Interactive Elements (Using Variables) --- */
+input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none; -moz-appearance: none; /* Remove default styling */
+    width: 1.25rem; height: 1.25rem;
+    border: 2px solid var(--checkbox-border);
+    border-radius: 0.25rem; cursor: pointer;
+    position: relative; /* For checkmark positioning */
+    margin-right: 0.5rem;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    background-color: var(--checkbox-bg);
+    flex-shrink: 0; /* Prevent checkbox from shrinking */
+}
+input[type="checkbox"]:checked {
+    background-color: var(--checkbox-checked-bg);
+    border-color: var(--checkbox-checked-border);
+}
+input[type="checkbox"]:checked::after { /* Custom checkmark */
+    content: '✔'; position: absolute;
+    color: white; font-size: 0.8rem; /* Adjust size/color as needed */
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+}
+li.task-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+li.parent-task-container { /* For parent tasks that contain subtasks */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Subtasks take full width */
+}
+#save-status { transition: opacity 0.5s ease-in-out; }
+
+/* --- Buttons (Base styles, colors set below) --- */
+.menu-btn { /* Base for menu buttons, specific colors are separate */
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+    line-height: 1.5;
+}
+/* Specific Button Colors (Default State) */
+#reset-daily-button:not(.confirming) { background-color: #3b82f6; border-color: #3b82f6; color: white;}
+#reset-daily-button:not(.confirming):hover { background-color: #2563eb; border-color: #2563eb; color: white;}
+#reset-weekly-button:not(.confirming) { background-color: #14b8a6; border-color: #14b8a6; color: white;}
+#reset-weekly-button:not(.confirming):hover { background-color: #0d9488; border-color: #0d9488; color: white;}
+#reset-button:not(.confirming) { background-color: #ef4444; border-color: #ef4444; color: white;}
+#reset-button:not(.confirming):hover { background-color: #dc2626; border-color: #dc2626; color: white;}
+#unhide-tasks-button:not(.confirming) { background-color: #8b5cf6; border-color: #8b5cf6; color: white; }
+#unhide-tasks-button:not(.confirming):hover { background-color: #7c3aed; border-color: #7c3aed; color: white; }
+
+
+/* Confirmation State Styling (Applies to all reset buttons) */
+.menu-btn.confirming {
+    background-color: var(--confirm-bg);
+    border-color: var(--confirm-bg);
+    color: var(--confirm-text) !important;
+}
+.menu-btn.confirming:hover {
+    background-color: var(--confirm-hover-bg);
+    border-color: var(--confirm-hover-bg);
+}
+
+
+/* Theme Toggle Button Specifics (Non-critical hover states) */
+#theme-toggle-button:hover, #hamburger-button:hover {
+    background-color: var(--theme-toggle-hover-bg);
+    border-color: var(--theme-toggle-hover-border);
+}
+
+
+/* Error Display (Non-critical hover states for buttons) */
+#error-copy-button {
+    background-color: var(--error-button-bg);
+    color: var(--error-text);
+    border: 1px solid transparent;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+}
+#error-copy-button:hover { background-color: var(--error-button-hover-bg); }
+#error-close-button {
+    background: none; border: none;
+    color: var(--error-text);
+    font-size: 1.5rem; line-height: 1;
+    padding: 0 0.5rem;
+    opacity: 0.7;
+}
+ #error-close-button:hover { opacity: 1; }
+
+/* Hamburger Menu (Non-critical hover states) */
+#menu-close-button:hover {
+    opacity: 1;
+    color: var(--menu-close-btn-hover-color);
+}
+#slideout-menu-overlay .menu-btn { /* Styles for buttons inside the menu */
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0.75rem;
+}
+#slideout-menu-overlay .menu-btn:last-child {
+    margin-bottom: 0;
+}
