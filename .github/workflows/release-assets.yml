@@ -2,14 +2,14 @@ name: Create File-Friendly Release Source Archives
 
 on:
   release:
-    types: [published] # Runs when a release is published
-  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+    types: [published] 
+  workflow_dispatch:
 
 jobs:
   build_source_archives:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Needed for checkout (read) and to write release assets (write)
+      contents: write
 
     steps:
       - name: Checkout code
@@ -17,23 +17,24 @@ jobs:
         with:
           ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
 
-      - name: Get Release Tag Name (for release event)
-        id: get_tag_from_release
-        if: github.event_name == 'release'
-        run: echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-
-      - name: Get Branch/Tag Name (for dispatch or other events)
-        id: get_tag_from_ref
-        if: github.event_name != 'release'
-        run: echo "TAG_NAME=$(echo ${{ github.ref }} | sed -e 's|refs/heads/||' -e 's|refs/tags/||')" >> $GITHUB_ENV
-      
-      - name: Set Archive Base Name
-        id: set_archive_name
+      - name: Get Tag Name for Archives
+        id: get_tag_name
         run: |
-          # Use TAG_NAME from release event if available, otherwise from ref, default if none
-          FINAL_TAG_NAME="${{ env.TAG_NAME || 'manual-run' }}"
-          echo "ARCHIVE_BASE_NAME=${FINAL_TAG_NAME}" >> $GITHUB_OUTPUT
-          echo "Using archive base name: ${FINAL_TAG_NAME}"
+          if [ "${{ github.event_name }}" == "release" ]; then
+            echo "TAG_FOR_ARCHIVE=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            RAW_REF_NAME=$(echo "${{ github.ref }}" | sed -e 's|refs/heads/||' -e 's|refs/tags/||')
+            SANITIZED_REF_NAME=$(echo "${RAW_REF_NAME}" | sed 's/[^a-zA-Z0-9._-]/-/g')
+            echo "TAG_FOR_ARCHIVE=${SANITIZED_REF_NAME:-manual-run}" >> $GITHUB_ENV
+          fi
+
+      - name: Define Archive Filenames
+        id: set_filenames
+        run: |
+          echo "ARCHIVE_ZIP_NAME=Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source-FileFriendly.zip" >> $GITHUB_OUTPUT
+          echo "ARCHIVE_TAR_NAME=Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source-FileFriendly.tar.gz" >> $GITHUB_OUTPUT
+          echo "Generated Zip filename: Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source-FileFriendly.zip"
+          echo "Generated Tar.gz filename: Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source-FileFriendly.tar.gz"
 
       - name: Create a staging directory for source files
         run: mkdir ./source_package_staging
@@ -52,26 +53,36 @@ jobs:
       - name: Prepare Critical CSS for injection
         id: prep_critical_css
         run: |
-          CRITICAL_CSS_CONTENT=$(cat ./source_package_staging/css/critical.css)
-          # Escape special characters for sed and wrap in style tags
-          # Basic escaping for common sed issues, might need more robust solution for complex CSS
-          ESCAPED_CSS=$(echo "${CRITICAL_CSS_CONTENT}" | sed -e 's/[\/&]/\\&/g' -e 's/$/\\n/' | tr -d '\n')
-          echo "INJECT_CRITICAL_CSS=<style type=\"text/css\">${ESCAPED_CSS}</style>" >> $GITHUB_ENV
-        working-directory: ./ 
+          CRITICAL_CSS_FILE="./source_package_staging/css/critical.css"
+          INJECT_CONTENT=""
+          if [ -f "$CRITICAL_CSS_FILE" ]; then
+            CRITICAL_CSS_CONTENT=$(cat "$CRITICAL_CSS_FILE")
+            # Prepare for multi-line environment variable
+            INJECT_CONTENT=$(printf "<style type=\\"text/css\\">\n%s\n</style>" "${CRITICAL_CSS_CONTENT}")
+            echo "Critical CSS prepared for injection."
+          else
+            echo "No critical.css found at $CRITICAL_CSS_FILE, critical CSS injection will be skipped or placeholder might remain."
+          fi
+          echo "INJECT_CRITICAL_CSS<<EOF" >> $GITHUB_ENV
+          echo "${INJECT_CONTENT}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
-      - name: Inject Critical CSS into staged index.html
+
+      - name: Inject Critical CSS into staged index.html (if critical CSS was prepared)
         working-directory: ./source_package_staging
+        if: env.INJECT_CRITICAL_CSS != '' 
         run: |
           echo "Attempting to inject critical CSS into index.html..."
           if [ -f ./index.html ]; then
-            # Replace the placeholder <%- criticalCss %> with the actual style block
-            # Using a different delimiter for sed because INJECT_CRITICAL_CSS contains slashes
-            sed -i "s|<%-\s*criticalCss\s*%>|${{ env.INJECT_CRITICAL_CSS }}|g" ./index.html
-            echo "Critical CSS injected into index.html."
+            TEMP_INDEX_HTML=$(mktemp)
+            perl -0777 -pe 's|<%-\s*criticalCss\s*%>|${ENV::INJECT_CRITICAL_CSS}|sg' ./index.html > "$TEMP_INDEX_HTML" && mv "$TEMP_INDEX_HTML" ./index.html
+            echo "Critical CSS injection attempt complete using perl."
           else
             echo "index.html not found in staging directory for CSS injection."
             exit 1
           fi
+        env:
+          INJECT_CRITICAL_CSS: ${{ env.INJECT_CRITICAL_CSS }}
 
       - name: Modify index.html for file:/// app.js compatibility (remove type=module)
         working-directory: ./source_package_staging
@@ -87,29 +98,34 @@ jobs:
       - name: Create Zip Archive of Modified Sources
         run: |
           cd ./source_package_staging
-          zip -r ../Task-Checklist-${{ env.TAG_NAME }}-Source.zip .
+          zip -r ../${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} .
           cd ..
-          echo "Zip archive created."
+          echo "Zip archive created: ${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}"
 
       - name: Create Tar.gz Archive of Modified Sources
         run: |
           cd ./source_package_staging
-          tar -czvf ../Task-Checklist-${{ env.TAG_NAME }}-Source.tar.gz .
+          tar -czvf ../${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }} .
           cd ..
-          echo "Tar.gz archive created."
+          echo "Tar.gz archive created: ${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}"
 
-      - name: Upload Zip Archive to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./Task-Checklist-${{ env.TAG_NAME }}-Source.zip
-          asset_name: Task-Checklist-${{ env.TAG_NAME }}-Source.zip
-          asset_content_type: application/zip
+      - name: List created archives 
+        run: ls -l ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}
 
-      - name: Upload Tar.gz Archive to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./Task-Checklist-${{ env.TAG_NAME }}-Source.tar.gz
-          asset_name: Task-Checklist-${{ env.TAG_NAME }}-Source.tar.gz
-          asset_content_type: application/gzip
+      - name: Upload Zip Archive to Release with gh CLI
+        if: github.event_name == 'release' && github.event.release.tag_name 
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME_FOR_UPLOAD: ${{ github.event.release.tag_name }} 
+        run: |
+          echo "Uploading Zip: ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} to tag ${TAG_NAME_FOR_UPLOAD}"
+          gh release upload "${TAG_NAME_FOR_UPLOAD}" ./"${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}" --clobber
+
+      - name: Upload Tar.gz Archive to Release with gh CLI
+        if: github.event_name == 'release' && github.event.release.tag_name 
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME_FOR_UPLOAD: ${{ github.event.release.tag_name }}
+        run: |
+          echo "Uploading Tar.gz: ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }} to tag ${TAG_NAME_FOR_UPLOAD}"
+          gh release upload "${TAG_NAME_FOR_UPLOAD}" ./"${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}" --clobber
