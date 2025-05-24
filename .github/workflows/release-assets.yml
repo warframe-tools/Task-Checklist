@@ -3,22 +3,37 @@ name: Create File-Friendly Release Source Archives
 on:
   release:
     types: [published] # Runs when a release is published
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 jobs:
   build_source_archives:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Needed to write release assets
+      contents: write # Needed for checkout (read) and to write release assets (write)
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
 
-      - name: Get Release Tag Name
-        id: get_tag
+      - name: Get Release Tag Name (for release event)
+        id: get_tag_from_release
+        if: github.event_name == 'release'
         run: echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+      - name: Get Branch/Tag Name (for dispatch or other events)
+        id: get_tag_from_ref
+        if: github.event_name != 'release'
+        run: echo "TAG_NAME=$(echo ${{ github.ref }} | sed -e 's|refs/heads/||' -e 's|refs/tags/||')" >> $GITHUB_ENV
+      
+      - name: Set Archive Base Name
+        id: set_archive_name
+        run: |
+          # Use TAG_NAME from release event if available, otherwise from ref, default if none
+          FINAL_TAG_NAME="${{ env.TAG_NAME || 'manual-run' }}"
+          echo "ARCHIVE_BASE_NAME=${FINAL_TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "Using archive base name: ${FINAL_TAG_NAME}"
 
       - name: Create a staging directory for source files
         run: mkdir ./source_package_staging
