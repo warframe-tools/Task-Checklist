@@ -1,0 +1,282 @@
+/* @font-face rules for self-hosted Inter font */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/inter-v18-latin-regular.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/inter-v18-latin-500.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/inter-v18-latin-600.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/inter-v18-latin-700.woff2') format('woff2');
+}
+
+/* --- Global Theme Variables (Critical for initial paint) --- */
+:root {
+    /* Default: Dark Mode */
+    --bg-content: rgba(31, 41, 55, 0.95);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --text-header: #ffffff;
+    --text-label: #d1d5db;
+    --text-label-checked: #9ca3af;
+    --border-color: #4b5563;
+    --checkbox-border: #6b7280;
+    --checkbox-bg: rgba(255, 255, 255, 0.1);
+    --checkbox-checked-bg: #4f46e5;
+    --checkbox-checked-border: #4f46e5;
+    --link-color: #60a5fa;
+    --link-hover-color: #93c5fd;
+    --theme-toggle-border: #4b5563;
+    --theme-toggle-hover-bg: rgba(255, 255, 255, 0.1);
+    --theme-toggle-hover-border: #9ca3af;
+    --theme-toggle-color: #9ca3af;
+    --section-header-hover-bg: rgba(255, 255, 255, 0.05);
+    --confirm-bg: #f59e0b;
+    --confirm-hover-bg: #d97706;
+    --confirm-text: #1f2937;
+    --error-bg: #ef4444;
+    --error-border: #dc2626;
+    --error-text: #ffffff;
+    --error-button-bg: rgba(255, 255, 255, 0.1);
+    --error-button-hover-bg: rgba(255, 255, 255, 0.2);
+    --menu-panel-bg: #272e3a;
+    --menu-panel-border: #374151;
+    --menu-title-color: #ffffff;
+    --menu-close-btn-color: #9ca3af;
+    --menu-close-btn-hover-color: #f3f4f6;
+    --hide-section-btn-bg: var(--text-muted);
+    --hide-section-btn-hover-bg: var(--text-secondary);
+    --hide-section-btn-text: var(--text-primary);
+    --baro-timer-color: var(--text-secondary);
+    --notification-btn-color: var(--text-muted);
+    --notification-btn-active-color: #4ade80;
+}
+
+body.light-mode {
+    --bg-content: rgba(255, 255, 255, 0.95);
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --text-header: #111827;
+    --text-label: #374151;
+    --text-label-checked: #6b7280;
+    --border-color: #e5e7eb;
+    --checkbox-border: #cbd5e1;
+    --checkbox-bg: rgba(0, 0, 0, 0.02);
+    --link-color: #3b82f6;
+    --link-hover-color: #2563eb;
+    --theme-toggle-border: #d1d5db;
+    --theme-toggle-hover-bg: rgba(0, 0, 0, 0.05);
+    --theme-toggle-hover-border: #6b7280;
+    --theme-toggle-color: #6b7280;
+    --section-header-hover-bg: rgba(0, 0, 0, 0.03);
+    --error-bg: #fee2e2;
+    --error-border: #f87171;
+    --error-text: #b91c1c;
+    --error-button-bg: rgba(0, 0, 0, 0.05);
+    --error-button-hover-bg: rgba(0, 0, 0, 0.1);
+    --menu-panel-bg: #f9fafb;
+    --menu-panel-border: #e5e7eb;
+    --menu-title-color: #111827;
+    --menu-close-btn-color: #6b7280;
+    --menu-close-btn-hover-color: #1f2937;
+    --hide-section-btn-bg: var(--text-muted);
+    --hide-section-btn-hover-bg: var(--text-secondary);
+    --hide-section-btn-text: var(--text-primary);
+    --baro-timer-color: var(--text-secondary);
+    --notification-btn-color: var(--text-muted);
+    --notification-btn-active-color: #22c55e;
+}
+
+/* --- Base Body Styles --- */
+body {
+    font-family: 'Inter', sans-serif;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    background-color: #111827;
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative;
+}
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+/* --- Content Box Element Styling --- */
+.checklist-content {
+    background-color: var(--bg-content);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+.checklist-content h1 { color: var(--text-header); }
+.checklist-content h2 {
+    color: var(--text-header);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.25rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.15s ease-in-out;
+}
+.checklist-content h2 .reset-time-local {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: 0.5rem;
+}
+.checklist-content .app-description {
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.checklist-content .border-b { border-color: var(--border-color); }
+
+/* --- Collapsible Section Basics --- */
+.collapse-icon {
+    width: 1rem; height: 1rem;
+    transition: transform 0.3s ease-in-out;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+.section-toggle[aria-expanded="false"] .collapse-icon,
+.parent-task-header[aria-expanded="false"] .collapse-icon {
+    transform: rotate(-90deg);
+}
+.section-content, .subtask-list {
+    overflow: hidden;
+    max-height: 3000px;
+    opacity: 1;
+    visibility: visible;
+    transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out 0.1s, visibility 0s linear 0s;
+     padding-left: 0.5rem;
+}
+.section-content.collapsed, .subtask-list.collapsed {
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height 0.4s ease-in-out, opacity 0.2s ease-in-out, visibility 0s linear 0.4s;
+}
+
+/* --- Theme Toggle & Hamburger Button Basics --- */
+#theme-toggle-button, #hamburger-button {
+    font-weight: 600;
+    padding: 0.375rem;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    border: 1px solid var(--theme-toggle-border);
+    background-color: transparent;
+    color: var(--theme-toggle-color);
+    cursor: pointer;
+    line-height: 1.5;
+}
+#theme-toggle-button { margin-right: 0.5rem; }
+#theme-toggle-button svg, #hamburger-button svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: currentColor;
+}
+body.light-mode #moon-icon { display: none; }
+body:not(.light-mode) #sun-icon { display: none; }
+
+/* --- Hamburger Menu Overlay Basics --- */
+#slideout-menu-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.75);
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+#slideout-menu-overlay.open {
+    display: flex;
+    opacity: 1;
+}
+#menu-content-box {
+    background-color: var(--menu-panel-bg);
+    border: 1px solid var(--menu-panel-border);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    max-width: 300px;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.2s ease-out 0.1s, opacity 0.2s ease-out 0.1s;
+}
+#slideout-menu-overlay.open #menu-content-box {
+    transform: scale(1);
+    opacity: 1;
+}
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--menu-panel-border);
+}
+.menu-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--menu-title-color);
+}
+#menu-close-button {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--menu-close-btn-color);
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+/* Error Display Basic Structure */
+#error-display {
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--error-border);
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+}
+#error-display.visible { display: flex; }
+#error-message { flex-grow: 1; }
+#error-copy-button, #error-close-button {
+    cursor: pointer;
+    flex-shrink: 0;
+}

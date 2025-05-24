@@ -6,7 +6,7 @@ This security policy applies to the latest version of the Warframe Task Checklis
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
+| 2.x.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
