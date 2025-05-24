@@ -3,7 +3,7 @@ name: Create File-Friendly Release Source Archives
 on:
   release:
     types: [published] 
-  workflow_dispatch:
+  workflow_dispatch: 
 
 jobs:
   build_source_archives:
@@ -31,10 +31,10 @@ jobs:
       - name: Define Archive Filenames
         id: set_filenames
         run: |
-          echo "ARCHIVE_ZIP_NAME=Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source-FileFriendly.zip" >> $GITHUB_OUTPUT
-          echo "ARCHIVE_TAR_NAME=Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source-FileFriendly.tar.gz" >> $GITHUB_OUTPUT
-          echo "Generated Zip filename: Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source-FileFriendly.zip"
-          echo "Generated Tar.gz filename: Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source-FileFriendly.tar.gz"
+          echo "ARCHIVE_ZIP_NAME=Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source.zip" >> $GITHUB_OUTPUT
+          echo "ARCHIVE_TAR_NAME=Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source.tar.gz" >> $GITHUB_OUTPUT
+          echo "Generated Zip filename: Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source.zip"
+          echo "Generated Tar.gz filename: Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source.tar.gz"
 
       - name: Create a staging directory for source files
         run: mkdir ./source_package_staging
