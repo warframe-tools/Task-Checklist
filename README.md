@@ -2,15 +2,15 @@
 
 # Warframe Task Checklist Web App
 
-A simple, client-side web application to help Warframe players track their daily, weekly, and bi-weekly in-game tasks.
+A simple, client-side web application to help Warframe players track their daily, weekly, and other in-game tasks, built with Vite for optimized performance.
 
-## Repository Updates
+## Pages Updates
 
-This repository will be updated (if changes are made) on the weekly reset (00:00 UTC) to avoid resets to the application hosted on Pages. To avoid any accidental resets of your progress, please fork this repository and host it yourself, or download it and use it locally (and make sure to update it weekly with any changes if needed).
+The hosted version of this application will be updated (if changes are made) on the weekly reset (00:00 UTC) to avoid resets to the application. To avoid any accidental resets of your progress, please fork this repository and host it yourself, or download the source package from the latest release and use it locally (and make sure to update it weekly with any changes if needed). Check out the [How to Use](#how-to-use) section for more information.
 
 ## Description
 
-This tool provides checklists for common recurring activities in Warframe. It saves your progress directly in your browser's local storage, automatically resets daily and weekly tasks based on UTC time, and offers a few customization options.
+This tool provides checklists for common recurring activities in Warframe. It saves your progress directly in your browser's local storage, automatically resets daily and weekly tasks based on UTC time, and offers a few customization options. The application is built using HTML, CSS (with Tailwind CSS via CDN for rapid styling), vanilla JavaScript, and is processed with Vite for an optimized production build.
 
 ## Fan Made Reviews/Showcase
 
@@ -26,7 +26,7 @@ This tool provides checklists for common recurring activities in Warframe. It sa
     * **Hide Individual Tasks:** Each task has an eye icon (👁️) to hide it from view. Hidden tasks are saved and persist across sessions.
     * **Hide Entire Sections:** If all tasks within a section are individually hidden, a "Hide Section" button will appear on the section header, allowing you to manually hide the entire section. This state is also saved.
 * **Local Progress Saving:** Your checked tasks, hidden task preferences, and notification settings are saved directly in your browser's local storage.
-    * **Version-Aware Storage:** Save data now persists across minor and patch updates (e.g., v2.0.x, v2.1.x, v2.2.x). A new save file is only created on major version changes (e.g., v2.x.x to v3.0.0).
+    * **Version-Aware Storage:** Save data now persists across minor and patch updates (e.g., v2.0.x, v2.1.x, v2.3.x). A new save file is only created on major version changes (e.g., v2.x.x to v3.0.0).
 * **Dynamic Timers & Resets:**
     * **Automatic Daily/Weekly Resets:**
         * Daily tasks reset automatically after 00:00 UTC.
@@ -54,10 +54,14 @@ This tool provides checklists for common recurring activities in Warframe. It sa
     * Toggle between a dark mode (default) and a light mode.
     * Theme preference is saved locally.
 * **Dynamic Background:**
-    * Features a daily rotating background image.
+    * Features a daily rotating background image, now loaded via CSS for better performance.
 * **User-Friendly Error Handling:**
     * Displays clear error messages if issues occur (e.g., problems saving to local storage).
     * Includes a "Copy" button in the error display for easy reporting.
+* **Performance Optimizations:**
+    * **Vite Build Process:** The application is built using Vite, which optimizes and bundles JavaScript and CSS, including filename hashing for efficient cache-busting.
+    * **Critical CSS Inlining:** Critical CSS is inlined in the deployed `index.html` via `vite-plugin-html` to ensure the fastest possible initial paint. Non-critical CSS is loaded asynchronously.
+    * **Self-Hosted Fonts:** The "Inter" font is self-hosted to reduce external dependencies and improve load times.
 * **Responsive Design:** Styled with Tailwind CSS for a generally responsive layout.
 * **Footer Information:** Includes links to relevant resources (WarframeTools, GitHub, License, Warframe Hub, Warframe Wiki, FrameHub), app version, and current Warframe version.
 
@@ -65,27 +69,47 @@ This tool provides checklists for common recurring activities in Warframe. It sa
 
 There are a few ways to use the Warframe Task Checklist:
 
-1.  **Directly from Github Pages on this repository (Recommended for most users):**
-    * Go directly to the Github Page that is run from this repository! https://warframetools.com/Task-Checklist/
+1.  **Live Site (Recommended for most users):**
+    * Go directly to the deployed site: [https://warframetools.com/Task-Checklist/](https://warframetools.com/Task-Checklist/)
+    * This version is built and optimized with Vite for the best performance.
 
-2.  **GitHub Pages:**
-    * The easiest way is to **fork this repository** to your own GitHub account.
-    * Enable GitHub Pages for your forked repository (usually under `Settings > Pages`, select the `main` branch and `/ (root)` folder).
-    * You will then have your own live version of the checklist that you control.
-    * **Update Schedule:** The main `warframe-tools/Task-Checklist` repository will aim to be updated with new tasks or game version changes around the weekly reset (Monday 00:00 UTC) to avoid disrupting users mid-week. You can then pull these updates into your fork.
+2.  **Fork and Deploy Your Own:**
+    * **Fork this repository** to your own GitHub account.
+    * Enable GitHub Pages for your forked repository (Settings > Pages).
+        * Set the "Build and deployment" source to **"GitHub Actions"**. The included workflows will build and deploy the site.
+    * You will then have your own live, optimized version that you control.
+    * The main `warframe-tools/Task-Checklist` repository aims to update around the weekly reset (Monday 00:00 UTC). You can then pull these updates into your fork.
 
-3.  **Download and Run Locally:**
-    * Download the source package below and unzip it to your desired location.
-    * The structure should be:
+3.  **Download and Run Source Locally (for `file:///` execution):**
+    * Go to the [Releases page](https://github.com/warframe-tools/Task-Checklist/releases) of this repository.
+    * Download the `Task-Checklist-[VERSION]-Source.zip` (or `.tar.gz`) from the latest release.
+    * Unzip the archive. The structure will be:
         ```
         your_folder/
         ├── index.html
-        └── assets/
-            └── your_image.jpg
-            └── another_image.jpg
+        ├── css/
+        │   └── style.css
+        │   └── critical.css  (This is for reference, its content is injected into index.html in the archive)
+        ├── js/
+        │   └── app.js
+        ├── fonts/
+        │   └── inter-v18-latin-regular.woff2
+        │   └── ... (other font files)
+        └── img/
+            └── garuda-fortuna.webp
+            └── ... (other image files)
         ```
-    * Open the `index.html` file directly in your web browser.
-    * If you add images, make sure you update the code in the .html file with those image locations!
+    * Open the `index.html` file from the unzipped folder directly in your web browser. This version has been specifically prepared by the GitHub Action to work well when opened via `file:///`.
+
+4.  **Develop or Run Source with a Local Server (Recommended for Developers):**
+    * Clone the repository: `git clone https://github.com/warframe-tools/Task-Checklist.git`
+    * Navigate into the project directory: `cd Task-Checklist`
+    * Install dependencies: `npm install`
+    * Run the development server: `npm run dev`
+        * This will open the app, usually at `http://localhost:5173/Task-Checklist/`, with hot module replacement and other development features.
+    * To run a local version of the production build:
+        * `npm run build`
+        * `npm run preview` (this will serve the `dist/pages` folder, usually at `http://localhost:4173/Task-Checklist/`)
 
 ## Feedback, Issues & Feature Requests
 
@@ -124,8 +148,9 @@ If you find this tool useful, consider supporting its development!
 
 ## Credits
 
+* **Vite:** [https://vitejs.dev/](https://vitejs.dev/)
 * **Tailwind CSS:** [https://tailwindcss.com/](https://tailwindcss.com/)
-* **Inter Font:** [https://fonts.google.com/specimen/Inter](https://fonts.google.com/specimen/Inter)
+* **Inter Font:** Self-hosted.(https://fonts.google.com/specimen/Inter).
 * Task list based on information discussed in the Warframe community.
 
 ## Disclaimer

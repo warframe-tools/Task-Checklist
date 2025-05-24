@@ -1,0 +1,100 @@
+name: Create File-Friendly Release Source Archives
+
+on:
+  release:
+    types: [published] # Runs when a release is published
+
+jobs:
+  build_source_archives:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to write release assets
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Get Release Tag Name
+        id: get_tag
+        run: echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+      - name: Create a staging directory for source files
+        run: mkdir ./source_package_staging
+
+      - name: Copy source files to staging directory
+        run: |
+          echo "Copying sources directory contents..."
+          cp -r ./sources/* ./source_package_staging/
+          echo "Copying root README.md if it exists..."
+          if [ -f ./README.md ]; then cp ./README.md ./source_package_staging/; fi
+          echo "Copying root LICENSE if it exists..."
+          if [ -f ./LICENSE ]; then cp ./LICENSE ./source_package_staging/; fi
+          echo "Listing staging directory contents:"
+          ls -R ./source_package_staging
+
+      - name: Prepare Critical CSS for injection
+        id: prep_critical_css
+        run: |
+          CRITICAL_CSS_CONTENT=$(cat ./source_package_staging/css/critical.css)
+          # Escape special characters for sed and wrap in style tags
+          # Basic escaping for common sed issues, might need more robust solution for complex CSS
+          ESCAPED_CSS=$(echo "${CRITICAL_CSS_CONTENT}" | sed -e 's/[\/&]/\\&/g' -e 's/$/\\n/' | tr -d '\n')
+          echo "INJECT_CRITICAL_CSS=<style type=\"text/css\">${ESCAPED_CSS}</style>" >> $GITHUB_ENV
+        working-directory: ./ 
+
+      - name: Inject Critical CSS into staged index.html
+        working-directory: ./source_package_staging
+        run: |
+          echo "Attempting to inject critical CSS into index.html..."
+          if [ -f ./index.html ]; then
+            # Replace the placeholder <%- criticalCss %> with the actual style block
+            # Using a different delimiter for sed because INJECT_CRITICAL_CSS contains slashes
+            sed -i "s|<%-\s*criticalCss\s*%>|${{ env.INJECT_CRITICAL_CSS }}|g" ./index.html
+            echo "Critical CSS injected into index.html."
+          else
+            echo "index.html not found in staging directory for CSS injection."
+            exit 1
+          fi
+
+      - name: Modify index.html for file:/// app.js compatibility (remove type=module)
+        working-directory: ./source_package_staging
+        run: |
+          echo "Attempting to modify app.js script tag in index.html..."
+          if [ -f ./index.html ]; then
+            sed -i 's|<script type="module" src="js/app.js"|<script src="js/app.js"|g' ./index.html
+            echo "app.js script tag modified in index.html."
+          else
+            echo "index.html not found in staging directory for JS modification."
+          fi
+
+      - name: Create Zip Archive of Modified Sources
+        run: |
+          cd ./source_package_staging
+          zip -r ../Task-Checklist-${{ env.TAG_NAME }}-Source.zip .
+          cd ..
+          echo "Zip archive created."
+
+      - name: Create Tar.gz Archive of Modified Sources
+        run: |
+          cd ./source_package_staging
+          tar -czvf ../Task-Checklist-${{ env.TAG_NAME }}-Source.tar.gz .
+          cd ..
+          echo "Tar.gz archive created."
+
+      - name: Upload Zip Archive to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./Task-Checklist-${{ env.TAG_NAME }}-Source.zip
+          asset_name: Task-Checklist-${{ env.TAG_NAME }}-Source.zip
+          asset_content_type: application/zip
+
+      - name: Upload Tar.gz Archive to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./Task-Checklist-${{ env.TAG_NAME }}-Source.tar.gz
+          asset_name: Task-Checklist-${{ env.TAG_NAME }}-Source.tar.gz
+          asset_content_type: application/gzip

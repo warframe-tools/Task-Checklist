@@ -1,5 +1,31 @@
 /* --- NON-CRITICAL CSS --- */
-/* These styles will be loaded from /assets/css/style.css */
+/* These styles will be loaded from /css/style.css (relative to sources/index.html) */
+
+/* --- Background Image Styles --- */
+/* Paths are relative to this style.css file (e.g., if style.css is in sources/css/ and images are in sources/img/) */
+#bg-image-0 {
+    background-image: url('../img/garuda-fortuna.webp');
+}
+#bg-image-1 {
+    background-image: url('../img/gara-eidolon.webp');
+}
+#bg-image-2 {
+    background-image: url('../img/heart-of-deimos-warframe.webp');
+}
+/* Add more #bg-image-X rules if you have more images */
+
+.daily-background-image {
+    position: fixed; /* Cover the whole viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -2; /* Behind the body::before overlay */
+    /* display: none; by default, JS will make one visible */
+}
 
 /* --- Content Box Element Styling (Non-Critical Parts) --- */
 .checklist-content h2:hover {
@@ -35,8 +61,8 @@
 
 /* --- Collapsible Section Styles (Non-Critical Parts) --- */
 .subtask-list {
-    margin-left: 1.5rem; /* Indent subtasks further */
-    padding-left: 0; /* Remove default ul padding */
+    margin-left: 1.5rem;
+    padding-left: 0;
     list-style: none;
 }
 .parent-task-header {
@@ -46,7 +72,7 @@
 }
 .parent-task-header .task-text {
     flex-grow: 1;
-    margin-left: 0.5rem; /* Space between checkbox and text */
+    margin-left: 0.5rem;
 }
 .task-text.checked, label.checked {
     text-decoration: line-through;
@@ -60,10 +86,10 @@
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 0.125rem; /* Small padding */
+    padding: 0.125rem;
     margin-left: 0.25rem;
     opacity: 0.6;
-    display: inline-flex; /* For centering icon */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
@@ -90,7 +116,7 @@
     margin-left: 0.75rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    display: none; /* Hidden by default, JS makes it visible */
+    display: none;
 }
 .hide-section-button:hover {
     background-color: var(--hide-section-btn-hover-bg);
@@ -107,23 +133,23 @@
 
 /* --- Interactive Elements (Using Variables) --- */
 input[type="checkbox"] {
-    appearance: none; -webkit-appearance: none; -moz-appearance: none; /* Remove default styling */
+    appearance: none; -webkit-appearance: none; -moz-appearance: none;
     width: 1.25rem; height: 1.25rem;
     border: 2px solid var(--checkbox-border);
     border-radius: 0.25rem; cursor: pointer;
-    position: relative; /* For checkmark positioning */
+    position: relative;
     margin-right: 0.5rem;
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
     background-color: var(--checkbox-bg);
-    flex-shrink: 0; /* Prevent checkbox from shrinking */
+    flex-shrink: 0;
 }
 input[type="checkbox"]:checked {
     background-color: var(--checkbox-checked-bg);
     border-color: var(--checkbox-checked-border);
 }
-input[type="checkbox"]:checked::after { /* Custom checkmark */
+input[type="checkbox"]:checked::after {
     content: '✔'; position: absolute;
-    color: white; font-size: 0.8rem; /* Adjust size/color as needed */
+    color: white; font-size: 0.8rem;
     top: 50%; left: 50%; transform: translate(-50%, -50%);
 }
 li.task-item {
@@ -131,15 +157,15 @@ li.task-item {
     align-items: center;
     margin-bottom: 0.5rem;
 }
-li.parent-task-container { /* For parent tasks that contain subtasks */
+li.parent-task-container {
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* Subtasks take full width */
+    align-items: stretch;
 }
 #save-status { transition: opacity 0.5s ease-in-out; }
 
 /* --- Buttons (Base styles, colors set below) --- */
-.menu-btn { /* Base for menu buttons, specific colors are separate */
+.menu-btn {
     font-weight: 600;
     padding: 0.5rem 1rem;
     border-radius: 0.375rem;
@@ -203,7 +229,7 @@ li.parent-task-container { /* For parent tasks that contain subtasks */
     opacity: 1;
     color: var(--menu-close-btn-hover-color);
 }
-#slideout-menu-overlay .menu-btn { /* Styles for buttons inside the menu */
+#slideout-menu-overlay .menu-btn {
     display: block;
     width: 100%;
     text-align: left;

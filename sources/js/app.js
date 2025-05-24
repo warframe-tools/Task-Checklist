@@ -1,14 +1,16 @@
-// --- assets/js/app.js ---
+// --- sources/js/app.js ---
 
 // --- Configuration ---
-const backgroundImages = [
-    'assets/img/garuda-fortuna.webp',
-    'assets/img/gara-eidolon.webp',
-    'assets/img/heart-of-deimos-warframe.webp'
+// Array of background div IDs (must match IDs in sources/index.html)
+const dailyBackgroundImageIds = [
+    'bg-image-0',
+    'bg-image-1',
+    'bg-image-2'
+    // Add more IDs if you add more background image divs in HTML
 ];
-const APP_VERSION = "2.3.0"; // Make sure this matches the version in HTML if displayed, or update HTML display logic
-const WARFRAME_VERSION = "38.6.2"; // Make sure this matches
-const THEME_STORAGE_KEY = 'warframeChecklistTheme'; // Must match the critical script's key if it uses one
+const APP_VERSION = "2.4.0";
+const WARFRAME_VERSION = "38.6.2";
+const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 function getStorageKey(appVersion) {
     const versionParts = appVersion.split('.');
@@ -21,9 +23,9 @@ function getStorageKey(appVersion) {
 const DATA_STORAGE_KEY = getStorageKey(APP_VERSION);
 
 const baroKiTeerData = {
-    referenceArrivalUTC: new Date(Date.UTC(2025, 4, 30, 13, 0, 0)).getTime(), // Month is 0-indexed (May = 4)
-    cycleMilliseconds: 14 * 24 * 60 * 60 * 1000, // 14 days
-    durationMilliseconds: 48 * 60 * 60 * 1000, // 48 hours
+    referenceArrivalUTC: new Date(Date.UTC(2025, 4, 30, 13, 0, 0)).getTime(),
+    cycleMilliseconds: 14 * 24 * 60 * 60 * 1000,
+    durationMilliseconds: 48 * 60 * 60 * 1000,
 };
 
 
@@ -89,7 +91,9 @@ const tasks = {
 let bodyElement, contentElement, themeToggleButton, hamburgerButton, slideoutMenuOverlay, menuContentBox, menuCloseButton,
     dailyList, weeklyList, otherList, resetDailyButton, resetWeeklyButton, resetButton, unhideTasksButton,
     lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement, weeklyResetTimeElement,
-    errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton, appVersionElement, wfVersionElement;
+    errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton, appVersionElement, wfVersionElement,
+    backgroundDivs = [];
+
 
 // --- State Variables ---
 const confirmState = {
@@ -109,7 +113,7 @@ let checklistData = {
     notificationPreferences: {},
     notificationsSent: {}
 };
-let currentTheme = 'dark'; // This will be updated by loadThemePreference
+let currentTheme = 'dark';
 let saveStatusTimeout;
 let countdownInterval;
 
@@ -141,6 +145,16 @@ function initializeDOMElements() {
     errorCopyButton = document.getElementById('error-copy-button');
     appVersionElement = document.querySelector('.version-text');
     wfVersionElement = document.querySelector('.warframe-version-text');
+
+    backgroundDivs = []; 
+    dailyBackgroundImageIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            backgroundDivs.push(el);
+        } else {
+            console.warn(`Background image container with ID '${id}' not found.`);
+        }
+    });
 }
 
 function displayError(message) {
@@ -176,14 +190,14 @@ function copyErrorToClipboard() {
 }
 
 function applyTheme(theme) {
-    if (!bodyElement || !themeToggleButton) return; // Ensure elements are available
+    if (!bodyElement || !themeToggleButton) return;
 
     if (theme === 'light') {
         bodyElement.classList.add('light-mode');
     } else {
         bodyElement.classList.remove('light-mode');
     }
-    currentTheme = theme; // Update the internal state
+    currentTheme = theme;
 }
 
 function handleThemeToggle() {
@@ -268,15 +282,30 @@ function getUTCDayOfYear(date) {
     const oneDay = 1000 * 60 * 60 * 24;
     return Math.floor(diff / oneDay);
 }
+
 function setDailyBackground() {
-    if (!bodyElement) return;
+    if (!bodyElement || backgroundDivs.length === 0) { // Check backgroundDivs instead of bodyElement.style
+        console.warn("Body element or background divs not ready for setDailyBackground.");
+        return;
+    }
+
     const now = new Date();
     const dayOfYear = getUTCDayOfYear(now);
-    const imageIndex = dayOfYear % backgroundImages.length;
-    const imageUrl = backgroundImages[imageIndex];
-    console.log(`Setting background for UTC day ${dayOfYear}, index ${imageIndex}: ${imageUrl}`);
-    bodyElement.style.backgroundImage = `url('${imageUrl}')`;
+    const imageIndex = dayOfYear % backgroundDivs.length;
+
+    console.log(`Setting daily background to show div: ${backgroundDivs[imageIndex] ? backgroundDivs[imageIndex].id : 'N/A'} (Index: ${imageIndex})`);
+
+    backgroundDivs.forEach((div, index) => {
+        if (div) { // Ensure div exists
+            if (index === imageIndex) {
+                div.style.display = 'block';
+            } else {
+                div.style.display = 'none';
+            }
+        }
+    });
 }
+
 function formatCountdown(ms) {
     if (ms < 0) return "00:00:00";
 
@@ -369,9 +398,9 @@ function getNextEightHourResetUTC() {
         nextResetDate.setUTCHours(8, 0, 0, 0);
     } else if (currentUTCHour < 16) {
         nextResetDate.setUTCHours(16, 0, 0, 0);
-    } else { // currentUTCHour >= 16
-        nextResetDate.setUTCDate(nextResetDate.getUTCDate() + 1); // Move to tomorrow
-        nextResetDate.setUTCHours(0, 0, 0, 0); // Set to 00:00 UTC of tomorrow
+    } else { 
+        nextResetDate.setUTCDate(nextResetDate.getUTCDate() + 1); 
+        nextResetDate.setUTCHours(0, 0, 0, 0); 
     }
     return nextResetDate.getTime();
 }
@@ -934,10 +963,10 @@ function updateSectionControls(sectionElementId) {
 }
 
 
-function loadAndInitializeApp() { // Renamed from loadAndInitialize to avoid conflict if any
-    initializeDOMElements(); // Initialize DOM element variables now that DOM is ready
+function loadAndInitializeApp() {
+    initializeDOMElements();
     hideError();
-    loadThemePreference(); // This will now correctly set app's currentTheme and icon
+    loadThemePreference();
 
     const savedData = localStorage.getItem(DATA_STORAGE_KEY);
     if (savedData) {
@@ -1046,13 +1075,12 @@ function loadAndInitializeApp() { // Renamed from loadAndInitialize to avoid con
 }
 
 // --- Initialization ---
-// Wait for the DOM to be fully loaded before initializing elements and attaching listeners
 document.addEventListener('DOMContentLoaded', () => {
     try {
         loadAndInitializeApp();
     } catch(error) {
         console.error("Critical Error during app.js initialization:", error);
-        const errDisp = document.getElementById('error-display'); // Attempt to use error display
+        const errDisp = document.getElementById('error-display');
         const errMsg = document.getElementById('error-message');
         if(errDisp && errMsg) {
             errMsg.textContent = "A critical error occurred during application startup. Please check the console.";

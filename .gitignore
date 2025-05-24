@@ -1,0 +1,26 @@
+# Node.js dependencies
+/node_modules/
+
+# Vite build output directory
+# (You configured this as 'pages' one level up from 'sources', so at the project root)
+/pages/
+
+# Log files
+*.log
+npm-debug.log*
+yarn-error.log
+pnpm-debug.log
+
+# Operating System generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
