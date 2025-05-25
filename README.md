@@ -78,11 +78,10 @@ There are a few ways to use the Warframe Task Checklist:
     * Enable GitHub Pages for your forked repository (Settings > Pages).
         * Set the "Build and deployment" source to **"GitHub Actions"**. The included workflows will build and deploy the site.
     * You will then have your own live, optimized version that you control.
-    * The main `warframe-tools/Task-Checklist` repository aims to update around the weekly reset (Monday 00:00 UTC). You can then pull these updates into your fork.
 
 3.  **Download and Run Source Locally (for `file:///` execution):**
     * Go to the [Releases page](https://github.com/warframe-tools/Task-Checklist/releases) of this repository.
-    * Download the `Task-Checklist-[VERSION]-Source.zip` (or `.tar.gz`) from the latest release.
+    * Download the `Task-Checklist-[VERSION].zip` (or `.tar.gz`) from the latest release.
     * Unzip the archive. The structure will be:
         ```
         your_folder/
