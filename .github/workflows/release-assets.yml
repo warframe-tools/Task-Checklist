@@ -2,19 +2,21 @@ name: Create File-Friendly Release Source Archives
 
 on:
   release:
-    types: [published] 
-  workflow_dispatch: 
+    types: [published] # Runs when a release is published
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 jobs:
   build_source_archives:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Needed for checkout (read) and to write release assets (write)
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          # For 'release' trigger, checkout the specific tag.
+          # For 'workflow_dispatch', it will checkout the branch you select (e.g., main).
           ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
 
       - name: Get Tag Name for Archives
@@ -27,6 +29,8 @@ jobs:
             SANITIZED_REF_NAME=$(echo "${RAW_REF_NAME}" | sed 's/[^a-zA-Z0-9._-]/-/g')
             echo "TAG_FOR_ARCHIVE=${SANITIZED_REF_NAME:-manual-run}" >> $GITHUB_ENV
           fi
+        env:
+          TAG_FOR_ARCHIVE: '' 
 
       - name: Define Archive Filenames
         id: set_filenames
@@ -50,39 +54,49 @@ jobs:
           echo "Listing staging directory contents:"
           ls -R ./source_package_staging
 
-      - name: Prepare Critical CSS for injection
-        id: prep_critical_css
-        run: |
-          CRITICAL_CSS_FILE="./source_package_staging/css/critical.css"
-          INJECT_CONTENT=""
-          if [ -f "$CRITICAL_CSS_FILE" ]; then
-            CRITICAL_CSS_CONTENT=$(cat "$CRITICAL_CSS_FILE")
-            # Prepare for multi-line environment variable
-            INJECT_CONTENT=$(printf "<style type=\\"text/css\\">\n%s\n</style>" "${CRITICAL_CSS_CONTENT}")
-            echo "Critical CSS prepared for injection."
-          else
-            echo "No critical.css found at $CRITICAL_CSS_FILE, critical CSS injection will be skipped or placeholder might remain."
-          fi
-          echo "INJECT_CRITICAL_CSS<<EOF" >> $GITHUB_ENV
-          echo "${INJECT_CONTENT}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-
-      - name: Inject Critical CSS into staged index.html (if critical CSS was prepared)
+      - name: Inject Critical CSS into staged index.html
         working-directory: ./source_package_staging
-        if: env.INJECT_CRITICAL_CSS != '' 
         run: |
-          echo "Attempting to inject critical CSS into index.html..."
-          if [ -f ./index.html ]; then
-            TEMP_INDEX_HTML=$(mktemp)
-            perl -0777 -pe 's|<%-\s*criticalCss\s*%>|${ENV::INJECT_CRITICAL_CSS}|sg' ./index.html > "$TEMP_INDEX_HTML" && mv "$TEMP_INDEX_HTML" ./index.html
-            echo "Critical CSS injection attempt complete using perl."
-          else
-            echo "index.html not found in staging directory for CSS injection."
+          CRITICAL_CSS_FILE="./css/critical.css" # Path within source_package_staging
+          INDEX_HTML_FILE="./index.html"
+          PLACEHOLDER="<%- criticalCss %>" # The exact placeholder string in your sources/index.html
+
+          if [ ! -f "$INDEX_HTML_FILE" ]; then
+            echo "Error: $INDEX_HTML_FILE not found in staging directory."
             exit 1
           fi
-        env:
-          INJECT_CRITICAL_CSS: ${{ env.INJECT_CRITICAL_CSS }}
+
+          if [ -f "$CRITICAL_CSS_FILE" ]; then
+            echo "Injecting critical CSS from $CRITICAL_CSS_FILE into $INDEX_HTML_FILE..."
+            
+            # Create the full style block to inject, saving to a temporary file
+            CRITICAL_CSS_CONTENT=$(cat "$CRITICAL_CSS_FILE")
+            STYLE_BLOCK_TEMP_FILE=$(mktemp)
+            printf "<style type=\"text/css\">\n%s\n</style>" "${CRITICAL_CSS_CONTENT}" > "$STYLE_BLOCK_TEMP_FILE"
+            
+            # Use awk for robust replacement. It reads the placeholder and the style block.
+            # It's generally safer for multi-line replacements with special characters.
+            INDEX_HTML_TEMP_FILE=$(mktemp)
+            awk -v placeholder="$PLACEHOLDER" -v style_file="$STYLE_BLOCK_TEMP_FILE" '
+              BEGIN {
+                # Read the entire style block from the temp file
+                while ((getline line < style_file) > 0) {
+                  style_block = style_block line "\n";
+                }
+                close(style_file);
+                sub(/\n$/, "", style_block);
+              }
+              {
+                gsub(placeholder, style_block);
+                print;
+              }
+            ' "$INDEX_HTML_FILE" > "$INDEX_HTML_TEMP_FILE" && mv "$INDEX_HTML_TEMP_FILE" "$INDEX_HTML_FILE"
+
+            rm "$STYLE_BLOCK_TEMP_FILE" # Clean up temp file
+            echo "Critical CSS injected."
+          else
+            echo "Warning: $CRITICAL_CSS_FILE not found. Placeholder '$PLACEHOLDER' in $INDEX_HTML_FILE will not be replaced."
+          fi
 
       - name: Modify index.html for file:/// app.js compatibility (remove type=module)
         working-directory: ./source_package_staging
@@ -116,16 +130,14 @@ jobs:
         if: github.event_name == 'release' && github.event.release.tag_name 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_NAME_FOR_UPLOAD: ${{ github.event.release.tag_name }} 
         run: |
-          echo "Uploading Zip: ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} to tag ${TAG_NAME_FOR_UPLOAD}"
-          gh release upload "${TAG_NAME_FOR_UPLOAD}" ./"${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}" --clobber
+          echo "Uploading Zip: ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} to tag ${{ github.event.release.tag_name }}"
+          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}" --clobber
 
       - name: Upload Tar.gz Archive to Release with gh CLI
         if: github.event_name == 'release' && github.event.release.tag_name 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_NAME_FOR_UPLOAD: ${{ github.event.release.tag_name }}
         run: |
-          echo "Uploading Tar.gz: ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }} to tag ${TAG_NAME_FOR_UPLOAD}"
-          gh release upload "${TAG_NAME_FOR_UPLOAD}" ./"${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}" --clobber
+          echo "Uploading Tar.gz: ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }} to tag ${{ github.event.release.tag_name }}"
+          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}" --clobber
