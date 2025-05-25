@@ -2,21 +2,19 @@ name: Create File-Friendly Release Source Archives
 
 on:
   release:
-    types: [published] # Runs when a release is published
-  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   build_source_archives:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Needed for checkout (read) and to write release assets (write)
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # For 'release' trigger, checkout the specific tag.
-          # For 'workflow_dispatch', it will checkout the branch you select (e.g., main).
           ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
 
       - name: Get Tag Name for Archives
@@ -45,21 +43,17 @@ jobs:
 
       - name: Copy source files to staging directory
         run: |
-          echo "Copying sources directory contents..."
           cp -r ./sources/* ./source_package_staging/
-          echo "Copying root README.md if it exists..."
           if [ -f ./README.md ]; then cp ./README.md ./source_package_staging/; fi
-          echo "Copying root LICENSE if it exists..."
           if [ -f ./LICENSE ]; then cp ./LICENSE ./source_package_staging/; fi
-          echo "Listing staging directory contents:"
           ls -R ./source_package_staging
 
       - name: Inject Critical CSS into staged index.html
         working-directory: ./source_package_staging
         run: |
-          CRITICAL_CSS_FILE="./css/critical.css" # Path within source_package_staging
+          CRITICAL_CSS_FILE="./css/critical.css" 
           INDEX_HTML_FILE="./index.html"
-          PLACEHOLDER="<%- criticalCss %>" # The exact placeholder string in your sources/index.html
+          PLACEHOLDER="<%- criticalCss %>" 
 
           if [ ! -f "$INDEX_HTML_FILE" ]; then
             echo "Error: $INDEX_HTML_FILE not found in staging directory."
@@ -68,18 +62,12 @@ jobs:
 
           if [ -f "$CRITICAL_CSS_FILE" ]; then
             echo "Injecting critical CSS from $CRITICAL_CSS_FILE into $INDEX_HTML_FILE..."
-            
-            # Create the full style block to inject, saving to a temporary file
             CRITICAL_CSS_CONTENT=$(cat "$CRITICAL_CSS_FILE")
             STYLE_BLOCK_TEMP_FILE=$(mktemp)
             printf "<style type=\"text/css\">\n%s\n</style>" "${CRITICAL_CSS_CONTENT}" > "$STYLE_BLOCK_TEMP_FILE"
-            
-            # Use awk for robust replacement. It reads the placeholder and the style block.
-            # It's generally safer for multi-line replacements with special characters.
             INDEX_HTML_TEMP_FILE=$(mktemp)
             awk -v placeholder="$PLACEHOLDER" -v style_file="$STYLE_BLOCK_TEMP_FILE" '
               BEGIN {
-                # Read the entire style block from the temp file
                 while ((getline line < style_file) > 0) {
                   style_block = style_block line "\n";
                 }
@@ -92,7 +80,7 @@ jobs:
               }
             ' "$INDEX_HTML_FILE" > "$INDEX_HTML_TEMP_FILE" && mv "$INDEX_HTML_TEMP_FILE" "$INDEX_HTML_FILE"
 
-            rm "$STYLE_BLOCK_TEMP_FILE" # Clean up temp file
+            rm "$STYLE_BLOCK_TEMP_FILE" 
             echo "Critical CSS injected."
           else
             echo "Warning: $CRITICAL_CSS_FILE not found. Placeholder '$PLACEHOLDER' in $INDEX_HTML_FILE will not be replaced."
@@ -101,7 +89,6 @@ jobs:
       - name: Modify index.html for file:/// app.js compatibility (remove type=module)
         working-directory: ./source_package_staging
         run: |
-          echo "Attempting to modify app.js script tag in index.html..."
           if [ -f ./index.html ]; then
             sed -i 's|<script type="module" src="js/app.js"|<script src="js/app.js"|g' ./index.html
             echo "app.js script tag modified in index.html."
@@ -114,24 +101,35 @@ jobs:
           cd ./source_package_staging
           zip -r ../${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} .
           cd ..
-          echo "Zip archive created: ${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}"
 
       - name: Create Tar.gz Archive of Modified Sources
         run: |
           cd ./source_package_staging
           tar -czvf ../${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }} .
           cd ..
-          echo "Tar.gz archive created: ${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}"
 
       - name: List created archives 
         run: ls -l ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}
+
+      - name: Upload Source Zip as Artifact (for manual/dispatch runs)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}
+          path: ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}
+
+      - name: Upload Source Tar.gz as Artifact (for manual/dispatch runs)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}
+          path: ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}
 
       - name: Upload Zip Archive to Release with gh CLI
         if: github.event_name == 'release' && github.event.release.tag_name 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Uploading Zip: ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} to tag ${{ github.event.release.tag_name }}"
           gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}" --clobber
 
       - name: Upload Tar.gz Archive to Release with gh CLI
@@ -139,5 +137,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Uploading Tar.gz: ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }} to tag ${{ github.event.release.tag_name }}"
           gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}" --clobber
