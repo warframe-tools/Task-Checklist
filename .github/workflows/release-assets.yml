@@ -33,8 +33,8 @@ jobs:
       - name: Define Base Archive Name
         id: set_base_name
         run: |
-          echo "ARCHIVE_BASE_NAME=Task-Checklist-${{ env.REF_FOR_ARCHIVE }}-Source" >> $GITHUB_OUTPUT
-          echo "Using archive base name: Task-Checklist-${{ env.REF_FOR_ARCHIVE }}-Source"
+          echo "ARCHIVE_BASE_NAME=Task-Checklist-${{ env.REF_FOR_ARCHIVE }}" >> $GITHUB_OUTPUT
+          echo "Using archive base name: Task-Checklist-${{ env.REF_FOR_ARCHIVE }}"
 
       - name: Create a staging directory for source files
         run: mkdir ./source_package_staging
