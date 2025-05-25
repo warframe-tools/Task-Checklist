@@ -9,7 +9,7 @@ jobs:
   build_source_archives:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write 
 
     steps:
       - name: Checkout code
@@ -17,26 +17,24 @@ jobs:
         with:
           ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
 
-      - name: Get Tag Name for Archives
-        id: get_tag_name
+      - name: Get Tag Name or Ref for Archives
+        id: get_ref_name
         run: |
           if [ "${{ github.event_name }}" == "release" ]; then
-            echo "TAG_FOR_ARCHIVE=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+            echo "REF_FOR_ARCHIVE=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
           else
             RAW_REF_NAME=$(echo "${{ github.ref }}" | sed -e 's|refs/heads/||' -e 's|refs/tags/||')
             SANITIZED_REF_NAME=$(echo "${RAW_REF_NAME}" | sed 's/[^a-zA-Z0-9._-]/-/g')
-            echo "TAG_FOR_ARCHIVE=${SANITIZED_REF_NAME:-manual-run}" >> $GITHUB_ENV
+            echo "REF_FOR_ARCHIVE=${SANITIZED_REF_NAME:-manual-run}" >> $GITHUB_ENV
           fi
         env:
-          TAG_FOR_ARCHIVE: '' 
+          REF_FOR_ARCHIVE: '' 
 
-      - name: Define Archive Filenames
-        id: set_filenames
+      - name: Define Base Archive Name
+        id: set_base_name
         run: |
-          echo "ARCHIVE_ZIP_NAME=Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source.zip" >> $GITHUB_OUTPUT
-          echo "ARCHIVE_TAR_NAME=Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source.tar.gz" >> $GITHUB_OUTPUT
-          echo "Generated Zip filename: Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source.zip"
-          echo "Generated Tar.gz filename: Task-Checklist-${{ env.TAG_FOR_ARCHIVE }}-Source.tar.gz"
+          echo "ARCHIVE_BASE_NAME=Task-Checklist-${{ env.REF_FOR_ARCHIVE }}-Source" >> $GITHUB_OUTPUT
+          echo "Using archive base name: Task-Checklist-${{ env.REF_FOR_ARCHIVE }}-Source"
 
       - name: Create a staging directory for source files
         run: mkdir ./source_package_staging
@@ -59,9 +57,7 @@ jobs:
             echo "Error: $INDEX_HTML_FILE not found in staging directory."
             exit 1
           fi
-
           if [ -f "$CRITICAL_CSS_FILE" ]; then
-            echo "Injecting critical CSS from $CRITICAL_CSS_FILE into $INDEX_HTML_FILE..."
             CRITICAL_CSS_CONTENT=$(cat "$CRITICAL_CSS_FILE")
             STYLE_BLOCK_TEMP_FILE=$(mktemp)
             printf "<style type=\"text/css\">\n%s\n</style>" "${CRITICAL_CSS_CONTENT}" > "$STYLE_BLOCK_TEMP_FILE"
@@ -79,7 +75,6 @@ jobs:
                 print;
               }
             ' "$INDEX_HTML_FILE" > "$INDEX_HTML_TEMP_FILE" && mv "$INDEX_HTML_TEMP_FILE" "$INDEX_HTML_FILE"
-
             rm "$STYLE_BLOCK_TEMP_FILE" 
             echo "Critical CSS injected."
           else
@@ -96,45 +91,39 @@ jobs:
             echo "index.html not found in staging directory for JS modification."
           fi
 
-      - name: Create Zip Archive of Modified Sources
+      - name: Create Zip Archive (for Release Event Only)
+        if: github.event_name == 'release'
         run: |
           cd ./source_package_staging
-          zip -r ../${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} .
+          zip -r ../${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.zip .
           cd ..
+          echo "Zip archive for release created: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.zip"
 
-      - name: Create Tar.gz Archive of Modified Sources
+      - name: Create Tar.gz Archive (for Release Event Only)
+        if: github.event_name == 'release'
         run: |
           cd ./source_package_staging
-          tar -czvf ../${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }} .
+          tar -czvf ../${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.tar.gz .
           cd ..
-
-      - name: List created archives 
-        run: ls -l ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }} ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}
-
-      - name: Upload Source Zip as Artifact (for manual/dispatch runs)
+          echo "Tar.gz archive for release created: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.tar.gz"
+      
+      - name: Upload Source Directory as Artifact (for manual/dispatch runs)
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}
-          path: ./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}
-
-      - name: Upload Source Tar.gz as Artifact (for manual/dispatch runs)
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}
-          path: ./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}
+          name: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }} 
+          path: ./source_package_staging/ 
 
       - name: Upload Zip Archive to Release with gh CLI
         if: github.event_name == 'release' && github.event.release.tag_name 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_filenames.outputs.ARCHIVE_ZIP_NAME }}" --clobber
+          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.zip" --clobber
 
       - name: Upload Tar.gz Archive to Release with gh CLI
         if: github.event_name == 'release' && github.event.release.tag_name 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_filenames.outputs.ARCHIVE_TAR_NAME }}" --clobber
+          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.tar.gz" --clobber
