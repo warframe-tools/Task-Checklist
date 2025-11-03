@@ -66,7 +66,7 @@ const tasks = {
         { id: 'weekly_ayatan', text: 'Ayatan Treasure Hunt: Complete Maroo\'s weekly mission for an Ayatan Sculpture (Maroo\'s Bazaar)' },
         { id: 'weekly_clem', text: 'Help Clem: Help Clem with his weekly survival, or he will die. (Relay)' },
         { id: 'weekly_kahl_garrison', text: 'Weekly Break Narmer Mission: Complete Kahl\'s weekly mission for Stock (requires Veilbreaker).' },
-        { id: 'weekly_iron_wake', text: 'Iron Wake (Paladino): Trade Riven Slivers with Paladino (requires The Chains of Harrow).' },
+        { id: 'weekly_iron_wake', text: 'Paladino (Iron Wake): Trade Riven Slivers with Paladino (requires The Chains of Harrow).' },
         { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.' },
         { id: 'weekly_acridies', text: 'Acridies (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).' },
         { id: 'weekly_archon_hunt', text: 'Archon Hunt: Complete the weekly Archon Hunt for a guaranteed Archon Shard (requires The New War).' },
