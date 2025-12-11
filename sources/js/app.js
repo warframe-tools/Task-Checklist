@@ -79,7 +79,8 @@ const tasks = {
         { id: 'weekly_eda', text: 'Elite Deep Archimedea (Necraloid): Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame, requires Whispers in the Walls & Rank 5 Cavia).' },
         { id: 'weekly_eta', text: 'Elite Temporal Archimedea (Kaya): Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame, requires Warframe 1999 & Rank 5 Hex).' },
         { id: 'weekly_calendar', text: 'Calendar (POM-2 Terminal): Complete weekly Calendar tasks (requires Warframe 1999).' },
-        { id: 'weekly_nightcap', text: 'Nightcap (Fortuna): Trade Fergolyte for Kuva and Ayatan Sculpture' }
+        { id: 'weekly_nightcap', text: 'Nightcap (Fortuna): Trade Fergolyte for Kuva and Ayatan Sculpture' },
+        { id: 'weekly_descendia', text: 'The Descendia: Weekly tower Gamemode for various resources' }
     ],
     other: [
         { id: 'other_baro', text: 'Baro Ki\'Teer: Check Baro Ki\'Teer\'s inventory on a Relay and purchase desired items with Ducats (trade Prime parts for Ducats). <span id="baro-countdown-timer" class="baro-countdown">(Loading...)</span>' },
