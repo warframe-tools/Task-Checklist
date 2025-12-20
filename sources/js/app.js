@@ -63,9 +63,9 @@ const tasks = {
     weekly: [
         { id: 'weekly_nightwave_complete', text: 'Nightwave: Complete relevant weekly Nightwave missions.' },
         { id: 'weekly_nightwave_spend', text: 'Nightwave (Spend): Spend Nightwave credits if needed (Aura mods, Catalysts/Reactors, etc.).' },
-        { id: 'weekly_ayatan', text: 'Ayatan Treasure Hunt: Complete Maroo\'s weekly mission for an Ayatan Sculpture (Maroo\'s Bazaar)' },
-        { id: 'weekly_clem', text: 'Help Clem: Help Clem with his weekly survival, or he will die. (Relay)' },
-        { id: 'weekly_kahl_garrison', text: 'Weekly Break Narmer Mission: Complete Kahl\'s weekly mission for Stock (requires Veilbreaker).' },
+        { id: 'weekly_ayatan', text: 'Ayatan Treasure Hunt (Maroo\'s Bazaar): Complete Maroo\'s weekly mission for an Ayatan Sculpture' },
+        { id: 'weekly_clem', text: 'Help Clem (Relay): Help Clem with his weekly survival, or he will die.' },
+        { id: 'weekly_kahl_garrison', text: 'Weekly Break Narmer Mission (Drifter\'s Camp: Complete Kahl\'s weekly mission for Stock (requires Veilbreaker).' },
         { id: 'weekly_iron_wake', text: 'Paladino (Iron Wake): Trade Riven Slivers with Paladino (requires The Chains of Harrow).' },
         { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.' },
         { id: 'weekly_acridies', text: 'Acridies (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).' },
@@ -81,10 +81,10 @@ const tasks = {
         { id: 'weekly_nightcap', text: 'Nightcap (Fortuna): Trade Fergolyte for Kuva and Ayatan Sculpture' }
     ],
     other: [
-        { id: 'other_baro', text: 'Baro Ki\'Teer: Check Baro Ki\'Teer\'s inventory on a Relay and purchase desired items with Ducats (trade Prime parts for Ducats). <span id="baro-countdown-timer" class="baro-countdown">(Loading...)</span>' },
-        { id: 'other_grandmother_tokens', text: 'Mend the Family: Purchase Family Tokens from Grandmother in the Necralisk (requires Heart of Deimos) <span id="grandmother_tokens-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true },
-        { id: 'other_yonta_voidplumes', text: 'Trade for Voidplumes: Purchase Voidplumes from Archimedean Yonta in the Chrysalith (requires Angels of the Zariman) <span id="yonta_voidplumes-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true },
-        { id: 'other_loid_voca', text: 'Trade for Voca: Purchase Voca from Loid in the Sanctum Anatomica (requires Whispers in the Walls) <span id="loid_voca-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true }
+        { id: 'other_baro', text: 'Baro Ki\'Teer (Relay with symbol): Check Baro Ki\'Teer\'s inventory and purchase desired items with Ducats (trade Prime parts for Ducats). <span id="baro-countdown-timer" class="baro-countdown">(Loading...)</span>' },
+        { id: 'other_grandmother_tokens', text: 'Mend the Family (Necralisk): Purchase Family Tokens from Grandmother (requires Heart of Deimos) <span id="grandmother_tokens-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true },
+        { id: 'other_yonta_voidplumes', text: 'Trade for Voidplumes (Chrysalith): Purchase Voidplumes from Archimedean Yonta (requires Angels of the Zariman) <span id="yonta_voidplumes-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true },
+        { id: 'other_loid_voca', text: 'Trade for Voca (Sanctum Anatomica): Purchase Voca from Loid (requires Whispers in the Walls) <span id="loid_voca-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true }
     ]
 };
 
