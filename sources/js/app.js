@@ -59,7 +59,7 @@ const tasks = {
         { id: 'daily_sortie', text: 'Sortie: Complete the 3 daily Sortie missions (requires The War Within).' },
         { id: 'daily_focus', text: 'Focus: Max out daily Focus gain (e.g., via Sanctuary Onslaught) (requires The Second Dream).' },
         { id: 'daily_steel_path', text: 'Steel Path Incursions: Complete daily Steel Path missions for Steel Essence (requires Steel Path unlocked).' },
-        { id: 'daily_marie', text: 'Marie (La Cathédrale): Purchase Operator and amp mods (requires Old Peace)' }
+        { id: 'daily_marie', text: 'Marie (La Cathédrale): Purchase Operator and amp mods (requires Old Peace).' }
     ],
     weekly: [
         { id: 'weekly_nightwave_complete', text: 'Nightwave: Complete relevant weekly Nightwave missions.' },
