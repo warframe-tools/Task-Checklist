@@ -8,8 +8,8 @@ const dailyBackgroundImageIds = [
     'bg-image-2'
     // Add more IDs if you add more background image divs in HTML
 ];
-const APP_VERSION = "3.0";
-const WARFRAME_VERSION = "40.0.0";
+const APP_VERSION = "3.1";
+const WARFRAME_VERSION = "41.0.0";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 function getStorageKey(appVersion) {
