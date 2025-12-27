@@ -32,62 +32,72 @@ const baroKiTeerData = {
 // --- Task Data ---
 const tasks = {
     daily: [
-        { id: 'daily_login', text: 'Log in: Collect the daily login reward.' },
-        { id: 'daily_craft_forma', text: 'Crafting (Forma): Start building a new Forma (and collect finished ones).' },
-        { id: 'daily_craft_other', text: 'Crafting (Other): Craft other daily resources/items using reusable blueprints (check Foundry/companion app).' },
-        { id: 'daily_syndicate_gain', text: 'Syndicates (Orbiter): Gain daily standing cap with your pledged Syndicate(s).' },
-        { id: 'daily_syndicate_spend', text: 'Syndicates (Orbiter - Spend): If maxed on standing, spend it (Relic packs, Vosfor packs, etc.).' },
+        { id: 'daily_login', text: 'Log in: Collect the daily login reward.', icon: 'LotusFlower.png' },
+        { id: 'daily_craft_forma', text: 'Crafting (Forma): Start building a new Forma (and collect finished ones).', icon: 'IconBuild.png' },
+        { id: 'daily_craft_other', text: 'Crafting (Other): Craft other daily resources/items using reusable blueprints (check Foundry/companion app).', icon: 'IconBuild.png' },
+        { id: 'daily_syndicate_gain', text: 'Syndicates (Orbiter): Gain daily standing cap with your pledged Syndicate(s).', icon: 'ReputationSmall.png' },
+        { id: 'daily_syndicate_spend', text: 'Syndicates (Orbiter - Spend): If maxed on standing, spend it (Relic packs, Vosfor packs, etc.).', icon: 'ReputationSmall.png' },
         {
             id: 'daily_world_syndicate_parent',
             text: 'World Syndicates (Standing)',
+            icon: 'ReputationSmall.png',
             isParent: true,
             subtasks: [
-                { id: 'daily_world_syndicate_simaris', text: 'Cephalon Simaris (Relay)' },
-                { id: 'daily_world_syndicate_ostron', text: 'Ostron (Cetus)' },
-                { id: 'daily_world_syndicate_quills', text: 'The Quills (Cetus)' },
-                { id: 'daily_world_syndicate_solaris', text: 'Solaris United (Fortuna)' },
-                { id: 'daily_world_syndicate_vox', text: 'Vox Solaris (Fortuna)' },
-                { id: 'daily_world_syndicate_ventkids', text: 'Ventkids (Fortuna)' },
-                { id: 'daily_world_syndicate_entrati', text: 'Entrati (Necralisk)' },
-                { id: 'daily_world_syndicate_necraloid', text: 'Necraloid (Necralisk)' },
-                { id: 'daily_world_syndicate_holdfasts', text: 'The Holdfasts (Chrysalith)' },
-                { id: 'daily_world_syndicate_cavia', text: 'Cavia (Sanctum Anatomica)' },
-                { id: 'daily_world_syndicate_hex', text: 'The Hex (Höllvania Central Mall)' }
+                { id: 'daily_world_syndicate_simaris', text: 'Cephalon Simaris (Relay)', icon: 'IconSimaris.png' },
+                { id: 'daily_world_syndicate_ostron', text: 'Ostron (Cetus)', icon: 'IconCetusElder.png' },
+                { id: 'daily_world_syndicate_quills', text: 'The Quills (Cetus)', icon: 'TheQuillsSigil.png' },
+                { id: 'daily_world_syndicate_solaris', text: 'Solaris United (Fortuna)', icon: 'SolarisUnited1.png' },
+                { id: 'daily_world_syndicate_vox', text: 'Vox Solaris (Fortuna)', icon: 'IconSolaris.png' },
+                { id: 'daily_world_syndicate_ventkids', text: 'Ventkids (Fortuna)', icon: 'VentkidsIcon.png' },
+                { id: 'daily_world_syndicate_entrati', text: 'Entrati (Necralisk)', icon: 'IconEntrati.png' },
+                { id: 'daily_world_syndicate_necraloid', text: 'Necraloid (Necralisk)', icon: 'NecraloidIcon.png' },
+                { id: 'daily_world_syndicate_holdfasts', text: 'The Holdfasts (Chrysalith)', icon: 'TheHoldfastsIcon.png' },
+                { id: 'daily_world_syndicate_cavia', text: 'Cavia (Sanctum Anatomica)', icon: 'Cavia_Syndicate_Logo_1.png' },
+                { id: 'daily_world_syndicate_hex', text: 'The Hex (Höllvania Central Mall)', icon: 'HexIcon.png' }
             ]
         },
-        { id: 'daily_dark_sector', text: 'Dark Sector Mission (Early Game): Complete one Dark Sector mission first for double credits (if needed & pre-Index).' },
-        { id: 'daily_sortie', text: 'Sortie: Complete the 3 daily Sortie missions (requires The War Within).' },
-        { id: 'daily_focus', text: 'Focus: Max out daily Focus gain (e.g., via Sanctuary Onslaught) (requires The Second Dream).' },
-        { id: 'daily_steel_path', text: 'Steel Path Incursions: Complete daily Steel Path missions for Steel Essence (requires Steel Path unlocked).' },
+        { id: 'daily_dark_sector', text: 'Dark Sector Mission (Early Game): Complete one Dark Sector mission first for double credits (if needed & pre-Index).', icon: 'IconInfested.png' },
+        { id: 'daily_sortie', text: 'Sortie: Complete the 3 daily Sortie missions (requires The War Within).', icon: 'Sortie.png' },
+        { id: 'daily_focus', text: 'Focus: Max out daily Focus gain (e.g., via Sanctuary Onslaught) (requires The Second Dream).', icon: 'FocusLensFocus.png' },
+        { id: 'daily_steel_path', text: 'Steel Path Incursions: Complete daily Steel Path missions for Steel Essence (requires Steel Path unlocked).', icon: 'SteelEssence.png', noIconFilter: true },
+        { id: 'daily_acrithis', text: 'Acrithis (Duviri/Dormizone): Check daily Arcane and Captura offering.', icon: 'IconDuviriAcrithis.png', noIconFilter: true },
+        { id: 'daily_ticker_crew', text: 'Ticker (Fortuna): Check available railjack crew to hire (requires Rising Tide & Command Intrinsics 1).', icon: 'IconCommand.png' },
         { id: 'daily_marie', text: 'Marie (La Cathédrale): Purchase Operator and amp mods (requires Old Peace).' }
     ],
     weekly: [
-        { id: 'weekly_nightwave_complete', text: 'Nightwave: Complete relevant weekly Nightwave missions.' },
-        { id: 'weekly_nightwave_spend', text: 'Nightwave (Spend): Spend Nightwave credits if needed (Aura mods, Catalysts/Reactors, etc.).' },
-        { id: 'weekly_ayatan', text: 'Ayatan Treasure Hunt (Maroo\'s Bazaar): Complete Maroo\'s weekly mission for an Ayatan Sculpture' },
-        { id: 'weekly_clem', text: 'Help Clem (Relay): Help Clem with his weekly survival, or he will die.' },
-        { id: 'weekly_kahl_garrison', text: 'Weekly Break Narmer Mission (Drifter\'s Camp: Complete Kahl\'s weekly mission for Stock (requires Veilbreaker).' },
-        { id: 'weekly_iron_wake', text: 'Paladino (Iron Wake): Trade Riven Slivers with Paladino (requires The Chains of Harrow).' },
-        { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.' },
-        { id: 'weekly_acridies', text: 'Acridies (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).' },
-        { id: 'weekly_archon_hunt', text: 'Archon Hunt: Complete the weekly Archon Hunt for a guaranteed Archon Shard (requires The New War).' },
-        { id: 'weekly_duviri_circuit', text: 'Duviri Circuit (Normal): Check weekly Warframe options & run Circuit if desired (requires Duviri).' },
-        { id: 'weekly_duviri_circuit_sp', text: 'Duviri Circuit (Steel Path): Check weekly Incarnon Adapters & run Circuit if desired (requires Steel Path & Duviri).' },
-        { id: 'weekly_teshin', text: 'Teshin (Steel Path): Check Teshin\'s Steel Essence shop (especially for Umbra Forma rotation - approx. every 8 weeks).' },
-        { id: 'weekly_bird3', text: 'Bird 3 (Cavia Syndicate): Buy the weekly Archon Shard for 30k Cavia Standing (requires Rank 5 Cavia).' },
-        { id: 'weekly_netracells', text: 'Netracells (Tagfer): Complete up to 5 weekly Netracell missions for Archon Shard chances (requires Whispers in the Walls).' },
-        { id: 'weekly_eda', text: 'Elite Deep Archimedea (Necraloid): Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame, requires Whispers in the Walls & Rank 5 Cavia).' },
-        { id: 'weekly_eta', text: 'Elite Temporal Archimedea (Kaya): Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame, requires Warframe 1999 & Rank 5 Hex).' },
-        { id: 'weekly_calendar', text: 'Calendar (POM-2 Terminal): Complete weekly Calendar tasks (requires Warframe 1999).' },
+        { id: 'weekly_nightwave_complete', text: 'Nightwave: Complete relevant weekly Nightwave missions.', icon: 'NightwaveSyndicate.png' },
+        { id: 'weekly_nightwave_spend', text: 'Nightwave (Spend): Spend Nightwave credits if needed (Aura mods, Catalysts/Reactors, etc.).', icon: 'NightwaveSyndicate.png' },
+        { id: 'weekly_ayatan', text: 'Ayatan Treasure Hunt (Maroo\'s Bazaar): Complete Maroo\'s weekly mission for an Ayatan Sculpture', icon: 'IconTreasureGem.png' },
+        { id: 'weekly_clem', text: 'Help Clem (Relay): Help Clem with his weekly survival, or he will die.', icon: 'Clem.png', noIconFilter: true },
+        { id: 'weekly_kahl_garrison', text: 'Weekly Break Narmer Mission (Drifter\'s Camp: Complete Kahl\'s weekly mission for Stock (requires Veilbreaker).', icon: 'GarrisonIcon.png' },
+        { id: 'weekly_iron_wake', text: 'Paladino (Iron Wake): Trade Riven Slivers with Paladino (requires The Chains of Harrow).', icon: 'RivenSliver.png', noIconFilter: true },
+        { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.', icon: 'TheHoldfastsIcon.png' },
+        { id: 'weekly_acridies', text: 'Acrithis (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).', icon: 'IconDuviriAcrithis.png', noIconFilter: true },
+        { id: 'weekly_archon_hunt', text: 'Archon Hunt: Complete the weekly Archon Hunt for a guaranteed Archon Shard (requires The New War).', icon: 'IconNarmer.png' },
+        { id: 'weekly_duviri_circuit', text: 'Duviri Circuit (Normal): Check weekly Warframe options & run Circuit if desired (requires Duviri).', icon: 'DuviriIcon.png' },
+        { id: 'weekly_duviri_circuit_sp', text: 'Duviri Circuit (Steel Path): Check weekly Incarnon Adapters & run Circuit if desired (requires Steel Path & Duviri).', icon: 'DuviriIcon.png' },
+        { id: 'weekly_teshin', text: 'Teshin (Steel Path): Check Teshin\'s Steel Essence shop (especially for Umbra Forma rotation - approx. every 8 weeks).', icon: 'SteelEssence.png', noIconFilter: true },
+        { id: 'weekly_bird3', text: 'Bird 3 (Cavia Syndicate): Buy the weekly Archon Shard for 30k Cavia Standing (requires Rank 5 Cavia).', icon: 'Cavia_Syndicate_Logo_1.png' },
+        {
+            id: 'weekly_search_pulses',
+            text: 'Search Pulses: Use 5 weekly search pulses on Netracells and Archimedeas.',
+            isParent: true,
+            subtasks: [
+                { id: 'weekly_netracells', text: 'Netracells (Tagfer): Complete up to 5 weekly Netracell missions for Archon Shard chances. (requires Whispers in the Walls. Costs 1 Search Pulse each.)', icon: 'NetraRequiemIcon.png' },
+                { id: 'weekly_eda', text: 'Elite Deep Archimedea (Necraloid): Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame, requires Whispers in the Walls & Rank 5 Cavia. Costs 2 Search Pulses.)', icon: 'Cavia_Syndicate_Logo_1.png' },
+                { id: 'weekly_eta', text: 'Elite Temporal Archimedea (Kaya): Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame, requires Warframe 1999 & Rank 5 Hex. Costs 2 Search Pulses.)', icon: 'HexIcon.png' },
+            ]
+        },
+        { id: 'weekly_calendar', text: 'Calendar (POM-2 Terminal): Complete weekly Calendar tasks (requires Warframe 1999).', icon: 'HexIcon.png' },
+        { id: 'weekly_invigorations', text: 'Helminth: Use weekly Invigorations (requires Rank 5 Entrati).', icon: 'IconHelminth.png' },
         { id: 'weekly_nightcap', text: 'Nightcap (Fortuna): Trade Fergolyte for Kuva and Ayatan Sculpture.' },
         { id: 'weekly_descendia', text: 'The Descendia: Weekly Tower gamemode for various resources.' }
-        
     ],
     other: [
-        { id: 'other_baro', text: 'Baro Ki\'Teer (Relay with symbol): Check Baro Ki\'Teer\'s inventory and purchase desired items with Ducats (trade Prime parts for Ducats). <span id="baro-countdown-timer" class="baro-countdown">(Loading...)</span>' },
-        { id: 'other_grandmother_tokens', text: 'Mend the Family (Necralisk): Purchase Family Tokens from Grandmother (requires Heart of Deimos) <span id="grandmother_tokens-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true },
-        { id: 'other_yonta_voidplumes', text: 'Trade for Voidplumes (Chrysalith): Purchase Voidplumes from Archimedean Yonta (requires Angels of the Zariman) <span id="yonta_voidplumes-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true },
-        { id: 'other_loid_voca', text: 'Trade for Voca (Sanctum Anatomica): Purchase Voca from Loid (requires Whispers in the Walls) <span id="loid_voca-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', isEightHourTask: true }
+        { id: 'other_baro', text: 'Baro Ki\'Teer (Relay with symbol): Check Baro Ki\'Teer\'s inventory and purchase desired items with Ducats (trade Prime parts for Ducats). <span id="baro-countdown-timer" class="baro-countdown">(Loading...)</span>', icon: 'IconPrimeParts.png' },
+        { id: 'other_grandmother_tokens', text: 'Mend the Family (Necralisk): Purchase Family Tokens from Grandmother (requires Heart of Deimos) <span id="grandmother_tokens-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', icon: 'GrandmotherToken.png', noIconFilter: true, isEightHourTask: true },
+        { id: 'other_yonta_voidplumes', text: 'Trade for Voidplumes (Chrysalith): Purchase Voidplumes from Archimedean Yonta (requires Angels of the Zariman) <span id="yonta_voidplumes-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', icon: 'VoidplumeDown.png', noIconFilter: true, isEightHourTask: true },
+        { id: 'other_loid_voca', text: 'Trade for Voca (Sanctum Anatomica): Purchase Voca from Loid (requires Whispers in the Walls) <span id="loid_voca-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', icon: 'BellowVoca.png', noIconFilter: true, isEightHourTask: true }
     ]
 };
 
@@ -106,6 +116,7 @@ const confirmState = {
     weekly: { timeout: null, isConfirming: false },
     unhide: { timeout: null, isConfirming: false }
 };
+
 let checklistData = {
     progress: {},
     lastSaved: null,
@@ -117,6 +128,7 @@ let checklistData = {
     notificationPreferences: {},
     notificationsSent: {}
 };
+
 let currentTheme = 'dark';
 let saveStatusTimeout;
 let countdownInterval;
@@ -150,7 +162,7 @@ function initializeDOMElements() {
     appVersionElement = document.querySelector('.version-text');
     wfVersionElement = document.querySelector('.warframe-version-text');
 
-    backgroundDivs = []; 
+    backgroundDivs = [];
     dailyBackgroundImageIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -168,12 +180,14 @@ function displayError(message) {
     errorDisplayElement.classList.add('visible');
     if (errorCopyButton) errorCopyButton.textContent = 'Copy';
 }
+
 function hideError() {
      if (!errorDisplayElement) return;
      errorDisplayElement.classList.remove('visible');
      errorMessageElement.textContent = '';
      if (errorCopyButton) errorCopyButton.textContent = 'Copy';
 }
+
 function copyErrorToClipboard() {
     const errorMessage = errorMessageElement.textContent;
     if (!errorMessage || !navigator.clipboard) {
@@ -245,6 +259,7 @@ function formatTimestamp(timestamp) {
         return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
     } catch (e) { console.error("Error formatting timestamp:", e); return 'Error'; }
 }
+
 function updateLastSavedDisplay(timestamp) {
     if (lastSavedTimestampElement) {
         lastSavedTimestampElement.textContent = `Last saved: ${formatTimestamp(timestamp)}`;
@@ -252,12 +267,14 @@ function updateLastSavedDisplay(timestamp) {
          console.error("lastSavedTimestampElement not found");
     }
 }
+
 function showSaveStatus() {
     if (!saveStatusElement) return;
     clearTimeout(saveStatusTimeout);
     saveStatusElement.style.opacity = '1';
     saveStatusTimeout = setTimeout(() => { saveStatusElement.style.opacity = '0'; }, 1500);
 }
+
 function getMostRecentMondayMidnightUTC() {
     const now = new Date();
     const currentUTCDay = now.getUTCDay();
@@ -268,18 +285,21 @@ function getMostRecentMondayMidnightUTC() {
     mondayUTC.setUTCHours(0, 0, 0, 0);
     return mondayUTC.getTime();
 }
- function getNextDailyMidnightUTC() {
-     const now = new Date();
-     const tomorrowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
-     tomorrowUTC.setUTCHours(0, 0, 0, 0);
-     return tomorrowUTC.getTime();
- }
+
+function getNextDailyMidnightUTC() {
+    const now = new Date();
+    const tomorrowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+    tomorrowUTC.setUTCHours(0, 0, 0, 0);
+    return tomorrowUTC.getTime();
+}
+
 function getUTCDateString(dateObj) {
     const year = dateObj.getUTCFullYear();
     const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
     const day = dateObj.getUTCDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
 function getUTCDayOfYear(date) {
     const startOfYear = Date.UTC(date.getUTCFullYear(), 0, 0);
     const diff = date.getTime() - startOfYear;
@@ -328,6 +348,7 @@ function formatCountdown(ms) {
     }
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
+
 function calculateBaroTimings() {
     const now = new Date().getTime();
     let nextArrival = baroKiTeerData.referenceArrivalUTC;
@@ -353,6 +374,7 @@ function calculateBaroTimings() {
         status: status
     };
 }
+
 function displayBaroCountdown() {
     const baroCountdownElement = document.getElementById('baro-countdown-timer');
     if (!baroCountdownElement) return;
@@ -402,9 +424,9 @@ function getNextEightHourResetUTC() {
         nextResetDate.setUTCHours(8, 0, 0, 0);
     } else if (currentUTCHour < 16) {
         nextResetDate.setUTCHours(16, 0, 0, 0);
-    } else { 
-        nextResetDate.setUTCDate(nextResetDate.getUTCDate() + 1); 
-        nextResetDate.setUTCHours(0, 0, 0, 0); 
+    } else {
+        nextResetDate.setUTCDate(nextResetDate.getUTCDate() + 1);
+        nextResetDate.setUTCHours(0, 0, 0, 0);
     }
     return nextResetDate.getTime();
 }
@@ -419,47 +441,48 @@ function displayEightHourTaskCountdown(taskElementId, countdownSpanId) {
     countdownSpan.textContent = `(Resets in ${formatCountdown(diff)})`;
 }
 
- function displayLocalResetTimes() {
-     try {
-         const now = new Date().getTime();
+function displayLocalResetTimes() {
+    try {
+        const now = new Date().getTime();
 
-         const nextDailyResetTimestamp = getNextDailyMidnightUTC();
-         const dailyDiff = nextDailyResetTimestamp - now;
-         if (dailyResetTimeElement) {
-             dailyResetTimeElement.textContent = `(Resets in ${formatCountdown(dailyDiff)})`;
-         }
+        const nextDailyResetTimestamp = getNextDailyMidnightUTC();
+        const dailyDiff = nextDailyResetTimestamp - now;
+        if (dailyResetTimeElement) {
+            dailyResetTimeElement.textContent = `(Resets in ${formatCountdown(dailyDiff)})`;
+        }
 
-         let nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
-          if (now >= nextWeeklyResetTimestamp) {
-              nextWeeklyResetTimestamp += 7 * 24 * 60 * 60 * 1000;
-          }
-         const weeklyDiff = nextWeeklyResetTimestamp - now;
-          if (weeklyResetTimeElement) {
-             weeklyResetTimeElement.textContent = `(Resets in ${formatCountdown(weeklyDiff)})`;
-         }
+        let nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
+        if (now >= nextWeeklyResetTimestamp) {
+            nextWeeklyResetTimestamp += 7 * 24 * 60 * 60 * 1000;
+        }
+        const weeklyDiff = nextWeeklyResetTimestamp - now;
+        if (weeklyResetTimeElement) {
+            weeklyResetTimeElement.textContent = `(Resets in ${formatCountdown(weeklyDiff)})`;
+        }
 
-         displayBaroCountdown();
-         tasks.other.forEach(task => {
-             if (task.isEightHourTask) {
-                 const countdownSpanId = task.id.replace(/^other_/, '') + '-countdown-timer';
-                 displayEightHourTaskCountdown(task.id, countdownSpanId);
-             }
-         });
+        displayBaroCountdown();
+        tasks.other.forEach(task => {
+            if (task.isEightHourTask) {
+                const countdownSpanId = task.id.replace(/^other_/, '') + '-countdown-timer';
+                displayEightHourTaskCountdown(task.id, countdownSpanId);
+            }
+        });
 
-         if (runAutoResets()) {
-             saveData(false);
-             populateSection(dailyList, tasks.daily, checklistData.progress);
-             populateSection(weeklyList, tasks.weekly, checklistData.progress);
-             populateSection(otherList, tasks.other, checklistData.progress);
-             ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
-         }
+        if (runAutoResets()) {
+            saveData(false);
+            populateSection(dailyList, tasks.daily, checklistData.progress);
+            populateSection(weeklyList, tasks.weekly, checklistData.progress);
+            populateSection(otherList, tasks.other, checklistData.progress);
+            ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
+        }
 
-     } catch (e) {
-         console.error("Error calculating or displaying local reset times:", e);
-          if (dailyResetTimeElement) dailyResetTimeElement.textContent = `(Resets 00:00 UTC)`;
-          if (weeklyResetTimeElement) weeklyResetTimeElement.textContent = `(Resets Mon 00:00 UTC)`;
-     }
- }
+    } catch (e) {
+        console.error("Error calculating or displaying local reset times:", e);
+        if (dailyResetTimeElement) dailyResetTimeElement.textContent = `(Resets 00:00 UTC)`;
+        if (weeklyResetTimeElement) weeklyResetTimeElement.textContent = `(Resets Mon 00:00 UTC)`;
+    }
+}
+
 function getStartOfCurrentEightHourCycleUTC() {
     const now = new Date();
     const currentUTCHour = now.getUTCHours();
@@ -552,6 +575,7 @@ function runAutoResets() {
     });
     return didReset;
 }
+
 function saveData(showStatus = true) {
     hideError();
     checklistData.lastSaved = new Date().toISOString();
@@ -568,6 +592,7 @@ function saveData(showStatus = true) {
         displayError(userMessage);
     }
 }
+
 async function requestNotificationPermission() {
     if (!("Notification" in window)) {
         console.warn("This browser does not support desktop notification");
@@ -613,6 +638,14 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         checkbox.dataset.parentId = task.parentId;
     }
 
+    const icon = document.createElement('img');
+    if (task.icon) {
+        icon.src = "img/icons/" + task.icon;
+        if (!task.noIconFilter) {
+            icon.classList.add('icon-filter')
+        }
+    }
+
     const controlsContainer = document.createElement('div');
     controlsContainer.classList.add('flex', 'items-center', 'ml-auto');
 
@@ -654,7 +687,6 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     });
     controlsContainer.appendChild(hideButton);
 
-
     if (task.isParent) {
         listItem.classList.add('parent-task-container');
 
@@ -664,6 +696,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         parentHeaderDiv.setAttribute('aria-controls', `${task.id}-subtasks`);
 
         parentHeaderDiv.appendChild(checkbox);
+        if (task.icon) { parentHeaderDiv.appendChild(icon); }
 
         const taskTextSpan = document.createElement('span');
         taskTextSpan.textContent = task.text;
@@ -703,14 +736,14 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
                 subtaskList.classList.toggle('collapsed', isExpanded);
             }
         });
-         collapseIcon.addEventListener('click', (e) => {
+        collapseIcon.addEventListener('click', (e) => {
             e.stopPropagation();
             const isExpanded = parentHeaderDiv.getAttribute('aria-expanded') === 'true';
             parentHeaderDiv.setAttribute('aria-expanded', !isExpanded);
             subtaskList.classList.toggle('collapsed', isExpanded);
         });
 
-         checkbox.addEventListener('change', (event) => {
+        checkbox.addEventListener('change', (event) => {
             const currentlyChecked = event.target.checked;
             checklistData.progress[task.id] = currentlyChecked;
             taskTextSpan.classList.toggle('checked', currentlyChecked);
@@ -726,9 +759,9 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         });
 
     } else {
-         if (isSubtask) {
+        if (isSubtask) {
             listItem.classList.add('ml-4');
-         }
+        }
 
         const label = document.createElement('label');
         label.htmlFor = task.id;
@@ -741,6 +774,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         if (isChecked) { label.classList.add('checked'); }
 
         listItem.appendChild(checkbox);
+        if (task.icon) { listItem.appendChild(icon); }
         listItem.appendChild(label);
         listItem.appendChild(controlsContainer);
 
@@ -751,8 +785,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
             if (isSubtask && task.parentId) {
                 let parentTaskDefinition = tasks.daily.find(t => t.id === task.parentId) ||
-                                         tasks.weekly.find(t => t.id === task.parentId) ||
-                                         tasks.other.find(t => t.id === task.parentId);
+                                           tasks.weekly.find(t => t.id === task.parentId) ||
+                                           tasks.other.find(t => t.id === task.parentId);
 
                 if (parentTaskDefinition && parentTaskDefinition.subtasks) {
                     const allSubtasksChecked = parentTaskDefinition.subtasks.every(st => checklistData.progress[st.id]);
@@ -771,6 +805,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     }
     return listItem;
 }
+
 function populateSection(sectionElement, taskList, progress) {
     if (!sectionElement) {
         console.error("Section element not found for population:", sectionElement);
@@ -783,9 +818,10 @@ function populateSection(sectionElement, taskList, progress) {
         sectionElement.appendChild(listItem);
     });
     if (sectionElement.parentElement && sectionElement.parentElement.id) {
-         updateSectionControls(sectionElement.parentElement.id);
+        updateSectionControls(sectionElement.parentElement.id);
     }
 }
+
 function resetSpecificButtonState(buttonElement, defaultText, stateKey) {
     if (!buttonElement || !confirmState[stateKey]) return;
     clearTimeout(confirmState[stateKey].timeout);
@@ -795,13 +831,14 @@ function resetSpecificButtonState(buttonElement, defaultText, stateKey) {
     buttonElement.classList.remove('confirming');
     console.log(`Button ${buttonElement.id} state reverted.`);
 }
+
 function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAction) {
     if (!confirmState[confirmKey]) {
         console.error("Invalid confirmKey:", confirmKey);
         return;
     }
 
-     if (!confirmState[confirmKey].isConfirming) {
+    if (!confirmState[confirmKey].isConfirming) {
         Object.keys(confirmState).forEach(key => {
             if (key !== confirmKey && confirmState[key].isConfirming) {
                 let btnElement, btnText;
@@ -833,6 +870,7 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
         }, 10000);
     }
 }
+
 function resetAllAction() {
     checklistData.progress = {};
     localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(checklistData));
@@ -849,6 +887,7 @@ function resetAllAction() {
     updateLastSavedDisplay(checklistData.lastSaved);
     console.log("Checklist reset complete.");
 }
+
 function resetDailyAction() {
     tasks.daily.forEach(task => {
         checklistData.progress[task.id] = false;
@@ -877,6 +916,7 @@ function resetDailyAction() {
     saveData();
     console.log("Daily checks manually reset.");
 }
+
 function resetWeeklyAction() {
     tasks.weekly.forEach(task => {
         checklistData.progress[task.id] = false;
@@ -891,6 +931,7 @@ function resetWeeklyAction() {
     saveData();
     console.log("Weekly checks manually reset.");
 }
+
 function handleSectionToggle(event) {
     const header = event.target.closest('.section-toggle');
     if (!header) return;
@@ -904,11 +945,13 @@ function handleSectionToggle(event) {
     contentDiv.classList.toggle('collapsed', isExpanded);
     console.log(`Toggled section ${contentId} to ${!isExpanded ? 'expanded' : 'collapsed'}`);
 }
+
 function toggleMenu() {
     if (slideoutMenuOverlay) {
         slideoutMenuOverlay.classList.toggle('open');
     }
 }
+
 function unhideAllAction() {
     checklistData.hiddenTasks = {};
     checklistData.manuallyHiddenSections = {};
@@ -920,7 +963,7 @@ function unhideAllAction() {
     populateSection(dailyList, tasks.daily, checklistData.progress);
     populateSection(weeklyList, tasks.weekly, checklistData.progress);
     populateSection(otherList, tasks.other, checklistData.progress);
-     ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
+    ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
     console.log("All tasks and sections unhidden.");
     toggleMenu();
 }
@@ -961,7 +1004,6 @@ function updateSectionControls(sectionElementId) {
     }
 }
 
-
 function loadAndInitializeApp() {
     initializeDOMElements();
     hideError();
@@ -999,7 +1041,7 @@ function loadAndInitializeApp() {
     populateSection(otherList, tasks.other, checklistData.progress);
     updateLastSavedDisplay(checklistData.lastSaved);
 
-     ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
+    ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
 
 
     // Setup event listeners
@@ -1062,13 +1104,13 @@ function loadAndInitializeApp() {
     });
 
 
-     if (errorCloseButton) {
-         errorCloseButton.addEventListener('click', hideError);
-     } else { console.error("Error close button not found!"); }
+    if (errorCloseButton) {
+        errorCloseButton.addEventListener('click', hideError);
+    } else { console.error("Error close button not found!"); }
 
-     if (errorCopyButton) {
-         errorCopyButton.addEventListener('click', copyErrorToClipboard);
-     } else { console.error("Error copy button not found!"); }
+    if (errorCopyButton) {
+        errorCopyButton.addEventListener('click', copyErrorToClipboard);
+    } else { console.error("Error copy button not found!"); }
 
     console.log(`Warframe Checklist App Initialized (v${APP_VERSION}) from app.js.`);
 }
