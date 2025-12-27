@@ -51,13 +51,13 @@
     transition: color 0.2s ease;
     margin: 0 0.25rem;
 }
- .checklist-content .footer-links a:hover {
+.checklist-content .footer-links a:hover {
     color: var(--link-hover-color);
- }
- .checklist-content .footer-links span {
+}
+.checklist-content .footer-links span {
     color: var(--text-muted);
     margin: 0 0.1rem;
- }
+}
 
 /* --- Collapsible Section Styles (Non-Critical Parts) --- */
 .subtask-list {
@@ -239,4 +239,16 @@ li.parent-task-container {
 }
 #slideout-menu-overlay .menu-btn:last-child {
     margin-bottom: 0;
+}
+
+/* Task Icons */
+.task-item img, .parent-task-header img {
+    max-height: 1.5em;
+    max-width: 1.5em;
+}
+body.light-mode .task-item img.icon-filter, body.light-mode .parent-task-header img.icon-filter {
+    filter: brightness(0) invert(0);
+}
+body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-task-header img.icon-filter {
+    filter: brightness(0) invert(1);
 }
