@@ -468,13 +468,7 @@ function displayLocalResetTimes() {
             }
         });
 
-        if (runAutoResets()) {
-            saveData(false);
-            populateSection(dailyList, tasks.daily, checklistData.progress);
-            populateSection(weeklyList, tasks.weekly, checklistData.progress);
-            populateSection(otherList, tasks.other, checklistData.progress);
-            ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
-        }
+        runAutoResets()
 
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
@@ -504,47 +498,27 @@ function runAutoResets() {
     const now = new Date();
     const nowUTCTimestamp = now.getTime();
     const todayUTCString = getUTCDateString(now);
-    let didReset = false;
 
     const lastDailyResetDate = checklistData.lastDailyReset ? new Date(checklistData.lastDailyReset) : null;
     let lastDailyResetUTCString = lastDailyResetDate ? getUTCDateString(lastDailyResetDate) : null;
     if (!lastDailyResetUTCString || lastDailyResetUTCString !== todayUTCString) {
         console.log(`Performing daily auto-reset (UTC). Today: ${todayUTCString}, Last Reset: ${lastDailyResetUTCString}`);
-        tasks.daily.forEach(task => {
-            if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
-                checklistData.progress[task.id] = false;
-                didReset = true;
-            }
-            if (task.isParent && task.subtasks) {
-                task.subtasks.forEach(subtask => {
-                    if (checklistData.progress[subtask.id] && !checklistData.hiddenTasks[subtask.id]) {
-                        checklistData.progress[subtask.id] = false;
-                    }
-                });
-            }
-        });
-        checklistData.lastDailyReset = now.toISOString();
+        resetSection("daily");
     }
 
     const lastWeeklyResetTimestamp = checklistData.lastWeeklyReset ? new Date(checklistData.lastWeeklyReset).getTime() : null;
     const mostRecentMondayUTCTimestamp = getMostRecentMondayMidnightUTC();
     if (!lastWeeklyResetTimestamp || lastWeeklyResetTimestamp < mostRecentMondayUTCTimestamp) {
-         if (nowUTCTimestamp >= mostRecentMondayUTCTimestamp) {
+        if (nowUTCTimestamp >= mostRecentMondayUTCTimestamp) {
             console.log(`Performing weekly auto-reset (UTC). Current Time: ${nowUTCTimestamp}, Last Reset: ${lastWeeklyResetTimestamp}, Target Monday: ${mostRecentMondayUTCTimestamp}`);
-            tasks.weekly.forEach(task => {
-                if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
-                    checklistData.progress[task.id] = false;
-                    didReset = true;
-                }
-            });
-            checklistData.lastWeeklyReset = now.toISOString();
-         }
+            resetSection("weekly");
+        }
     }
 
+    let didResetOther = false;
     const startOfCurrentEightHourCycle = getStartOfCurrentEightHourCycleUTC();
     if (!checklistData.lastEightHourResets) checklistData.lastEightHourResets = {};
     if (!checklistData.notificationsSent) checklistData.notificationsSent = {};
-
 
     tasks.other.forEach(task => {
         if (task.isEightHourTask) {
@@ -555,7 +529,7 @@ function runAutoResets() {
                 if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
                     checklistData.progress[task.id] = false;
                     console.log(`Resetting 8-hour task: ${task.id}`);
-                    didReset = true;
+                    didResetOther = true;
                 }
                 checklistData.lastEightHourResets[task.id] = startOfCurrentEightHourCycle;
                 if(checklistData.notificationsSent[notificationId]) {
@@ -573,7 +547,10 @@ function runAutoResets() {
             }
         }
     });
-    return didReset;
+    if (didResetOther) {
+        populateSection(otherList, tasks.other, checklistData.progress);
+        updateSectionControls('other-tasks-section')
+    }
 }
 
 function saveData(showStatus = true) {
@@ -893,48 +870,54 @@ function resetAllAction() {
     console.log("Checklist reset complete.");
 }
 
-function resetDailyAction() {
-    tasks.daily.forEach(task => {
-        checklistData.progress[task.id] = false;
-        const checkbox = document.getElementById(task.id);
-        if (checkbox) {
-            checkbox.checked = false;
-            const listItem = checkbox.closest('li');
-            const label = listItem.querySelector('label');
-            const parentTextSpan = listItem.querySelector('.parent-task-header .task-text');
-            if (label) label.classList.remove('checked');
-            if (parentTextSpan) parentTextSpan.classList.remove('checked');
+function resetSection(section) {
+    const validSections = ["daily", "weekly"];
+    if (!validSections.includes(section)) {
+        console.error("Section '%s' is not a valid section name: %s", section, validSections);
+        return;
+    }
+    let taskList, sectionElement, sectionElementId;
+    if (section === "daily") {
+        taskList = tasks.daily;
+        sectionElement = dailyList;
+        sectionElementId = 'daily-tasks-section';
+    } else if (section === "weekly") {
+        taskList = tasks.weekly;
+        sectionElement = weeklyList;
+        sectionElementId = 'weekly-tasks-section';
+    }
+    let didReset = false;
+    taskList.forEach(task => {
+        if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
+            checklistData.progress[task.id] = false;
+            didReset = true;
         }
         if (task.isParent && task.subtasks) {
             task.subtasks.forEach(subtask => {
-                checklistData.progress[subtask.id] = false;
-                const subCheckbox = document.getElementById(subtask.id);
-                if (subCheckbox) {
-                    subCheckbox.checked = false;
-                    const subLabel = subCheckbox.closest('li').querySelector('label');
-                    if (subLabel) subLabel.classList.remove('checked');
+                if (checklistData.progress[subtask.id] && !checklistData.hiddenTasks[subtask.id]) {
+                    checklistData.progress[subtask.id] = false;
+                    didReset = true;
                 }
             });
         }
     });
-    checklistData.lastDailyReset = new Date().toISOString();
+    const now = new Date().toISOString();
+    if (section === "daily") {checklistData.lastDailyReset = now;}
+    else if (section === "weekly") {checklistData.lastWeeklyReset = now;}
     saveData();
-    console.log("Daily checks manually reset.");
+    if (didReset) {
+        populateSection(sectionElement, taskList, checklistData.progress);
+        updateSectionControls(sectionElementId);
+    }
+    console.log("%s checks reset.", section);
+}
+
+function resetDailyAction() {
+    resetSection("daily");
 }
 
 function resetWeeklyAction() {
-    tasks.weekly.forEach(task => {
-        checklistData.progress[task.id] = false;
-        const checkbox = document.getElementById(task.id);
-        if (checkbox) {
-            checkbox.checked = false;
-            const label = checkbox.closest('li').querySelector('label');
-            if (label) label.classList.remove('checked');
-        }
-    });
-    checklistData.lastWeeklyReset = new Date().toISOString();
-    saveData();
-    console.log("Weekly checks manually reset.");
+    resetSection("weekly");
 }
 
 function handleSectionToggle(event) {
