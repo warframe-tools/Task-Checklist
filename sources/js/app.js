@@ -28,6 +28,7 @@ const baroKiTeerData = {
     durationMilliseconds: 48 * 60 * 60 * 1000,
 };
 
+const icons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
 
 // --- Task Data ---
 const tasks = {
@@ -43,61 +44,94 @@ const tasks = {
             icon: 'ReputationSmall.png',
             isParent: true,
             subtasks: [
-                { id: 'daily_world_syndicate_simaris', text: 'Cephalon Simaris (Relay)', icon: 'IconSimaris.png' },
-                { id: 'daily_world_syndicate_ostron', text: 'Ostron (Cetus)', icon: 'IconCetusElder.png' },
-                { id: 'daily_world_syndicate_quills', text: 'The Quills (Cetus)', icon: 'TheQuillsSigil.png' },
-                { id: 'daily_world_syndicate_solaris', text: 'Solaris United (Fortuna)', icon: 'SolarisUnited1.png' },
-                { id: 'daily_world_syndicate_vox', text: 'Vox Solaris (Fortuna)', icon: 'IconSolaris.png' },
-                { id: 'daily_world_syndicate_ventkids', text: 'Ventkids (Fortuna)', icon: 'VentkidsIcon.png' },
-                { id: 'daily_world_syndicate_entrati', text: 'Entrati (Necralisk)', icon: 'IconEntrati.png' },
-                { id: 'daily_world_syndicate_necraloid', text: 'Necraloid (Necralisk)', icon: 'NecraloidIcon.png' },
-                { id: 'daily_world_syndicate_holdfasts', text: 'The Holdfasts (Chrysalith)', icon: 'TheHoldfastsIcon.png' },
-                { id: 'daily_world_syndicate_cavia', text: 'Cavia (Sanctum Anatomica)', icon: 'Cavia_Syndicate_Logo_1.png' },
-                { id: 'daily_world_syndicate_hex', text: 'The Hex (Höllvania Central Mall)', icon: 'HexIcon.png' }
+                { id: 'daily_world_syndicate_simaris', text: 'Cephalon Simaris (Relay)', icon: 'syndicates/IconSimaris.png' },
+                { id: 'daily_world_syndicate_ostron', text: 'Ostron (Cetus)', icon: 'syndicates/IconCetusElder.png' },
+                { id: 'daily_world_syndicate_quills', text: 'The Quills (Cetus)', icon: 'syndicates/TheQuillsSigil.png' },
+                { id: 'daily_world_syndicate_solaris', text: 'Solaris United (Fortuna)', icon: 'syndicates/SolarisUnited1.png' },
+                { id: 'daily_world_syndicate_vox', text: 'Vox Solaris (Fortuna)', icon: 'syndicates/IconSolaris.png' },
+                { id: 'daily_world_syndicate_ventkids', text: 'Ventkids (Fortuna)', icon: 'syndicates/FactionVentKidz.png' },
+                { id: 'daily_world_syndicate_entrati', text: 'Entrati (Necralisk)', icon: 'syndicates/IconEntrati.png' },
+                { id: 'daily_world_syndicate_necraloid', text: 'Necraloid (Necralisk)', icon: 'syndicates/Loid.png' },
+                { id: 'daily_world_syndicate_holdfasts', text: 'The Holdfasts (Chrysalith)', icon: 'syndicates/TheHoldfastsIcon.png' },
+                { id: 'daily_world_syndicate_cavia', text: 'Cavia (Sanctum Anatomica)', icon: 'syndicates/FactionSigilCavia.png' },
+                { id: 'daily_world_syndicate_hex', text: 'The Hex (Höllvania Central Mall)', icon: 'syndicates/HexIcon.png' }
             ]
         },
         { id: 'daily_dark_sector', text: 'Dark Sector Mission (Early Game): Complete one Dark Sector mission first for double credits (if needed & pre-Index).', icon: 'IconInfested.png' },
         { id: 'daily_sortie', text: 'Sortie: Complete the 3 daily Sortie missions (requires The War Within).', icon: 'Sortie.png' },
         { id: 'daily_focus', text: 'Focus: Max out daily Focus gain (e.g., via Sanctuary Onslaught) (requires The Second Dream).', icon: 'FocusLensFocus.png' },
-        { id: 'daily_steel_path', text: 'Steel Path Incursions: Complete daily Steel Path missions for Steel Essence (requires Steel Path unlocked).', icon: 'SteelEssence.png', noIconFilter: true },
-        { id: 'daily_acrithis', text: 'Acrithis (Duviri/Dormizone): Check daily Arcane and Captura offering.', icon: 'IconDuviriAcrithis.png', noIconFilter: true },
+        { id: 'daily_steel_path', text: 'Steel Path Incursions: Complete daily Steel Path missions for Steel Essence (requires Steel Path unlocked).', icon: 'SteelEssenceIcon.png' },
+        { id: 'daily_acrithis', text: 'Acrithis (Duviri/Dormizone): Check daily Arcane and Captura offering.', icon: 'Acrithis.png' },
         { id: 'daily_ticker_crew', text: 'Ticker (Fortuna): Check available railjack crew to hire (requires Rising Tide & Command Intrinsics 1).', icon: 'IconCommand.png' },
-        { id: 'daily_marie', text: 'Marie (La Cathédrale): Purchase Operator and amp mods (requires Old Peace).' }
+        { id: 'daily_marie', text: 'Marie (La Cathédrale): Purchase Operator and amp mods (requires Old Peace).', icon: 'Wisp.png' }
     ],
     weekly: [
-        { id: 'weekly_nightwave_complete', text: 'Nightwave: Complete relevant weekly Nightwave missions.', icon: 'NightwaveSyndicate.png' },
-        { id: 'weekly_nightwave_spend', text: 'Nightwave (Spend): Spend Nightwave credits if needed (Aura mods, Catalysts/Reactors, etc.).', icon: 'NightwaveSyndicate.png' },
-        { id: 'weekly_ayatan', text: 'Ayatan Treasure Hunt (Maroo\'s Bazaar): Complete Maroo\'s weekly mission for an Ayatan Sculpture', icon: 'IconTreasureGem.png' },
-        { id: 'weekly_clem', text: 'Help Clem (Relay): Help Clem with his weekly survival, or he will die.', icon: 'Clem.png', noIconFilter: true },
+        { id: 'weekly_nightwave_complete', text: 'Nightwave: Complete relevant weekly Nightwave missions.', icon: 'NightwaveIconSimple.png' },
+        { id: 'weekly_nightwave_spend', text: 'Nightwave (Spend): Spend Nightwave credits if needed (Aura mods, Catalysts/Reactors, etc.).', icon: 'NightwaveIconSimple.png' },
+        { id: 'weekly_ayatan', text: 'Ayatan Treasure Hunt (Maroo\'s Bazaar): Complete Maroo\'s weekly mission for an Ayatan Sculpture', icon: 'Maroo.png' },
+        { id: 'weekly_clem', text: 'Help Clem (Relay): Help Clem with his weekly survival, or he will die.', icon: 'HelpClem_.png' },
         { id: 'weekly_kahl_garrison', text: 'Weekly Break Narmer Mission (Drifter\'s Camp: Complete Kahl\'s weekly mission for Stock (requires Veilbreaker).', icon: 'GarrisonIcon.png' },
-        { id: 'weekly_iron_wake', text: 'Paladino (Iron Wake): Trade Riven Slivers with Paladino (requires The Chains of Harrow).', icon: 'RivenSliver.png', noIconFilter: true },
-        { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.', icon: 'TheHoldfastsIcon.png' },
-        { id: 'weekly_acridies', text: 'Acrithis (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).', icon: 'IconDuviriAcrithis.png', noIconFilter: true },
+        { id: 'weekly_iron_wake', text: 'Paladino (Iron Wake): Trade Riven Slivers with Paladino (requires The Chains of Harrow).', icon: 'IconOmegaMod256.png' },
+        { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.', icon: 'Yonta.png' },
+        { id: 'weekly_acridies', text: 'Acrithis (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).', icon: 'Acrithis.png' },
         { id: 'weekly_archon_hunt', text: 'Archon Hunt: Complete the weekly Archon Hunt for a guaranteed Archon Shard (requires The New War).', icon: 'IconNarmer.png' },
-        { id: 'weekly_duviri_circuit', text: 'Duviri Circuit (Normal): Check weekly Warframe options & run Circuit if desired (requires Duviri).', icon: 'DuviriIcon.png' },
-        { id: 'weekly_duviri_circuit_sp', text: 'Duviri Circuit (Steel Path): Check weekly Incarnon Adapters & run Circuit if desired (requires Steel Path & Duviri).', icon: 'DuviriIcon.png' },
-        { id: 'weekly_teshin', text: 'Teshin (Steel Path): Check Teshin\'s Steel Essence shop (especially for Umbra Forma rotation - approx. every 8 weeks).', icon: 'SteelEssence.png', noIconFilter: true },
-        { id: 'weekly_bird3', text: 'Bird 3 (Cavia Syndicate): Buy the weekly Archon Shard for 30k Cavia Standing (requires Rank 5 Cavia).', icon: 'Cavia_Syndicate_Logo_1.png' },
+        { id: 'weekly_duviri_circuit', text: 'Duviri Circuit (Normal): Check weekly Warframe options & run Circuit if desired (requires Duviri).', icon: 'IconDuviriCategory256.png' },
+        { id: 'weekly_duviri_circuit_sp', text: 'Duviri Circuit (Steel Path): Check weekly Incarnon Adapters & run Circuit if desired (requires Steel Path & Duviri).', icon: 'IconDuviriCategory256.png' },
+        { id: 'weekly_teshin', text: 'Teshin (Steel Path): Check Teshin\'s Steel Essence shop (especially for Umbra Forma rotation - approx. every 8 weeks).', icon: 'SteelEssenceIcon.png' },
+        { id: 'weekly_bird3', text: 'Bird 3 (Cavia Syndicate): Buy the weekly Archon Shard for 30k Cavia Standing (requires Rank 5 Cavia).', icon: 'Bird3.png' },
         {
             id: 'weekly_search_pulses',
             text: 'Search Pulses: Use 5 weekly search pulses on Netracells and Archimedeas.',
+            icon: 'MagnifyingGlassIcon.png',
             isParent: true,
             subtasks: [
-                { id: 'weekly_netracells', text: 'Netracells (Tagfer): Complete up to 5 weekly Netracell missions for Archon Shard chances. (requires Whispers in the Walls. Costs 1 Search Pulse each.)', icon: 'NetraRequiemIcon.png' },
-                { id: 'weekly_eda', text: 'Elite Deep Archimedea (Necraloid): Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame, requires Whispers in the Walls & Rank 5 Cavia. Costs 2 Search Pulses.)', icon: 'Cavia_Syndicate_Logo_1.png' },
-                { id: 'weekly_eta', text: 'Elite Temporal Archimedea (Kaya): Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame, requires Warframe 1999 & Rank 5 Hex. Costs 2 Search Pulses.)', icon: 'HexIcon.png' },
+                {
+                    id: 'weekly_netracells',
+                    text: 'Netracells (Tagfer): Complete up to 5 weekly Netracell missions for Archon Shard chances. (requires Whispers in the Walls. Costs 1 Search Pulse each.)',
+                    icon: 'NetraRequiemIcon.png'
+                },
+                {
+                    id: 'weekly_eda',
+                    text: 'Elite Deep Archimedea (Necraloid): Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame, requires Whispers in the Walls & Rank 5 Cavia. Costs 2 Search Pulses.)',
+                    icon: 'Necraloid.png'
+                },
+                {
+                    id: 'weekly_eta',
+                    text: 'Elite Temporal Archimedea (Kaya): Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame, requires Warframe 1999 & Rank 5 Hex. Costs 2 Search Pulses.)',
+                    icon: 'Kaya_.png'
+                },
             ]
         },
-        { id: 'weekly_calendar', text: 'Calendar (POM-2 Terminal): Complete weekly Calendar tasks (requires Warframe 1999).', icon: 'HexIcon.png' },
+        { id: 'weekly_calendar', text: 'Calendar (POM-2 Terminal): Complete weekly Calendar tasks (requires Warframe 1999).', icon: 'Computer.png' },
         { id: 'weekly_invigorations', text: 'Helminth: Use weekly Invigorations (requires Rank 5 Entrati).', icon: 'IconHelminth.png' },
-        { id: 'weekly_nightcap', text: 'Nightcap (Fortuna): Trade Fergolyte for Kuva and Ayatan Sculpture.' },
-        { id: 'weekly_descendia', text: 'The Descendia: Weekly Tower gamemode for various resources.' }
+        { id: 'weekly_nightcap', text: 'Nightcap (Fortuna): Trade Fergolyte for Kuva and Ayatan Sculpture.', icon: 'MysteryShroom256_d.png' },
+        { id: 'weekly_descendia', text: 'The Descendia (Normal): Weekly Tower gamemode for various resources.', icon: 'Heat_d.png' },
+        { id: 'weekly_descendia_sp', text: 'The Descendia (Steel Path): Weekly Tower gamemode for various resources.', icon: 'Heat_d.png' }
     ],
     other: [
-        { id: 'other_baro', text: 'Baro Ki\'Teer (Relay with symbol): Check Baro Ki\'Teer\'s inventory and purchase desired items with Ducats (trade Prime parts for Ducats). <span id="baro-countdown-timer" class="baro-countdown">(Loading...)</span>', icon: 'IconPrimeParts.png' },
-        { id: 'other_grandmother_tokens', text: 'Mend the Family (Necralisk): Purchase Family Tokens from Grandmother (requires Heart of Deimos) <span id="grandmother_tokens-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', icon: 'GrandmotherToken.png', noIconFilter: true, isEightHourTask: true },
-        { id: 'other_yonta_voidplumes', text: 'Trade for Voidplumes (Chrysalith): Purchase Voidplumes from Archimedean Yonta (requires Angels of the Zariman) <span id="yonta_voidplumes-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', icon: 'VoidplumeDown.png', noIconFilter: true, isEightHourTask: true },
-        { id: 'other_loid_voca', text: 'Trade for Voca (Sanctum Anatomica): Purchase Voca from Loid (requires Whispers in the Walls) <span id="loid_voca-countdown-timer" class="eight-hour-countdown">(Loading...)</span>', icon: 'BellowVoca.png', noIconFilter: true, isEightHourTask: true }
+        {
+            id: 'other_baro',
+            text: 'Baro Ki\'Teer (Relay with symbol): Check Baro Ki\'Teer\'s inventory and purchase desired items with Ducats (trade Prime parts for Ducats). <span id="baro-countdown-timer" class="baro-countdown">(Loading...)</span>',
+            icon: 'IconPrimeParts.png'
+        },
+        {
+            id: 'other_grandmother_tokens',
+            text: 'Mend the Family (Necralisk): Purchase Family Tokens from Grandmother (requires Heart of Deimos) <span id="grandmother_tokens-countdown-timer" class="eight-hour-countdown">(Loading...)</span>',
+            icon: 'syndicates/IconEntrati.png',
+            isEightHourTask: true
+        },
+        {
+            id: 'other_yonta_voidplumes',
+            text: 'Trade for Voidplumes (Chrysalith): Purchase Voidplumes from Archimedean Yonta (requires Angels of the Zariman) <span id="yonta_voidplumes-countdown-timer" class="eight-hour-countdown">(Loading...)</span>',
+            icon: 'Yonta.png',
+            isEightHourTask: true
+        },
+        {
+            id: 'other_loid_voca',
+            text: 'Trade for Voca (Sanctum Anatomica): Purchase Voca from Loid (requires Whispers in the Walls) <span id="loid_voca-countdown-timer" class="eight-hour-countdown">(Loading...)</span>',
+            icon: 'MiniMapCaviaVendor_.png',
+            isEightHourTask: true
+        },
     ]
 };
 
@@ -617,7 +651,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
     const icon = document.createElement('img');
     if (task.icon) {
-        icon.src = "img/icons/" + task.icon;
+        icon.src = icons["../img/icons/" + task.icon];
         if (!task.noIconFilter) {
             icon.classList.add('icon-filter')
         }
