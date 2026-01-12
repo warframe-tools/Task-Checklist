@@ -9,7 +9,7 @@ jobs:
   build_source_archives:
     runs-on: ubuntu-latest
     permissions:
-      contents: write 
+      contents: write
 
     steps:
       - name: Checkout code
@@ -28,7 +28,7 @@ jobs:
             echo "REF_FOR_ARCHIVE=${SANITIZED_REF_NAME:-manual-run}" >> $GITHUB_ENV
           fi
         env:
-          REF_FOR_ARCHIVE: '' 
+          REF_FOR_ARCHIVE: ''
 
       - name: Define Base Archive Name
         id: set_base_name
@@ -49,9 +49,9 @@ jobs:
       - name: Inject Critical CSS into staged index.html
         working-directory: ./source_package_staging
         run: |
-          CRITICAL_CSS_FILE="./css/critical.css" 
+          CRITICAL_CSS_FILE="./css/critical.css"
           INDEX_HTML_FILE="./index.html"
-          PLACEHOLDER="<%- criticalCss %>" 
+          PLACEHOLDER="<%- criticalCss %>"
 
           if [ ! -f "$INDEX_HTML_FILE" ]; then
             echo "Error: $INDEX_HTML_FILE not found in staging directory."
@@ -75,7 +75,7 @@ jobs:
                 print;
               }
             ' "$INDEX_HTML_FILE" > "$INDEX_HTML_TEMP_FILE" && mv "$INDEX_HTML_TEMP_FILE" "$INDEX_HTML_FILE"
-            rm "$STYLE_BLOCK_TEMP_FILE" 
+            rm "$STYLE_BLOCK_TEMP_FILE"
             echo "Critical CSS injected."
           else
             echo "Warning: $CRITICAL_CSS_FILE not found. Placeholder '$PLACEHOLDER' in $INDEX_HTML_FILE will not be replaced."
@@ -89,6 +89,16 @@ jobs:
             echo "app.js script tag modified in index.html."
           else
             echo "index.html not found in staging directory for JS modification."
+          fi
+
+      - name: Modify app.js for file:/// compatibility (remove import.meta)
+        working-directory: ./source_package_staging/js
+        run: |
+          if [ -f ./app.js ]; then
+            sed -E -i 's/MODULE-ONLY<.+?MODULE-ONLY>//g' app.js
+            echo "import.meta removed from app.js"
+          else
+            echo "app.js not found in staging directory for modification."
           fi
 
       - name: Create Zip Archive (for Release Event Only)
@@ -106,23 +116,23 @@ jobs:
           tar -czvf ../${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.tar.gz .
           cd ..
           echo "Tar.gz archive for release created: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.tar.gz"
-      
+
       - name: Upload Source Directory as Artifact (for manual/dispatch runs)
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }} 
-          path: ./source_package_staging/ 
+          name: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}
+          path: ./source_package_staging/
 
       - name: Upload Zip Archive to Release with gh CLI
-        if: github.event_name == 'release' && github.event.release.tag_name 
+        if: github.event_name == 'release' && github.event.release.tag_name
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.zip" --clobber
 
       - name: Upload Tar.gz Archive to Release with gh CLI
-        if: github.event_name == 'release' && github.event.release.tag_name 
+        if: github.event_name == 'release' && github.event.release.tag_name
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

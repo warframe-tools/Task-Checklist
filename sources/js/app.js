@@ -28,8 +28,6 @@ const baroKiTeerData = {
     durationMilliseconds: 48 * 60 * 60 * 1000,
 };
 
-const icons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
-
 // --- Task Data ---
 const tasks = {
     daily: [
@@ -134,6 +132,16 @@ const tasks = {
         },
     ]
 };
+
+let icons;
+/* MODULE-ONLY< */ icons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'}); /* MODULE-ONLY> */
+function iconURL(iconName) {
+    if (icons) {
+        return icons["../img/icons/" + iconName]
+    } else {
+        return "./img/icons/" + iconName;
+    }
+}
 
 // --- DOM Elements (defined after DOMContentLoaded) ---
 let bodyElement, contentElement, themeToggleButton, hamburgerButton, slideoutMenuOverlay, menuContentBox, menuCloseButton,
@@ -651,7 +659,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
     const icon = document.createElement('img');
     if (task.icon) {
-        icon.src = icons["../img/icons/" + task.icon];
+        icon.src = iconURL(task.icon);
         if (!task.noIconFilter) {
             icon.classList.add('icon-filter')
         }
