@@ -590,6 +590,7 @@ function runAutoResets() {
         }
     });
     if (didResetOther) {
+        saveData();
         populateSection(otherList, tasks.other, checklistData.progress);
         updateSectionControls('other-tasks-section')
     }
