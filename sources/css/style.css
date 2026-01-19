@@ -135,6 +135,7 @@
 input[type="checkbox"] {
     appearance: none; -webkit-appearance: none; -moz-appearance: none;
     width: 1.25rem; height: 1.25rem;
+    margin: 0.125rem 0;
     border: 2px solid var(--checkbox-border);
     border-radius: 0.25rem; cursor: pointer;
     position: relative;
@@ -154,7 +155,7 @@ input[type="checkbox"]:checked::after {
 }
 li.task-item {
     display: flex;
-    align-items: center;
+    align-items: start;
     margin-bottom: 0.5rem;
 }
 li.parent-task-container {
@@ -243,12 +244,39 @@ li.parent-task-container {
 
 /* Task Icons */
 .task-item img, .parent-task-header img {
-    max-height: 1.5em;
-    max-width: 1.5em;
+    height: 1.5em;
+    width: 1.5em;
 }
 body.light-mode .task-item img.icon-filter, body.light-mode .parent-task-header img.icon-filter {
     filter: brightness(0) invert(0);
 }
 body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-task-header img.icon-filter {
     filter: brightness(0) invert(1);
+}
+
+/* Info Line */
+.info-line {
+    font-size: 75%;
+    color: var(--text-secondary);
+    margin-left: 0.5em;
+}
+.info-line > span:not(:last-of-type)::after {
+    content: "|";
+    margin: 0 0.5em;
+}
+.info-line > span {
+    white-space: nowrap;
+}
+.info-line svg {
+    max-width: 0.9375rem;
+    max-height: 0.9375rem;
+    margin-right: 0.2em;
+    display: inline;
+    vertical-align: text-bottom;
+}
+.info-line svg path {
+    fill: var(--text-secondary);
+}
+.tooltip {
+    text-decoration: underline dotted;
 }
