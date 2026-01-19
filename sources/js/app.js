@@ -59,9 +59,17 @@ const tasks = {
         { id: 'daily_sortie', text: 'Sortie: Complete the 3 daily Sortie missions (requires The War Within).', icon: 'Sortie.png' },
         { id: 'daily_focus', text: 'Focus: Max out daily Focus gain (e.g., via Sanctuary Onslaught) (requires The Second Dream).', icon: 'FocusLensFocus.png' },
         { id: 'daily_steel_path', text: 'Steel Path Incursions: Complete daily Steel Path missions for Steel Essence (requires Steel Path unlocked).', icon: 'SteelEssenceIcon.png' },
-        { id: 'daily_acrithis', text: 'Acrithis (Duviri/Dormizone): Check daily Arcane and Captura offering.', icon: 'Acrithis.png' },
-        { id: 'daily_ticker_crew', text: 'Ticker (Fortuna): Check available railjack crew to hire (requires Rising Tide & Command Intrinsics 1).', icon: 'IconCommand.png' },
-        { id: 'daily_marie', text: 'Marie (La Cathédrale): Purchase Operator and amp mods (requires Old Peace).', icon: 'Wisp.png' }
+        {
+            id: 'daily_vendors',
+            text: 'Vendors',
+            icon: 'Market.png',
+            isParent: true,
+            subtasks: [
+                { id: 'daily_acrithis', text: 'Acrithis (Duviri/Dormizone): Check daily Arcane and Captura offering.', icon: 'Acrithis.png' },
+                { id: 'daily_ticker_crew', text: 'Ticker (Fortuna): Check available railjack crew to hire (requires Rising Tide & Command Intrinsics 1).', icon: 'IconCommand.png' },
+                { id: 'daily_marie', text: 'Marie (La Cathédrale): Purchase Operator and amp mods (requires Old Peace).', icon: 'Wisp.png' },
+            ],
+        },
     ],
     weekly: [
         { id: 'weekly_nightwave_complete', text: 'Nightwave: Complete relevant weekly Nightwave missions.', icon: 'NightwaveIconSimple.png' },
@@ -69,14 +77,9 @@ const tasks = {
         { id: 'weekly_ayatan', text: 'Ayatan Treasure Hunt (Maroo\'s Bazaar): Complete Maroo\'s weekly mission for an Ayatan Sculpture', icon: 'Maroo.png' },
         { id: 'weekly_clem', text: 'Help Clem (Relay): Help Clem with his weekly survival, or he will die.', icon: 'HelpClem_.png' },
         { id: 'weekly_kahl_garrison', text: 'Weekly Break Narmer Mission (Drifter\'s Camp: Complete Kahl\'s weekly mission for Stock (requires Veilbreaker).', icon: 'GarrisonIcon.png' },
-        { id: 'weekly_iron_wake', text: 'Paladino (Iron Wake): Trade Riven Slivers with Paladino (requires The Chains of Harrow).', icon: 'IconOmegaMod256.png' },
-        { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.', icon: 'Yonta.png' },
-        { id: 'weekly_acridies', text: 'Acrithis (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).', icon: 'Acrithis.png' },
         { id: 'weekly_archon_hunt', text: 'Archon Hunt: Complete the weekly Archon Hunt for a guaranteed Archon Shard (requires The New War).', icon: 'IconNarmer.png' },
         { id: 'weekly_duviri_circuit', text: 'Duviri Circuit (Normal): Check weekly Warframe options & run Circuit if desired (requires Duviri).', icon: 'IconDuviriCategory256.png' },
         { id: 'weekly_duviri_circuit_sp', text: 'Duviri Circuit (Steel Path): Check weekly Incarnon Adapters & run Circuit if desired (requires Steel Path & Duviri).', icon: 'IconDuviriCategory256.png' },
-        { id: 'weekly_teshin', text: 'Teshin (Steel Path): Check Teshin\'s Steel Essence shop (especially for Umbra Forma rotation - approx. every 8 weeks).', icon: 'SteelEssenceIcon.png' },
-        { id: 'weekly_bird3', text: 'Bird 3 (Cavia Syndicate): Buy the weekly Archon Shard for 30k Cavia Standing (requires Rank 5 Cavia).', icon: 'Bird3.png' },
         {
             id: 'weekly_search_pulses',
             text: 'Search Pulses: Use 5 weekly search pulses on Netracells and Archimedeas.',
@@ -102,9 +105,22 @@ const tasks = {
         },
         { id: 'weekly_calendar', text: 'Calendar (POM-2 Terminal): Complete weekly Calendar tasks (requires Warframe 1999).', icon: 'Computer.png' },
         { id: 'weekly_invigorations', text: 'Helminth: Use weekly Invigorations (requires Rank 5 Entrati).', icon: 'IconHelminth.png' },
-        { id: 'weekly_nightcap', text: 'Nightcap (Fortuna): Trade Fergolyte for Kuva and Ayatan Sculpture.', icon: 'MysteryShroom256_d.png' },
         { id: 'weekly_descendia', text: 'The Descendia (Normal): Weekly Tower gamemode for various resources.', icon: 'Heat_d.png' },
-        { id: 'weekly_descendia_sp', text: 'The Descendia (Steel Path): Weekly Tower gamemode for various resources.', icon: 'Heat_d.png' }
+        { id: 'weekly_descendia_sp', text: 'The Descendia (Steel Path): Weekly Tower gamemode for various resources.', icon: 'Heat_d.png' },
+        {
+            id: 'weekly_vendors',
+            text: 'Vendors',
+            icon: 'Market.png',
+            isParent: true,
+            subtasks: [
+                { id: 'weekly_iron_wake', text: 'Paladino (Iron Wake): Trade Riven Slivers with Paladino (requires The Chains of Harrow).', icon: 'IconOmegaMod256.png' },
+                { id: 'weekly_yonta', text: 'Archimedian Yonta (Zariman): Buy weekly Kuva with Voidplumes.', icon: 'Yonta.png' },
+                { id: 'weekly_acridies', text: 'Acrithis (Duviri/Dormizone): Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).', icon: 'Acrithis.png' },
+                { id: 'weekly_teshin', text: 'Teshin (Steel Path): Check Teshin\'s Steel Essence shop (especially for Umbra Forma rotation - approx. every 8 weeks).', icon: 'SteelEssenceIcon.png' },
+                { id: 'weekly_bird3', text: 'Bird 3 (Cavia Syndicate): Buy the weekly Archon Shard for 30k Cavia Standing (requires Rank 5 Cavia).', icon: 'Bird3.png' },
+                { id: 'weekly_nightcap', text: 'Nightcap (Fortuna): Trade Fergolyte for Kuva and Ayatan Sculpture.', icon: 'MysteryShroom256_d.png' },
+            ],
+        },
     ],
     other: [
         {
