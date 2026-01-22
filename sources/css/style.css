@@ -259,6 +259,7 @@ body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-
     font-size: 75%;
     color: var(--text-secondary);
     margin-left: 0.5em;
+    min-height: 0;
 }
 .info-line > span:not(:last-of-type)::after {
     content: "|";
@@ -279,4 +280,13 @@ body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-
 }
 .tooltip {
     text-decoration: underline dotted;
+}
+.info-line-expander {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+    transition: grid-template-rows 100ms; /* https://css-tricks.com/css-grid-can-do-auto-height-transitions/ */
+}
+.task-item .checked .info-line-expander {
+    grid-template-rows: 0fr;
 }

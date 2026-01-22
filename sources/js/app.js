@@ -1095,7 +1095,11 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             infoLineHTML += makeInfoLineItem(task, "prereq", "Requirements", prereqIcon);
             infoLineHTML += makeInfoLineItem(task, "info", "Info", infoIcon);
             infoLine.innerHTML = infoLineHTML;
-            label.appendChild(infoLine);
+
+            const infoLineExpander = document.createElement("div");
+            infoLineExpander.classList.add("info-line-expander");
+            infoLineExpander.appendChild(infoLine);
+            label.appendChild(infoLineExpander);
         }
 
         label.classList.add('ml-2', 'flex-1', 'cursor-pointer');
