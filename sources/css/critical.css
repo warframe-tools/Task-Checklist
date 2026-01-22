@@ -280,3 +280,9 @@ body:not(.light-mode) #sun-icon { display: none; }
     cursor: pointer;
     flex-shrink: 0;
 }
+
+
+.info-line svg {
+    width: 0.9375rem;
+    height: 0.9375rem;
+}

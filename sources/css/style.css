@@ -269,8 +269,6 @@ body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-
     white-space: nowrap;
 }
 .info-line svg {
-    max-width: 0.9375rem;
-    max-height: 0.9375rem;
     margin-right: 0.2em;
     display: inline;
     vertical-align: text-bottom;

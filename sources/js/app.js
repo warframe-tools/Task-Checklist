@@ -1,5 +1,7 @@
 // --- sources/js/app.js ---
 
+import * as svgIcons from "./icons.js";
+
 // --- Configuration ---
 // Array of background div IDs (must match IDs in sources/index.html)
 const dailyBackgroundImageIds = [
@@ -28,414 +30,14 @@ const baroKiTeerData = {
     durationMilliseconds: 48 * 60 * 60 * 1000,
 };
 
-const hideIcon = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>';
-const bellIcon = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>';
-const locationIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" /></svg>';
-const npcIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" /></svg>';
-const terminalIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z" clip-rule="evenodd" /></svg>';
-const prereqIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" /><path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" /></svg>';
-const infoIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" /></svg>';
-
 // --- Task Data ---
-const tasks = {
-    daily: [
-        {
-            id: 'daily_login',
-            text: 'Log in: Collect the daily login reward.',
-            icon: 'LotusFlower.png'
-        },
-        {
-            id: 'daily_craft_forma',
-            text: 'Crafting (Forma): Start building a new Forma (and collect finished ones).',
-            icon: 'IconBuild.png',
-            location: 'Base of Operations',
-            terminal: 'Foundry',
-        },
-        {
-            id: 'daily_craft_other',
-            text: 'Crafting (Other): Craft other daily resources/items using reusable blueprints (check Foundry/companion app).',
-            icon: 'IconBuild.png',
-            location: 'Base of Operations',
-            terminal: 'Foundry',
-        },
-        {
-            id: 'daily_syndicate_gain',
-            text: 'Faction Syndicates: Gain daily standing cap with your pledged Syndicate(s).',
-            icon: 'ReputationSmall.png',
-            info: 'Gain affinity in any mission to increase faction standing'
-        },
-        {
-            id: 'daily_syndicate_spend',
-            text: 'Faction Syndicates: If maxed on standing, spend it (Relic packs, Vosfor packs, etc.).',
-            icon: 'ReputationSmall.png',
-            location: 'Base of Operations/Any Relay',
-            terminal: 'Syndicates',
-        },
-        {
-            id: 'daily_world_syndicate_parent',
-            text: 'World Syndicates (Standing)',
-            icon: 'ReputationSmall.png',
-            isParent: true,
-            subtasks: [
-                {
-                    id: 'daily_world_syndicate_simaris',
-                    text: 'Cephalon Simaris',
-                    icon: 'syndicates/IconSimaris.png',
-                    location: 'Any Relay',
-                },
-                {
-                    id: 'daily_world_syndicate_ostron',
-                    text: 'Ostron',
-                    icon: 'syndicates/IconCetusElder.png',
-                    location: 'Cetus, Earth',
-                    prereq: "Saya's Vigil",
-                },
-                {
-                    id: 'daily_world_syndicate_quills',
-                    text: 'The Quills',
-                    icon: 'syndicates/TheQuillsSigil.png',
-                    location: 'Cetus, Earth',
-                    prereq: 'The War Within',
-                },
-                {
-                    id: 'daily_world_syndicate_solaris',
-                    text: 'Solaris United',
-                    icon: 'syndicates/SolarisUnited1.png',
-                    location: 'Fortuna, Venus',
-                    prereq: 'Vox Solaris (Quest)',
-                },
-                {
-                    id: 'daily_world_syndicate_vox',
-                    text: 'Vox Solaris',
-                    icon: 'syndicates/IconSolaris.png',
-                    location: 'Fortuna, Venus',
-                    prereq: 'The War Within',
-                },
-                {
-                    id: 'daily_world_syndicate_ventkids',
-                    text: 'Ventkids',
-                    icon: 'syndicates/FactionVentKidz.png',
-                    location: 'Fortuna, Venus',
-                    prereq: 'Vox Solaris (Quest)',
-                },
-                {
-                    id: 'daily_world_syndicate_entrati',
-                    text: 'Entrati',
-                    icon: 'syndicates/IconEntrati.png',
-                    location: 'Necralisk, Deimos',
-                    prereq: 'Heart of Deimos',
-                },
-                {
-                    id: 'daily_world_syndicate_necraloid',
-                    text: 'Necraloid',
-                    icon: 'syndicates/Loid.png',
-                    location: 'Necralisk, Deimos',
-                    prereq: 'The War Within',
-                },
-                {
-                    id: 'daily_world_syndicate_holdfasts',
-                    text: 'The Holdfasts',
-                    icon: 'syndicates/TheHoldfastsIcon.png',
-                    location: 'Chrysalith, Zariman',
-                    prereq: 'Angels of the Zariman',
-                },
-                {
-                    id: 'daily_world_syndicate_cavia',
-                    text: 'Cavia',
-                    icon: 'syndicates/FactionSigilCavia.png',
-                    location: 'Sanctum Anatomica, Deimos',
-                    prereq: 'Whispers in the Walls',
-                },
-                {
-                    id: 'daily_world_syndicate_hex',
-                    text: 'The Hex',
-                    icon: 'syndicates/HexIcon.png',
-                    location: 'Höllvania Central Mall',
-                    prereq: 'The Hex (Quest)',
-                },
-            ],
-        },
-        {
-            id: 'daily_dark_sector',
-            text: 'Dark Sector Mission (Early Game): Complete one Dark Sector mission first for double credits (if needed & pre-Index).',
-            icon: 'IconInfested.png',
-            location: 'Base of Operations',
-            terminal: 'Navigation',
-        },
-        {
-            id: 'daily_sortie',
-            text: 'Sortie: Complete the 3 daily Sortie missions.',
-            icon: 'Sortie.png',
-            location: 'Base of Operations',
-            terminal: 'Navigation',
-            prereq: 'The War Within',
-        },
-        {
-            id: 'daily_focus',
-            text: 'Focus: Max out daily Focus gain (e.g., via Sanctuary Onslaught).',
-            icon: 'FocusLensFocus.png',
-            prereq: 'The Second Dream'
-        },
-        {
-            id: 'daily_steel_path',
-            text: 'Steel Path Incursions: Complete daily Steel Path missions for Steel Essence.',
-            icon: 'SteelEssenceIcon.png',
-            prereq: 'Steel Path unlocked'
-        },
-        {
-            id: 'daily_vendors',
-            text: 'Vendors',
-            icon: 'Market.png',
-            isParent: true,
-            subtasks: [
-                {
-                    id: 'daily_acrithis',
-                    text: 'Acrithis: Check daily Arcane and Captura offering.',
-                    icon: 'Acrithis.png',
-                    location: 'Duviri/Dormizone',
-                    npc: 'Acrithis',
-                },
-                {
-                    id: 'daily_ticker_crew',
-                    text: 'Ticker: Check available railjack crew to hire.',
-                    icon: 'IconCommand.png',
-                    location: 'Fortuna, Venus',
-                    npc: 'Ticker',
-                    prereq: 'Rising Tide & Command Intrinsics 1'
-                },
-                {
-                    id: 'daily_marie',
-                    text: 'Marie: Purchase Operator and amp mods.',
-                    icon: 'Wisp.png',
-                    location: 'La Cathédrale (Sanctum Anatomica, Deimos)',
-                    npc: 'Marie',
-                    prereq: 'The Old Peace',
-                },
-            ],
-        },
-    ],
-    weekly: [
-        {
-            id: 'weekly_nightwave_complete',
-            text: 'Nightwave: Complete relevant weekly Nightwave missions.',
-            icon: 'NightwaveIconSimple.png',
-        },
-        {
-            id: 'weekly_nightwave_spend',
-            text: 'Nightwave (Spend): Spend Nightwave credits if needed (Aura mods, Catalysts/Reactors, etc.).',
-            icon: 'NightwaveIconSimple.png',
-        },
-        {
-            id: 'weekly_ayatan',
-            text: "Ayatan Treasure Hunt: Complete Maroo's weekly mission for an Ayatan Sculpture",
-            icon: 'Maroo.png',
-            location: "Maroo's Bazaar, Mars",
-            npc: 'Maroo',
-        },
-        {
-            id: 'weekly_clem',
-            text: 'Help Clem: Help Clem with his weekly survival, or he will die.',
-            icon: 'HelpClem_.png',
-            location: 'Any Relay',
-            npc: 'Darvo',
-            prereq: 'A Man of Few Words',
-        },
-        {
-            id: 'weekly_kahl_garrison',
-            text: "Break Narmer: Complete Kahl's weekly mission for Stock.",
-            icon: 'GarrisonIcon.png',
-            location: "Drifter's Camp, Earth",
-            npc: 'Kahl',
-            prereq: 'Veilbreaker',
-        },
-        {
-            id: 'weekly_archon_hunt',
-            text: 'Archon Hunt: Complete the weekly Archon Hunt for a guaranteed Archon Shard.',
-            icon: 'IconNarmer.png',
-            location: 'Base of Operations',
-            terminal: 'Navigation',
-            prereq: 'The New War',
-        },
-        {
-            id: 'weekly_duviri_circuit',
-            text: 'Duviri Circuit (Normal): Check weekly Warframe options & run Circuit if desired.',
-            icon: 'IconDuviriCategory256.png',
-            location: 'Base of Operations/Dormizone',
-            terminal: 'Navigation',
-            prereq: 'The Duviri Paradox',
-        },
-        {
-            id: 'weekly_duviri_circuit_sp',
-            text: 'Duviri Circuit (Steel Path): Check weekly Incarnon Adapters & run Circuit if desired.',
-            icon: 'IconDuviriCategory256.png',
-            location: 'Base of Operations/Dormizone',
-            terminal: 'Navigation',
-            prereq: 'Steel Path unlocked & The Duviri Paradox',
-        },
-        {
-            id: 'weekly_search_pulses',
-            text: 'Search Pulses: Use 5 weekly search pulses on Netracells and Archimedeas.',
-            icon: 'MagnifyingGlassIcon.png',
-            isParent: true,
-            subtasks: [
-                {
-                    id: 'weekly_netracells',
-                    text: 'Netracells: Complete up to 5 weekly Netracell missions for Archon Shard chances.',
-                    icon: 'NetraRequiemIcon.png',
-                    location: 'Sanctum Anatomica, Deimos',
-                    npc: 'Tagfer',
-                    prereq: 'Whispers in the Walls',
-                    info: 'Costs 1 Search Pulse per successful mission'
-                },
-                {
-                    id: 'weekly_eda',
-                    text: 'Elite Deep Archimedea: Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame)',
-                    icon: 'Necraloid.png',
-                    location: 'Sanctum Anatomica, Deimos',
-                    npc: 'Necraloid',
-                    prereq: 'Rank 5 Cavia',
-                    info: 'Costs 2 Search Pulses to unlock for the week',
-                },
-                {
-                    id: 'weekly_eta',
-                    text: 'Elite Temporal Archimedea: Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame)',
-                    icon: 'Kaya_.png',
-                    location: 'Höllvania Central Mall',
-                    npc: 'Kaya',
-                    prereq: 'Rank 5 The Hex',
-                    info: 'Costs 2 Search Pulses to unlock for the week',
-                },
-            ],
-        },
-        {
-            id: 'weekly_calendar',
-            text: '1999 Calendar: Complete weekly Calendar tasks.',
-            icon: 'Computer.png',
-            location: 'Base of Operations',
-            terminal: 'POM-2 PC',
-            prereq: 'The Hex',
-        },
-        {
-            id: 'weekly_invigorations',
-            text: 'Helminth: Use weekly Invigorations.',
-            icon: 'IconHelminth.png',
-            location: 'Base of Operations',
-            npc: 'Helminth',
-            prereq: 'Rank 5 Entrati'
-        },
-        {
-            id: 'weekly_descendia',
-            text: 'The Descendia (Normal): Weekly Tower gamemode for various resources.',
-            icon: 'Heat_d.png',
-            location: 'Dark Refractory (Base of Operations)',
-            terminal: 'Navigation',
-        },
-        {
-            id: 'weekly_descendia_sp',
-            text: 'The Descendia (Steel Path): Weekly Tower gamemode for various resources.',
-            icon: 'Heat_d.png',
-            location: 'Dark Refractory (Base of Operations)',
-            terminal: 'Navigation',
-        },
-        {
-            id: 'weekly_vendors',
-            text: 'Vendors',
-            icon: 'Market.png',
-            isParent: true,
-            subtasks: [
-                {
-                    id: 'weekly_iron_wake',
-                    text: 'Paladino: Trade Riven Slivers.',
-                    icon: 'IconOmegaMod256.png',
-                    location: 'Iron Wake, Earth',
-                    npc: 'Paladino',
-                    prereq: 'The Chains of Harrow',
-                },
-                {
-                    id: 'weekly_yonta',
-                    text: 'Archimedian Yonta: Buy weekly Kuva with Voidplumes.',
-                    icon: 'Yonta.png',
-                    location: 'Chrysalith, Zariman',
-                    npc: 'Yonta',
-                    prereq: 'Angels of the Zariman',
-                },
-                {
-                    id: 'weekly_acridies',
-                    text: 'Acrithis: Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).',
-                    icon: 'Acrithis.png',
-                    location: 'Duviri/Dormizone',
-                    npc: 'Acrithis',
-                    prereq: 'The Duviri Paradox',
-                },
-                {
-                    id: 'weekly_teshin',
-                    text: "Teshin (Steel Path): Check Teshin's Steel Essence shop (especially for Umbra Forma rotation every 8 weeks).",
-                    icon: 'SteelEssenceIcon.png',
-                    location: 'Any Relay',
-                    npc: 'Teshin',
-                    prereq: 'Steel Path unlocked',
-                },
-                {
-                    id: 'weekly_bird3',
-                    text: 'Bird 3: Buy the weekly Archon Shard for 30k Cavia Standing.',
-                    icon: 'Bird3.png',
-                    location: 'Sanctum Anatomica, Deimos',
-                    npc: 'Bird 3',
-                    prereq: 'Rank 5 Cavia'
-                },
-                {
-                    id: 'weekly_nightcap',
-                    text: 'Nightcap: Trade Fergolyte for Kuva and Ayatan Sculpture.',
-                    icon: 'MysteryShroom256_d.png',
-                    location: 'Fortuna, Venus',
-                    npc: 'Nightcap',
-                    prereq: 'The New War',
-                },
-            ],
-        },
-    ],
-    other: [
-        {
-            id: 'other_baro',
-            text: 'Baro Ki\'Teer: Check Baro Ki\'Teer\'s inventory and purchase desired items with Ducats (trade Prime parts for Ducats). <span id="baro-countdown-timer" class="baro-countdown">(Loading...)</span>',
-            icon: 'IconPrimeParts.png',
-            location: 'Relay with Symbol',
-            npc: "Baro Ki'Teer",
-        },
-        {
-            id: 'other_grandmother_tokens',
-            text: 'Mend the Family: Purchase Family Tokens from Grandmother <span id="grandmother_tokens-countdown-timer" class="eight-hour-countdown">(Loading...)</span>',
-            icon: 'syndicates/IconEntrati.png',
-            isEightHourTask: true,
-            location: 'Necralisk, Deimos',
-            prereq: 'Heart of Deimos',
-        },
-        {
-            id: 'other_yonta_voidplumes',
-            text: 'Trade for Voidplumes <span id="yonta_voidplumes-countdown-timer" class="eight-hour-countdown">(Loading...)</span>',
-            icon: 'Yonta.png',
-            isEightHourTask: true,
-            location: 'Chrysalith, Zariman',
-            npc: 'Yonta',
-            prereq: 'Angels of the Zariman',
-        },
-        {
-            id: 'other_loid_voca',
-            text: 'Trade for Voca <span id="loid_voca-countdown-timer" class="eight-hour-countdown">(Loading...)</span>',
-            icon: 'MiniMapCaviaVendor_.png',
-            isEightHourTask: true,
-            location: 'Sanctum Anatomica, Deimos',
-            npc: 'Loid',
-            prereq: 'Whispers in the Walls',
-        },
-    ],
-};
+import tasks from "./tasks.json" with {type: "json"};
 
-let icons;
-/* MODULE-ONLY< */ icons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'}); /* MODULE-ONLY> */
+let taskIcons;
+/* MODULE-ONLY< */ taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'}); /* MODULE-ONLY> */
 function iconURL(iconName) {
-    if (icons) {
-        return icons["../img/icons/" + iconName]
+    if (taskIcons) {
+        return taskIcons["../img/icons/" + iconName]
     } else {
         return "./img/icons/" + iconName;
     }
@@ -973,7 +575,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         notificationButton.setAttribute('aria-label', `Toggle notifications for ${task.text.split(':')[0]}`);
         notificationButton.title = `Toggle notifications for ${task.text.split(':')[0]}`;
 
-        notificationButton.innerHTML = bellIcon;
+        notificationButton.innerHTML = svgIcons.bellIcon;
         if(checklistData.notificationPreferences[task.id]) notificationButton.classList.add('active');
 
         notificationButton.addEventListener('click', async (e) => {
@@ -993,7 +595,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     hideButton.classList.add('hide-task-btn');
     hideButton.setAttribute('aria-label', `Hide task: ${task.text.split(':')[0]}`);
     hideButton.title = `Hide task: ${task.text.split(':')[0]}`;
-    hideButton.innerHTML = hideIcon;
+    hideButton.innerHTML = svgIcons.hideIcon;
     hideButton.addEventListener('click', (e) => {
         e.stopPropagation();
         checklistData.hiddenTasks[task.id] = true;
@@ -1019,13 +621,9 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         taskTextSpan.classList.add('task-text', 'ml-2', 'flex-grow', 'cursor-pointer');
         if (isChecked) taskTextSpan.classList.add('checked');
 
-        const collapseIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        const collapseIcon = document.createElement("div");
         collapseIcon.setAttribute('class', 'collapse-icon');
-        collapseIcon.setAttribute('fill', 'none');
-        collapseIcon.setAttribute('viewBox', '0 0 24 24');
-        collapseIcon.setAttribute('stroke-width', '1.5');
-        collapseIcon.setAttribute('stroke', 'currentColor');
-        collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />';
+        collapseIcon.innerHTML = svgIcons.collapseIcon;
 
         parentHeaderDiv.appendChild(taskTextSpan);
         parentHeaderDiv.appendChild(controlsContainer);
@@ -1088,12 +686,12 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             const infoLine = document.createElement('div');
             infoLine.classList.add('info-line');
             let infoLineHTML = "";
-            infoLineHTML += makeInfoLineItem(task, "location", "Location", locationIcon);
+            infoLineHTML += makeInfoLineItem(task, "location", "Location", svgIcons.locationIcon);
             infoLineHTML = infoLineHTML.replace('Base of Operations', '<span class="tooltip" title="Orbiter, Drifter\'s Camp, or Backroom">$&</span>');
-            infoLineHTML += makeInfoLineItem(task, "npc", "NPC", npcIcon);
-            infoLineHTML += makeInfoLineItem(task, "terminal", "Terminal", terminalIcon);
-            infoLineHTML += makeInfoLineItem(task, "prereq", "Requirements", prereqIcon);
-            infoLineHTML += makeInfoLineItem(task, "info", "Info", infoIcon);
+            infoLineHTML += makeInfoLineItem(task, "npc", "NPC", svgIcons.npcIcon);
+            infoLineHTML += makeInfoLineItem(task, "terminal", "Terminal", svgIcons.terminalIcon);
+            infoLineHTML += makeInfoLineItem(task, "prereq", "Requirements", svgIcons.prereqIcon);
+            infoLineHTML += makeInfoLineItem(task, "info", "Info", svgIcons.infoIcon);
             infoLine.innerHTML = infoLineHTML;
 
             const infoLineExpander = document.createElement("div");
