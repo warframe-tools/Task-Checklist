@@ -1,4 +1,5 @@
 // --- sources/js/app.js ---
+console.log(`vite mode: ${import.meta.env.MODE}`);
 
 // --- Configuration ---
 // Array of background div IDs (must match IDs in sources/index.html)
