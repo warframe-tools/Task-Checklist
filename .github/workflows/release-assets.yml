@@ -58,7 +58,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.html" --clobber
+          gh release upload "${{ github.event.release.tag_name }}" "./release/${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.html" --clobber
 
       - name: Upload Source Directory as Artifact (for manual/dispatch runs)
         if: github.event_name == 'workflow_dispatch'
