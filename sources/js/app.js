@@ -768,11 +768,6 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             }
             saveData();
         });
-
-        label.addEventListener('click', () => {
-            checkbox.checked = !checkbox.checked;
-            checkbox.dispatchEvent(new Event('change'));
-        });
     }
     return listItem;
 }
