@@ -36,14 +36,9 @@ const baroKiTeerData = {
 // --- Task Data ---
 import tasks from "./tasks.json" with {type: "json"};
 
-let taskIcons;
-/* MODULE-ONLY< */ taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'}); /* MODULE-ONLY> */
+const taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
 function iconURL(iconName) {
-    if (taskIcons) {
-        return taskIcons["../img/icons/" + iconName]
-    } else {
-        return "./img/icons/" + iconName;
-    }
+    return taskIcons["../img/icons/" + iconName];
 }
 
 // --- DOM Elements (defined after DOMContentLoaded) ---
