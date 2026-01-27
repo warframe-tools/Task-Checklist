@@ -12,6 +12,8 @@ const dailyBackgroundImageIds = [
     // Add more IDs if you add more background image divs in HTML
 ];
 const APP_VERSION = "3.1";
+const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
+const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
 const WARFRAME_VERSION = "41.0.0";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
@@ -48,7 +50,7 @@ function iconURL(iconName) {
 let bodyElement, contentElement, themeToggleButton, hamburgerButton, slideoutMenuOverlay, menuContentBox, menuCloseButton,
     dailyList, weeklyList, otherList, resetDailyButton, resetWeeklyButton, resetButton, unhideTasksButton,
     lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement, weeklyResetTimeElement,
-    errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton, appVersionElement, wfVersionElement,
+    errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton, appVersionElement, gitHashElement, wfVersionElement,
     backgroundDivs = [];
 
 
@@ -103,6 +105,7 @@ function initializeDOMElements() {
     errorCloseButton = document.getElementById('error-close-button');
     errorCopyButton = document.getElementById('error-copy-button');
     appVersionElement = document.querySelector('.version-text');
+    gitHashElement = document.querySelector('.git-hash-text');
     wfVersionElement = document.querySelector('.warframe-version-text');
 
     backgroundDivs = [];
@@ -990,10 +993,15 @@ function loadAndInitializeApp() {
 
 
     // Setup event listeners
-    if(appVersionElement) appVersionElement.textContent = `App Version ${APP_VERSION}`;
+    if (appVersionElement) appVersionElement.textContent = APP_VERSION;
     else console.error("App version element not found!");
 
-    if(wfVersionElement) wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`;
+    if (gitHashElement) {
+        gitHashElement.textContent = GIT_COMMIT_HASH;
+        gitHashElement.href = `https://github.com/warframe-tools/Task-Checklist/tree/${GIT_COMMIT_HASH_LONG}`;
+    } else console.error("git hash element not found!");
+
+    if (wfVersionElement) wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`;
     else console.error("Warframe version element not found!");
 
     if (resetDailyButton) { resetDailyButton.addEventListener('click', () => handleResetConfirmation(resetDailyButton, 'daily', 'Reset Daily Checks', resetDailyAction)); }
@@ -1057,7 +1065,7 @@ function loadAndInitializeApp() {
         errorCopyButton.addEventListener('click', copyErrorToClipboard);
     } else { console.error("Error copy button not found!"); }
 
-    console.log(`Warframe Checklist App Initialized (v${APP_VERSION}) from app.js.`);
+    console.log(`Warframe Checklist App Initialized (v${APP_VERSION} (${GIT_COMMIT_HASH})) from app.js.`);
 }
 
 // --- Initialization ---

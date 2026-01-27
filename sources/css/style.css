@@ -59,6 +59,10 @@
     margin: 0 0.1rem;
 }
 
+a.git-hash-text {
+    text-decoration: underline;
+}
+
 /* --- Collapsible Section Styles (Non-Critical Parts) --- */
 .subtask-list {
     margin-left: 1.5rem;
