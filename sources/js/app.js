@@ -1,4 +1,5 @@
 // --- sources/js/app.js ---
+console.log(`vite mode: ${import.meta.env.MODE}`);
 
 import * as svgIcons from "./icons.js";
 

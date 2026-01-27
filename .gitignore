@@ -2,8 +2,8 @@
 /node_modules/
 
 # Vite build output directory
-# (You configured this as 'pages' one level up from 'sources', so at the project root)
 /pages/
+/release/
 
 # Log files
 *.log

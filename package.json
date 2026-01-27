@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build-release": "vite build --mode release",
     "preview": "vite preview"
   },
   "repository": {
@@ -27,6 +28,7 @@
   "homepage": "https://warframetools.com/Task-Checklist/",
   "devDependencies": {
     "vite": "^6.4.1",
-    "vite-plugin-html": "^3.2.2"
+    "vite-plugin-html": "^3.2.2",
+    "vite-plugin-singlefile": "^2.3.0"
   }
 }
