@@ -1,4 +1,4 @@
-name: Create File-Friendly Release Source Archives
+name: Create File-Friendly Release
 
 on:
   release:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_source_archives:
+  build_release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -48,25 +48,21 @@ jobs:
       - name: Build project with Vite
         run: npm run build-release
 
-      - name: Create Zip Archive (for Release Event Only)
-        if: github.event_name == 'release'
+      - name: Rename Release File
         run: |
           cd ./release
           mv index.html ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.html
-          zip ../${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.zip ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.html
-          cd ..
-          echo "Zip archive for release created: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.zip"
 
-      - name: Upload Zip Archive to Release with gh CLI
+      - name: Upload Release with gh CLI
         if: github.event_name == 'release' && github.event.release.tag_name
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.zip" --clobber
+          gh release upload "${{ github.event.release.tag_name }}" "./${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.html" --clobber
 
       - name: Upload Source Directory as Artifact (for manual/dispatch runs)
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}
-          path: ./release/index.html
+          path: ./release/${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.html
