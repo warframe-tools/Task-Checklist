@@ -177,7 +177,7 @@ body::before {
     opacity: 1;
     visibility: visible;
     transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out 0.1s, visibility 0s linear 0s;
-     padding-left: 0.5rem;
+    padding-left: 0.5rem;
 }
 .section-content.collapsed, .subtask-list.collapsed {
     max-height: 0;
@@ -279,4 +279,10 @@ body:not(.light-mode) #sun-icon { display: none; }
 #error-copy-button, #error-close-button {
     cursor: pointer;
     flex-shrink: 0;
+}
+
+
+.info-line svg {
+    width: 0.9375rem;
+    height: 0.9375rem;
 }

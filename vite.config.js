@@ -1,28 +1,31 @@
 // vite.config.js
-import { defineConfig } from 'vite'
-import { createHtmlPlugin } from 'vite-plugin-html' 
-import fs from 'node:fs' 
-import path from 'node:path' 
+import { defineConfig } from "vite";
+import { createHtmlPlugin } from "vite-plugin-html";
+import { viteSingleFile } from "vite-plugin-singlefile";
+import fs from "node:fs";
+import path from "node:path";
+import { execSync } from "node:child_process";
 
-export default defineConfig({
-  root: 'sources',
-  base: '/Task-Checklist/',
+process.env.VITE_GIT_COMMIT_HASH = execSync("git rev-parse HEAD").toString().trim(); // only updated on vite restart
 
-  plugins: [
-    createHtmlPlugin({
-      minify: true, // Minify the HTML in production
-      inject: {
-        data: {
-          // Read the content of critical.css and wrap it in <style> tags
-          // This ensures it's truly inline in the built HTML
-          criticalCss: `<style type="text/css">\n${fs.readFileSync(path.resolve(__dirname, 'sources/css/critical.css'), 'utf-8')}\n</style>`
-        },
-      },
-    }),
-  ],
+export default defineConfig(({ mode }) => ({
+    root: "sources",
+    base: "/Task-Checklist/",
 
-  build: {
-    outDir: '../pages', // Output to 'pages' at the project root
-    emptyOutDir: true,
-  },
-})
+    plugins: [
+        createHtmlPlugin({
+            minify: true,
+            inject: {
+                data: {
+                    criticalCss: `<style type="text/css">\n${fs.readFileSync(path.resolve(__dirname, "sources/css/critical.css"), "utf-8")}\n</style>`,
+                },
+            },
+        }),
+        mode === "release" ? viteSingleFile({removeViteModuleLoader: true}) : null,
+    ],
+
+    build: {
+        outDir: mode === "release" ? "../release" : "../pages",
+        emptyOutDir: true,
+    },
+}));
