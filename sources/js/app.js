@@ -11,10 +11,10 @@ const dailyBackgroundImageIds = [
     'bg-image-2'
     // Add more IDs if you add more background image divs in HTML
 ];
-const APP_VERSION = "3.1";
+const APP_VERSION = "4.0";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
-const WARFRAME_VERSION = "41.0.0";
+const WARFRAME_VERSION = "41.0.7";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 function getStorageKey(appVersion) {
