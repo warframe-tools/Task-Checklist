@@ -81,24 +81,8 @@ There are a few ways to use the Warframe Task Checklist:
 
 3.  **Download and Run Source Locally (for `file:///` execution):**
     * Go to the [Releases page](https://github.com/warframe-tools/Task-Checklist/releases) of this repository.
-    * Download the `Task-Checklist-[VERSION].zip` (or `.tar.gz`) from the latest release.
-    * Unzip the archive. The structure will be:
-        ```
-        your_folder/
-        ├── index.html
-        ├── css/
-        │   └── style.css
-        │   └── critical.css  (This is for reference, its content is injected into index.html in the archive)
-        ├── js/
-        │   └── app.js
-        ├── fonts/
-        │   └── inter-v18-latin-regular.woff2
-        │   └── ... (other font files)
-        └── img/
-            └── garuda-fortuna.webp
-            └── ... (other image files)
-        ```
-    * Open the `index.html` file from the unzipped folder directly in your web browser. This version has been specifically prepared by the GitHub Action to work well when opened via `file:///`.
+    * Download the `Task-Checklist-[VERSION].html`
+    * Open the `Task-Checklist-[VERSION].html` file in your favorite browser! This version has been specifically prepared by the GitHub Action to work well when opened via `file:///`.
 
 4.  **Develop or Run Source with a Local Server (Recommended for Developers):**
     * Clone the repository: `git clone https://github.com/warframe-tools/Task-Checklist.git`
@@ -151,6 +135,7 @@ If you find this tool useful, consider supporting its development!
 * **Tailwind CSS:** [https://tailwindcss.com/](https://tailwindcss.com/)
 * **Inter Font:** Self-hosted.(https://fonts.google.com/specimen/Inter).
 * Task list based on information discussed in the Warframe community.
+* @AnSq for the full overhaul and major features.
 
 ## Disclaimer
 
