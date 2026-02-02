@@ -10,7 +10,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  discussions: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
@@ -67,19 +66,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  # Announcements job
-  announce:
-    needs: [build, deploy]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create Announcement Post
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.build.outputs.latest_tag }}
-        run: |
-          gh discussion create \
-            --repository "${{ github.repository }}" \
-            --category "Announcements" \
-            --title "Update $VERSION is now live!" \
-            --body "The [site](https://warframetools.com/Task-Checklist) has been successfully updated to version $VERSION. Please clear your cache if you do not see the new version. 🚀"
