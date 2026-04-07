@@ -27,7 +27,7 @@
   },
   "homepage": "https://warframetools.com/Task-Checklist/",
   "devDependencies": {
-    "vite": "^6.4.1",
+    "vite": "^6.4.2",
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-singlefile": "^2.3.0"
   }
