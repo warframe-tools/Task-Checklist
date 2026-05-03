@@ -31,7 +31,7 @@
 .checklist-content h2:hover {
     background-color: var(--section-header-hover-bg);
 }
-.checklist-content label, .parent-task-header .task-text { color: var(--text-label); }
+.checklist-content .task-description { color: var(--text-label); }
 .checklist-content #last-saved-timestamp,
 .checklist-content #storage-notice {
     color: var(--text-muted);
@@ -74,11 +74,12 @@ a.git-hash-text {
     align-items: start;
     cursor: pointer;
 }
-.parent-task-header .task-text {
-    flex-grow: 1;
+.task-description {
+    flex: 1 1 0%;
     margin-left: 0.5rem;
+    cursor: pointer;
 }
-.task-text.checked, label.checked {
+.task-description.checked {
     text-decoration: line-through;
     color: var(--text-label-checked);
 }
@@ -128,10 +129,11 @@ a.git-hash-text {
 .hide-section-button.visible {
     display: inline-block;
 }
-.baro-countdown, .eight-hour-countdown {
+.other-countdown {
     font-size: 0.75rem;
     color: var(--baro-timer-color);
-    margin-left: 0.25rem;
+    margin-left: 0.4rem;
+    display: inline-block;
 }
 
 
@@ -161,9 +163,6 @@ li.task-item {
     display: flex;
     align-items: start;
     margin-bottom: 0.5rem;
-}
-li.task-item label {
-    flex: 1 1 0%;
 }
 li.parent-task-container {
     display: flex;

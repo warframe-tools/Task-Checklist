@@ -21,7 +21,10 @@ const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 // in a backwards-uncompatible way (this should be *very* rare)
 const DATA_STORAGE_KEY = "warframeChecklistData_format1";
 
-const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+const MILLISECONDS_PER_SECOND = 1000;
+const MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND;
+const MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE;
+const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR;
 
 const baroKiTeerData = {
     referenceArrivalUTC: new Date(Date.UTC(2025, 4, 30, 13, 0, 0)).getTime(),
@@ -62,7 +65,7 @@ let checklistData = {
     lastWeeklyReset: null,
     hiddenTasks: {},
     manuallyHiddenSections: {},
-    lastEightHourResets: {},
+    lastTaskResetTimes: {},
     notificationPreferences: {},
     notificationsSent: {}
 };
@@ -247,8 +250,7 @@ function getUTCDateString(dateObj) {
 function getUTCDayOfYear(date) {
     const startOfYear = Date.UTC(date.getUTCFullYear(), 0, 0);
     const diff = date.getTime() - startOfYear;
-    const oneDay = 1000 * 60 * 60 * 24;
-    return Math.floor(diff / oneDay);
+    return Math.floor(diff / MILLISECONDS_PER_DAY);
 }
 
 function setDailyBackground() {
@@ -291,6 +293,48 @@ function formatCountdown(ms) {
         return `${days}d ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
     }
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+function duration(str) {
+    // Returns the duration in milliseconds of the given "duration string".
+    // Duration strings look like "14d 5h 20m 15s", for number of days, hours
+    // minutes, and seconds. All parts are optional. Spaces are optional.
+    // Case insensitive. Integers only.
+    const map = {
+        "d": MILLISECONDS_PER_DAY,
+        "h": MILLISECONDS_PER_HOUR,
+        "m": MILLISECONDS_PER_MINUTE,
+        "s": MILLISECONDS_PER_SECOND
+    };
+    return str.toLowerCase().matchAll(/((\d+)([a-z]))/g).toArray().reduce((acc, curr) => {
+        const n = parseInt(curr[2]);
+        let mult;
+        if (Object.hasOwn(map, curr[3])) {
+            mult = map[curr[3]];
+        } else {
+            console.warn(`unknown time multiplier '${curr[3]}'. Skipping "${curr[1]}" in "${str}"`);
+            mult = 0;
+        }
+        return acc + (n * mult);
+    }, 0);
+}
+
+function isDst(date, timezone) {
+    // returns whether the given date is in Daylight Saving Time in the named timezone
+    const dateFormat = Intl.DateTimeFormat("en-CA", {timeZone: timezone, timeZoneName: "shortOffset"});
+
+    function wholeHourOffset(d) {
+        // returns the whole hour part of the UTC offset as an integer.
+        // note the existence of fractional timezones (India, Central Australia, Newfoundland, etc.)
+        const timeZoneName = dateFormat.formatToParts(d).find((p) => p.type === "timeZoneName").value;
+        return parseInt(timeZoneName.replace("GMT", "").split(":")[0], 10);
+    }
+
+    const currentOffset = wholeHourOffset(date);
+    const janOffset = wholeHourOffset(new Date("2026-01-01T00:00:00Z"));
+    const julOffset = wholeHourOffset(new Date("2026-07-01T00:00:00Z"));
+    const dstOffset = Math.max(janOffset, julOffset);
+    return currentOffset === dstOffset;
 }
 
 function calculateBaroTimings() {
@@ -338,8 +382,8 @@ function displayBaroCountdown() {
             checklistData.notificationsSent[arrivalNotificationId] = true;
             saveData(false);
         }
-        if (diff > 0 && diff < 60 * 60 * 1000 && checklistData.notificationPreferences['other_baro'] && !checklistData.notificationsSent[departureNotificationId]) {
-            showNotification("Baro Ki'Teer Departing Soon!", `Leaves in approximately ${Math.round(diff / (60 * 1000))} minutes.`);
+        if (diff > 0 && diff < MILLISECONDS_PER_HOUR && checklistData.notificationPreferences['other_baro'] && !checklistData.notificationsSent[departureNotificationId]) {
+            showNotification("Baro Ki'Teer Departing Soon!", `Leaves in approximately ${Math.round(diff / MILLISECONDS_PER_MINUTE)} minutes.`);
             checklistData.notificationsSent[departureNotificationId] = true;
             saveData(false);
         }
@@ -359,30 +403,22 @@ function displayBaroCountdown() {
     baroCountdownElement.textContent = countdownText;
 }
 
-function getNextEightHourResetUTC() {
-    const now = new Date();
-    const currentUTCHour = now.getUTCHours();
-    let nextResetDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+function displayOtherTaskCountdown(task) {
+    const resetTimer = document.querySelector(`label[for=${task.id}] .other-countdown`);
+    if (!resetTimer) return;
 
-    if (currentUTCHour < 8) {
-        nextResetDate.setUTCHours(8, 0, 0, 0);
-    } else if (currentUTCHour < 16) {
-        nextResetDate.setUTCHours(16, 0, 0, 0);
-    } else {
-        nextResetDate.setUTCDate(nextResetDate.getUTCDate() + 1);
-        nextResetDate.setUTCHours(0, 0, 0, 0);
-    }
-    return nextResetDate.getTime();
+    const now = new Date();
+    const ref = new Date(task.ref || 0);
+    const period = duration(task.period);
+    const cycleNumber = Math.floor((now.getTime() - ref.getTime()) / period);
+    const nextResetTimestamp = ref.getTime() + ((cycleNumber + 1) * period);
+    const diff = nextResetTimestamp - now;
+    resetTimer.textContent = `(Resets in ${formatCountdown(diff)})`;
 }
 
-function displayEightHourTaskCountdown(taskElementId, countdownSpanId) {
-    const countdownSpan = document.getElementById(countdownSpanId);
-    if (!countdownSpan) return;
-
-    const nextResetTimestamp = getNextEightHourResetUTC();
-    const now = new Date().getTime();
-    const diff = nextResetTimestamp - now;
-    countdownSpan.textContent = `(Resets in ${formatCountdown(diff)})`;
+function handleResets() {
+    displayLocalResetTimes();
+    runAutoResets();
 }
 
 function displayLocalResetTimes() {
@@ -397,7 +433,7 @@ function displayLocalResetTimes() {
 
         let nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
         if (now >= nextWeeklyResetTimestamp) {
-            nextWeeklyResetTimestamp += 7 * 24 * 60 * 60 * 1000;
+            nextWeeklyResetTimestamp += 7 * MILLISECONDS_PER_DAY;
         }
         const weeklyDiff = nextWeeklyResetTimestamp - now;
         if (weeklyResetTimeElement) {
@@ -405,37 +441,12 @@ function displayLocalResetTimes() {
         }
 
         displayBaroCountdown();
-        tasks.other.forEach(task => {
-            if (task.isEightHourTask) {
-                const countdownSpanId = task.id.replace(/^other_/, '') + '-countdown-timer';
-                displayEightHourTaskCountdown(task.id, countdownSpanId);
-            }
-        });
-
-        runAutoResets()
-
+        tasks.other.forEach(task => displayOtherTaskCountdown(task));
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
         if (dailyResetTimeElement) dailyResetTimeElement.textContent = `(Resets 00:00 UTC)`;
         if (weeklyResetTimeElement) weeklyResetTimeElement.textContent = `(Resets Mon 00:00 UTC)`;
     }
-}
-
-function getStartOfCurrentEightHourCycleUTC() {
-    const now = new Date();
-    const currentUTCHour = now.getUTCHours();
-    let cycleStartHour;
-
-    if (currentUTCHour < 8) {
-        cycleStartHour = 0;
-    } else if (currentUTCHour < 16) {
-        cycleStartHour = 8;
-    } else {
-        cycleStartHour = 16;
-    }
-    const cycleStartDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    cycleStartDate.setUTCHours(cycleStartHour, 0, 0, 0);
-    return cycleStartDate.getTime();
 }
 
 function runAutoResets() {
@@ -460,34 +471,42 @@ function runAutoResets() {
     }
 
     let didResetOther = false;
-    const startOfCurrentEightHourCycle = getStartOfCurrentEightHourCycleUTC();
-    if (!checklistData.lastEightHourResets) checklistData.lastEightHourResets = {};
+    if (!checklistData.lastTaskResetTimes) checklistData.lastTaskResetTimes = {};
     if (!checklistData.notificationsSent) checklistData.notificationsSent = {};
 
-    tasks.other.forEach(task => {
-        if (task.isEightHourTask) {
-            const lastResetForThisTask = checklistData.lastEightHourResets[task.id];
-            const notificationId = `${task.id}_${startOfCurrentEightHourCycle}`;
+    tasks.other.forEach((task) => {
+        if (!task.period) {
+            console.error(`[${task.id}] other_* tasks MUST specify a "period"`);
+            return;
+        }
+        if (!task.ref) {
+            console.warn(`[${task.id}] other_* tasks SHOULD specify a "ref". The default ref of 0 ("1970-01-01T00:00:00Z") will be used otherwise.`)
+        }
+        const ref = new Date(task.ref || 0);
+        const period = duration(task.period);
+        const cycleNumber = Math.floor((now.getTime() - ref.getTime()) / period);
 
-            if (!lastResetForThisTask || lastResetForThisTask < startOfCurrentEightHourCycle) {
-                if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
-                    checklistData.progress[task.id] = false;
-                    console.log(`Resetting 8-hour task: ${task.id}`);
-                    didResetOther = true;
-                }
-                checklistData.lastEightHourResets[task.id] = startOfCurrentEightHourCycle;
-                if(checklistData.notificationsSent[notificationId]) {
-                    delete checklistData.notificationsSent[notificationId];
-                }
+        const lastResetTime = checklistData.lastTaskResetTimes[task.id] || 0;
+        const lastResetCycleNumber = Math.floor((lastResetTime - ref.getTime()) / period);
+        if (cycleNumber > lastResetCycleNumber) {
+            // Reset task
+            if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
+                checklistData.progress[task.id] = false;
+                console.log(`Resetting task: ${task.id}`);
+                didResetOther = true;
             }
-            if (nowUTCTimestamp >= startOfCurrentEightHourCycle &&
-                nowUTCTimestamp < startOfCurrentEightHourCycle + 60000 &&
-                checklistData.notificationPreferences[task.id] &&
-                !checklistData.notificationsSent[notificationId]) {
+            checklistData.lastTaskResetTimes[task.id] = now.getTime();
 
-                const taskText = task.text.substring(0, task.text.indexOf(':'));
-                showNotification(`${taskText} has reset!`, "Vendor stock may have updated.");
-                checklistData.notificationsSent[notificationId] = true;
+            // Delete old notification record
+            const notifSent = checklistData.notificationsSent[task.id];
+            if (notifSent && notifSent !== cycleNumber) {
+                delete checklistData.notificationsSent[task.id];
+            }
+
+            // Send and record new notification
+            if (checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[task.id] !== cycleNumber) {
+                showNotification(`${task.text.split(":")[0]} has reset!`, "Vendor stock may have updated.");
+                checklistData.notificationsSent[task.id] = cycleNumber;
             }
         }
     });
@@ -624,19 +643,22 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         parentHeaderDiv.appendChild(checkbox);
         if (task.icon) { parentHeaderDiv.appendChild(icon); }
 
-        // Task Text
-        const taskTextDiv = document.createElement('div');
-        taskTextDiv.textContent = task.text;
-        taskTextDiv.classList.add('task-text', 'ml-2', 'cursor-pointer');
-        if (isChecked) taskTextDiv.classList.add('checked');
-        makeInfoLine(task, taskTextDiv);
+        // Task Text & Info Line
+        const taskDescription = document.createElement("div");
+        taskDescription.classList.add("task-description");
+        const taskText = document.createElement('span');
+        taskText.textContent = task.text;
+        taskText.classList.add("task-text");
+        if (isChecked) taskDescription.classList.add('checked');
+        taskDescription.appendChild(taskText);
+        makeInfoLine(task, taskDescription);
+        parentHeaderDiv.appendChild(taskDescription);
 
         // Collapse Button
         const collapseIcon = document.createElement("div");
         collapseIcon.setAttribute('class', 'collapse-icon');
         collapseIcon.innerHTML = svgIcons.collapseIcon;
 
-        parentHeaderDiv.appendChild(taskTextDiv);
         parentHeaderDiv.appendChild(controlsContainer);
         parentHeaderDiv.appendChild(collapseIcon);
         listItem.appendChild(parentHeaderDiv);
@@ -681,11 +703,10 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             } else {
                 currentlyChecked = event.target.checked;
             }
-            console.log(`change ${task.id} (parent) ${currentlyChecked}`);
 
             event.target.checked = currentlyChecked;
             checklistData.progress[task.id] = currentlyChecked;
-            taskTextDiv.classList.toggle('checked', currentlyChecked);
+            taskText.classList.toggle('checked', currentlyChecked);
 
             task.subtasks.forEach(subtask => {
                 const subCheckbox = document.getElementById(subtask.id);
@@ -704,12 +725,20 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         label.htmlFor = task.id;
 
         // Task Text
-        label.innerHTML = `<div class="task-text">${task.text}</div>`;
+        label.innerHTML = `<span class="task-text">${task.text}</span>`;
+
+        // Reset Timer
+        if (task.period) {
+            const resetTimer = document.createElement("span");
+            resetTimer.classList.add("other-countdown");
+            resetTimer.textContent = "(Loading...)";
+            label.appendChild(resetTimer);
+        }
 
         // Info Line & Cycle Schedule
         makeInfoLine(task, label);
 
-        label.classList.add('ml-2', 'cursor-pointer');
+        label.classList.add("task-description");
         if (isChecked) { label.classList.add('checked'); }
 
         listItem.appendChild(checkbox);
@@ -725,7 +754,6 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             } else {
                 currentlyChecked = event.target.checked;
             }
-            console.log(`change ${task.id} ${currentlyChecked}`);
 
             event.target.checked = currentlyChecked;
             checklistData.progress[task.id] = currentlyChecked;
@@ -742,7 +770,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
                     const parentCheckbox = document.getElementById(parentTaskDefinition.id);
                     const parentContainer = parentCheckbox ? parentCheckbox.closest('.parent-task-container') : null;
-                    const parentTextSpan = parentContainer ? parentContainer.querySelector('.parent-task-header .task-text') : null;
+                    const parentTextSpan = parentContainer ? parentContainer.querySelector('.parent-task-header .task-description') : null;
 
                     if (parentCheckbox) parentCheckbox.checked = allSubtasksChecked;
                     if (parentTextSpan) parentTextSpan.classList.toggle('checked', allSubtasksChecked);
@@ -879,7 +907,7 @@ function makeInfoLine(task, appendTo) {
 
         // Info Line
         if (hasInfoLine) {
-            if (task.npc && task.terminal) {console.warn(`Tasks should specify only one of [npc, terminal]. (${task.id})`);}
+            if (task.npc && task.terminal) {console.warn(`[${task.id}] Tasks should specify only one of [npc, terminal].`);}
             const infoLine = document.createElement('div');
             infoLine.classList.add('info-line');
             let infoLineHTML = "";
@@ -1009,10 +1037,8 @@ function resetAllAction() {
     allCheckboxes.forEach((checkbox) => {
         checkbox.checked = false;
         const listItem = checkbox.closest('li');
-        const label = listItem.querySelector('label');
-        const parentTextSpan = listItem.querySelector('.parent-task-header .task-text');
-        if (label) label.classList.remove('checked');
-        if (parentTextSpan) parentTextSpan.classList.remove('checked');
+        const taskDescription = listItem.querySelector(".task-description");
+        if (taskDescription) {taskDescription.classList.remove("checked")};
     });
     updateLastSavedDisplay(checklistData.lastSaved);
     console.log("Checklist reset complete.");
@@ -1041,7 +1067,7 @@ function resetSection(section) {
             didReset = true;
         }
         if (task.subtasks) {
-            task.subtasks.forEach(subtask => {
+            task.subtasks.forEach(subtask => { //FIXME: recursion
                 if (checklistData.progress[subtask.id] && !checklistData.hiddenTasks[subtask.id]) {
                     checklistData.progress[subtask.id] = false;
                     didReset = true;
@@ -1156,21 +1182,21 @@ function loadAndInitializeApp() {
                 checklistData.lastWeeklyReset = parsedData.lastWeeklyReset || null;
                 checklistData.hiddenTasks = parsedData.hiddenTasks || {};
                 checklistData.manuallyHiddenSections = parsedData.manuallyHiddenSections || {};
-                checklistData.lastEightHourResets = parsedData.lastEightHourResets || {};
+                checklistData.lastTaskResetTimes = parsedData.lastTaskResetTimes || {};
                 checklistData.notificationPreferences = parsedData.notificationPreferences || {};
                 checklistData.notificationsSent = parsedData.notificationsSent || {};
             } else { console.warn("Invalid data format found in localStorage. Starting fresh."); }
         } catch (e) {
             console.error("Error parsing saved data:", e);
             displayError("Failed to load saved progress. Data might be corrupted.");
-            checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {}, lastEightHourResets: {}, notificationPreferences: {}, notificationsSent: {} };
+            checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {}, lastTaskResetTimes: {}, notificationPreferences: {}, notificationsSent: {} };
         }
     }
 
     setDailyBackground();
-    displayLocalResetTimes();
+    handleResets();
     if (countdownInterval) clearInterval(countdownInterval);
-    countdownInterval = setInterval(displayLocalResetTimes, 1000);
+    countdownInterval = setInterval(handleResets, 1000);
 
     populateSection(dailyList, tasks.daily, checklistData.progress);
     populateSection(weeklyList, tasks.weekly, checklistData.progress);

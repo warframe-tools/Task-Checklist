@@ -359,7 +359,7 @@
                 },
                 {
                     "id": "weekly_eda",
-                    "text": "Elite Deep Archimedea: Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame)",
+                    "text": "Elite Deep Archimedea: Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame).",
                     "icon": "Necraloid.png",
                     "location": "Sanctum Anatomica, Deimos",
                     "npc": "Necraloid",
@@ -368,7 +368,7 @@
                 },
                 {
                     "id": "weekly_eta",
-                    "text": "Elite Temporal Archimedea: Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame)",
+                    "text": "Elite Temporal Archimedea: Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame).",
                     "icon": "Kaya_.png",
                     "location": "Höllvania Central Mall",
                     "npc": "Kaya",
@@ -474,36 +474,63 @@
     "other": [
         {
             "id": "other_baro",
-            "text": "Baro Ki'Teer: Check Baro Ki'Teer's inventory and purchase desired items with Ducats (trade Prime parts for Ducats). <span id=\"baro-countdown-timer\" class=\"baro-countdown\">(Loading...)</span>",
+            "text": "Baro Ki'Teer: Check Baro Ki'Teer's inventory and purchase desired items with Ducats (trade Prime parts for Ducats).",
             "icon": "IconPrimeParts.png",
             "location": "Relay with Symbol",
-            "npc": "Baro Ki'Teer"
+            "npc": "Baro Ki'Teer",
+            "period": "14d",
+            "duration": "48h",
+            "ref": "2022-12-30T09:00:00-05:00",
+            "observesDst": true
         },
         {
             "id": "other_grandmother_tokens",
-            "text": "Mend the Family: Purchase Family Tokens from Grandmother <span id=\"grandmother_tokens-countdown-timer\" class=\"eight-hour-countdown\">(Loading...)</span>",
+            "text": "Mend the Family: Purchase Family Tokens from Grandmother.",
             "icon": "syndicates/IconEntrati.png",
-            "isEightHourTask": true,
             "location": "Necralisk, Deimos",
-            "prereq": "Heart of Deimos"
+            "prereq": "Heart of Deimos",
+            "period": "8h",
+            "ref": "2020-11-19"
         },
         {
             "id": "other_yonta_voidplumes",
-            "text": "Trade for Voidplumes <span id=\"yonta_voidplumes-countdown-timer\" class=\"eight-hour-countdown\">(Loading...)</span>",
+            "text": "Trade for Voidplumes",
             "icon": "Yonta.png",
-            "isEightHourTask": true,
             "location": "Chrysalith, Zariman",
             "npc": "Yonta",
-            "prereq": "Angels of the Zariman"
+            "prereq": "Angels of the Zariman",
+            "period": "8h",
+            "ref": "2022-04-27"
         },
         {
             "id": "other_loid_voca",
-            "text": "Trade for Voca <span id=\"loid_voca-countdown-timer\" class=\"eight-hour-countdown\">(Loading...)</span>",
+            "text": "Trade for Voca",
             "icon": "MiniMapCaviaVendor_.png",
-            "isEightHourTask": true,
             "location": "Sanctum Anatomica, Deimos",
             "npc": "Loid",
-            "prereq": "Whispers in the Walls"
+            "prereq": "Whispers in the Walls",
+            "period": "8h",
+            "ref": "2023-12-13"
+        },
+        {
+            "id": "other_glast",
+            "text": "Tenet Weapons: Check Ergo Glast's shop for good valence bonuses.",
+            "icon": "ErgoGlast.png",
+            "location": "Any Relay",
+            "npc": "Ergo Glast",
+            "prereq": "The Archwing + Mastery Rank 14",
+            "period": "4d",
+            "ref": "2021-07-08"
+        },
+        {
+            "id": "other_eleanor",
+            "text": "Coda Weapons: Check Eleanor's shop for good valence bonuses.",
+            "icon": "Nyx.png",
+            "location": "Höllvania Central Mall",
+            "npc": "Eleanor Nightingale",
+            "prereq": "The Hex (Quest)",
+            "period": "4d",
+            "ref": "2025-03-18"
         }
     ]
 }
