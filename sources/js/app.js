@@ -26,12 +26,6 @@ const MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND;
 const MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE;
 const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR;
 
-const baroKiTeerData = {
-    referenceArrivalUTC: new Date(Date.UTC(2025, 4, 30, 13, 0, 0)).getTime(),
-    cycleMilliseconds: 14 * MILLISECONDS_PER_DAY,
-    durationMilliseconds: 2 * MILLISECONDS_PER_DAY,
-};
-
 // --- Task Data ---
 import tasks from "./tasks.json" with {type: "json"};
 import cycles from "./cycles.json" with {type: "json"};
@@ -295,7 +289,7 @@ function formatCountdown(ms) {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
-function duration(str) {
+function parseDuration(str) {
     // Returns the duration in milliseconds of the given "duration string".
     // Duration strings look like "14d 5h 20m 15s", for number of days, hours
     // minutes, and seconds. All parts are optional. Spaces are optional.
@@ -337,83 +331,39 @@ function isDst(date, timezone) {
     return currentOffset === dstOffset;
 }
 
-function calculateBaroTimings() {
-    const now = new Date().getTime();
-    let nextArrival = baroKiTeerData.referenceArrivalUTC;
-
-    while (nextArrival < now - baroKiTeerData.durationMilliseconds) {
-        nextArrival += baroKiTeerData.cycleMilliseconds;
-    }
-    if (now >= nextArrival + baroKiTeerData.durationMilliseconds) {
-        nextArrival += baroKiTeerData.cycleMilliseconds;
-    }
-
-    const departure = nextArrival + baroKiTeerData.durationMilliseconds;
-    let status = "arriving";
-    if (now >= nextArrival && now < departure) {
-        status = "here";
-    } else if (now >= departure) {
-        status = "departed";
-    }
-
-    return {
-        nextArrivalTimestamp: nextArrival,
-        departureTimestamp: departure,
-        status: status
-    };
-}
-
-function displayBaroCountdown() {
-    const baroCountdownElement = document.getElementById('baro-countdown-timer');
-    if (!baroCountdownElement) return;
-
-    const timings = calculateBaroTimings();
-    const now = new Date().getTime();
-    let countdownText = "";
-    const arrivalNotificationId = `baro_arrival_${timings.nextArrivalTimestamp}`;
-    const departureNotificationId = `baro_departure_${timings.departureTimestamp}`;
-
-
-    if (timings.status === "here") {
-        const diff = timings.departureTimestamp - now;
-        countdownText = `Leaves in ${formatCountdown(diff)}`;
-        if (checklistData.notificationPreferences['other_baro'] && !checklistData.notificationsSent[arrivalNotificationId]) {
-            showNotification("Baro Ki'Teer Has Arrived!", "Check his inventory for exclusive items.");
-            checklistData.notificationsSent[arrivalNotificationId] = true;
-            saveData(false);
-        }
-        if (diff > 0 && diff < MILLISECONDS_PER_HOUR && checklistData.notificationPreferences['other_baro'] && !checklistData.notificationsSent[departureNotificationId]) {
-            showNotification("Baro Ki'Teer Departing Soon!", `Leaves in approximately ${Math.round(diff / MILLISECONDS_PER_MINUTE)} minutes.`);
-            checklistData.notificationsSent[departureNotificationId] = true;
-            saveData(false);
-        }
-
-    } else {
-        let nextArrivalForCountdown = timings.nextArrivalTimestamp;
-        const diff = nextArrivalForCountdown - now;
-        countdownText = `Arrives in ${formatCountdown(diff)}`;
-        if (timings.status === "departed") {
-            const prevArrivalId = `baro_arrival_${timings.nextArrivalTimestamp - baroKiTeerData.cycleMilliseconds}`;
-            const prevDepartureId = `baro_departure_${timings.departureTimestamp - baroKiTeerData.cycleMilliseconds}`;
-            if(checklistData.notificationsSent[prevArrivalId]) delete checklistData.notificationsSent[prevArrivalId];
-            if(checklistData.notificationsSent[prevDepartureId]) delete checklistData.notificationsSent[prevDepartureId];
-            if(checklistData.notificationsSent[departureNotificationId]) delete checklistData.notificationsSent[departureNotificationId];
-        }
-    }
-    baroCountdownElement.textContent = countdownText;
-}
-
 function displayOtherTaskCountdown(task) {
     const resetTimer = document.querySelector(`label[for=${task.id}] .other-countdown`);
     if (!resetTimer) return;
 
     const now = new Date();
     const ref = new Date(task.ref || 0);
-    const period = duration(task.period);
+    const period = parseDuration(task.period);
     const cycleNumber = Math.floor((now.getTime() - ref.getTime()) / period);
-    const nextResetTimestamp = ref.getTime() + ((cycleNumber + 1) * period);
-    const diff = nextResetTimestamp - now;
-    resetTimer.textContent = `(Resets in ${formatCountdown(diff)})`;
+    const prevResetTimestamp = ref.getTime() + (cycleNumber * period);
+    const nextResetTimestamp = prevResetTimestamp + period;
+
+    if (task.duration) { // intermittently available task (e.g., Baro)
+        const duration = parseDuration(task.duration);
+        const thisCycleLeaveTimestamp = prevResetTimestamp + duration;
+        const leaveNotifiId = `${task.id}/departure`;
+
+        if (now.getTime() < thisCycleLeaveTimestamp) { // task available
+            const diff = thisCycleLeaveTimestamp - now.getTime();
+            resetTimer.textContent = `(Available for ${formatCountdown(diff)})`;
+
+            // Leaving soon notification (Arrival notification is handled in runAutoResets, the same as always available tasks)
+            if (diff < MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifiId] !== cycleNumber) {
+                showNotification(`${task.text.split(":")[0]} Leaving Soon!`, `Approximately ${Math.round(diff / MILLISECONDS_PER_MINUTE)} minutes remaining.`);
+                checklistData.notificationsSent[leaveNotifiId] = cycleNumber;
+                saveData(false);
+            }
+        } else { // task not available
+            resetTimer.textContent = `(Available in ${formatCountdown(nextResetTimestamp - now.getTime())})`;
+            if (checklistData.notificationsSent[leaveNotifiId]) {delete checklistData.notificationsSent[leaveNotifiId];}
+        }
+    } else { // always availalbe task
+        resetTimer.textContent = `(Resets in ${formatCountdown(nextResetTimestamp - now.getTime())})`;
+    }
 }
 
 function handleResets() {
@@ -425,12 +375,14 @@ function displayLocalResetTimes() {
     try {
         const now = new Date().getTime();
 
+        // Daily
         const nextDailyResetTimestamp = getNextDailyMidnightUTC();
         const dailyDiff = nextDailyResetTimestamp - now;
         if (dailyResetTimeElement) {
             dailyResetTimeElement.textContent = `(Resets in ${formatCountdown(dailyDiff)})`;
         }
 
+        // Weekly
         let nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
         if (now >= nextWeeklyResetTimestamp) {
             nextWeeklyResetTimestamp += 7 * MILLISECONDS_PER_DAY;
@@ -440,7 +392,7 @@ function displayLocalResetTimes() {
             weeklyResetTimeElement.textContent = `(Resets in ${formatCountdown(weeklyDiff)})`;
         }
 
-        displayBaroCountdown();
+        // Other
         tasks.other.forEach(task => displayOtherTaskCountdown(task));
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
@@ -483,7 +435,7 @@ function runAutoResets() {
             console.warn(`[${task.id}] other_* tasks SHOULD specify a "ref". The default ref of 0 ("1970-01-01T00:00:00Z") will be used otherwise.`)
         }
         const ref = new Date(task.ref || 0);
-        const period = duration(task.period);
+        const period = parseDuration(task.period);
         const cycleNumber = Math.floor((now.getTime() - ref.getTime()) / period);
 
         const lastResetTime = checklistData.lastTaskResetTimes[task.id] || 0;
