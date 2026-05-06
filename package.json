@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "build-release": "vite build --mode release",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   },
   "repository": {
     "type": "git",
@@ -27,8 +29,11 @@
   },
   "homepage": "https://warframetools.com/Task-Checklist/",
   "devDependencies": {
+    "@vitest/ui": "^4.1.5",
+    "jsdom": "^29.1.1",
     "vite": "^6.4.2",
     "vite-plugin-html": "^3.2.2",
-    "vite-plugin-singlefile": "^2.3.0"
+    "vite-plugin-singlefile": "^2.3.0",
+    "vitest": "^4.1.5"
   }
 }

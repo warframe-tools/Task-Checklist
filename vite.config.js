@@ -11,16 +11,17 @@ process.env.VITE_GIT_COMMIT_HASH = execSync("git rev-parse HEAD").toString().tri
 export default defineConfig(({ mode }) => ({
     root: "sources",
     base: "/Task-Checklist/",
+    cacheDir: "../.vite",
 
     plugins: [
-        createHtmlPlugin({
+        mode !== "test" ? createHtmlPlugin({
             minify: true,
             inject: {
                 data: {
                     criticalCss: `<style type="text/css">\n${fs.readFileSync(path.resolve(__dirname, "sources/css/critical.css"), "utf-8")}\n</style>`,
                 },
             },
-        }),
+        }) : null,
         mode === "release" ? viteSingleFile({removeViteModuleLoader: true}) : null,
     ],
 
@@ -28,4 +29,8 @@ export default defineConfig(({ mode }) => ({
         outDir: mode === "release" ? "../release" : "../pages",
         emptyOutDir: true,
     },
+
+    test: {
+        environment: "jsdom"
+    }
 }));

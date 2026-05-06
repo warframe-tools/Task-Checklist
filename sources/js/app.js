@@ -317,7 +317,7 @@ function parseDuration(str) {
     }, 0);
 }
 
-function isDst(date, timezone) {
+export function isDst(date, timezone) {
     // returns whether the given date is in Daylight Saving Time in the named timezone
     if (typeof date === "number") {date = new Date(date);}
 
@@ -330,9 +330,10 @@ function isDst(date, timezone) {
         return parseInt(timeZoneName.replace("GMT", "").split(":")[0], 10);
     }
 
-    const currentOffset = wholeHourOffset(date);
     const janOffset = wholeHourOffset(new Date("2026-01-01T00:00:00Z"));
     const julOffset = wholeHourOffset(new Date("2026-07-01T00:00:00Z"));
+    if (janOffset === julOffset) {return false;}
+    const currentOffset = wholeHourOffset(date);
     const dstOffset = Math.max(janOffset, julOffset);
     return currentOffset === dstOffset;
 }
