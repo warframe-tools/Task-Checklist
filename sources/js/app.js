@@ -26,6 +26,8 @@ const MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND;
 const MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE;
 const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR;
 
+const SERVER_TIMEZONE = "America/Toronto";  // used for determining Daylight Saving Time
+
 // --- Task Data ---
 import tasks from "./tasks.json" with {type: "json"};
 import cycles from "./cycles.json" with {type: "json"};
@@ -294,6 +296,8 @@ function parseDuration(str) {
     // Duration strings look like "14d 5h 20m 15s", for number of days, hours
     // minutes, and seconds. All parts are optional. Spaces are optional.
     // Case insensitive. Integers only.
+    if (!str) {return undefined;}
+
     const map = {
         "d": MILLISECONDS_PER_DAY,
         "h": MILLISECONDS_PER_HOUR,
@@ -315,6 +319,8 @@ function parseDuration(str) {
 
 function isDst(date, timezone) {
     // returns whether the given date is in Daylight Saving Time in the named timezone
+    if (typeof date === "number") {date = new Date(date);}
+
     const dateFormat = Intl.DateTimeFormat("en-CA", {timeZone: timezone, timeZoneName: "shortOffset"});
 
     function wholeHourOffset(d) {
@@ -331,6 +337,18 @@ function isDst(date, timezone) {
     return currentOffset === dstOffset;
 }
 
+function calcCycleNumber(task, time) {
+    // calculates the cycleNumber (number of resets since the reference time) of the given task at the given time (a Date object or timestamp)
+    if (typeof time === "number") {time = new Date(time);}
+    const ref = new Date(task.ref || 0);
+    const period = parseDuration(task.period);
+    let diff = time.getTime() - ref.getTime();
+    if (task.observesDst && isDst(time, SERVER_TIMEZONE)) {
+        diff += MILLISECONDS_PER_HOUR;
+    }
+    return Math.floor(diff / period);
+}
+
 function displayOtherTaskCountdown(task) {
     const resetTimer = document.querySelector(`label[for=${task.id}] .other-countdown`);
     if (!resetTimer) return;
@@ -338,13 +356,17 @@ function displayOtherTaskCountdown(task) {
     const now = new Date();
     const ref = new Date(task.ref || 0);
     const period = parseDuration(task.period);
-    const cycleNumber = Math.floor((now.getTime() - ref.getTime()) / period);
+    const cycleNumber = calcCycleNumber(task, now);
     const prevResetTimestamp = ref.getTime() + (cycleNumber * period);
-    const nextResetTimestamp = prevResetTimestamp + period;
+    let nextResetTimestamp = prevResetTimestamp + period;
+    let thisCycleLeaveTimestamp = prevResetTimestamp + parseDuration(task.duration);
+
+    if (task.observesDst) {
+        if (isDst(nextResetTimestamp))      {nextResetTimestamp      -= MILLISECONDS_PER_HOUR;}
+        if (isDst(thisCycleLeaveTimestamp)) {thisCycleLeaveTimestamp -= MILLISECONDS_PER_HOUR;}
+    }
 
     if (task.duration) { // intermittently available task (e.g., Baro)
-        const duration = parseDuration(task.duration);
-        const thisCycleLeaveTimestamp = prevResetTimestamp + duration;
         const leaveNotifiId = `${task.id}/departure`;
 
         if (now.getTime() < thisCycleLeaveTimestamp) { // task available
@@ -393,7 +415,7 @@ function displayLocalResetTimes() {
         }
 
         // Other
-        tasks.other.forEach(task => displayOtherTaskCountdown(task));
+        tasks.other.forEach((task) => displayOtherTaskCountdown(task));
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
         if (dailyResetTimeElement) dailyResetTimeElement.textContent = `(Resets 00:00 UTC)`;
@@ -434,12 +456,10 @@ function runAutoResets() {
         if (!task.ref) {
             console.warn(`[${task.id}] other_* tasks SHOULD specify a "ref". The default ref of 0 ("1970-01-01T00:00:00Z") will be used otherwise.`)
         }
-        const ref = new Date(task.ref || 0);
-        const period = parseDuration(task.period);
-        const cycleNumber = Math.floor((now.getTime() - ref.getTime()) / period);
 
+        const cycleNumber = calcCycleNumber(task, now);
         const lastResetTime = checklistData.lastTaskResetTimes[task.id] || 0;
-        const lastResetCycleNumber = Math.floor((lastResetTime - ref.getTime()) / period);
+        const lastResetCycleNumber = calcCycleNumber(task, new Date(lastResetTime));
         if (cycleNumber > lastResetCycleNumber) {
             // Reset task
             if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
@@ -749,7 +769,7 @@ function makeCycleIcon(cycleData) {
     }
 }
 
-function showScheduleAction(task, period, cycleNumber) {
+function showScheduleAction(task, period, cycleIndex) {
     const cycleCount = cycles[task.id].order.length;
 
     return () => {
@@ -785,7 +805,7 @@ function showScheduleAction(task, period, cycleNumber) {
                 repeat = '<tr><td colspan="2" class="cycle-repeats">(Cycle Repeats)</td></tr>';
             }
 
-            const rowData = cycles[task.id].order[modulo(cycleNumber + i, cycleCount)];
+            const rowData = cycles[task.id].order[modulo(cycleIndex + i, cycleCount)];
 
             tbody.innerHTML +=
                 `${repeat}<tr>
@@ -817,7 +837,7 @@ function makeInfoLine(task, appendTo) {
             const ref = new Date(cycles[task.id].ref);
             const cycleCount = cycles[task.id].order.length;
 
-            let prefix, period, cycleNumber;
+            let prefix, period, cycleIndex;
             if (task.id.startsWith("weekly_")) {
                 prefix = "This&nbsp;Week";
                 period = 7 * MILLISECONDS_PER_DAY;
@@ -833,9 +853,9 @@ function makeInfoLine(task, appendTo) {
                 prefix = "Current&nbsp;Cycle";
                 console.error(`cycles are not implemented for this task (${task.id})`);
             }
-            cycleNumber = modulo(Math.floor((now.getTime() - ref.getTime()) / period), cycleCount);
-            console.log(`${task.id} cycleNumber ${cycleNumber}`);
-            const cycleData = cycles[task.id].order[cycleNumber];
+            cycleIndex = modulo(Math.floor((now.getTime() - ref.getTime()) / period), cycleCount);
+            console.log(`${task.id} cycleNumber ${cycleIndex}`);
+            const cycleData = cycles[task.id].order[cycleIndex];
 
             const cyclePrefix = document.createElement("span");
             cyclePrefix.innerHTML = `${prefix}: `;
@@ -851,7 +871,7 @@ function makeInfoLine(task, appendTo) {
             showSchedule.type = "button";
             showSchedule.classList.add("show-schedule-btn");
             showSchedule.innerHTML = "Show&nbsp;Schedule";
-            showSchedule.addEventListener("click", showScheduleAction(task, period, cycleNumber));
+            showSchedule.addEventListener("click", showScheduleAction(task, period, cycleIndex));
             currentCycle.appendChild(showSchedule);
 
             taskInfoExpanderContent.appendChild(currentCycle);
