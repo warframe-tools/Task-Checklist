@@ -9,7 +9,7 @@
     "build-release": "vite build --mode release",
     "preview": "vite preview",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui --open=false --coverage"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
   },
   "homepage": "https://warframetools.com/Task-Checklist/",
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.5",
     "@vitest/ui": "^4.1.5",
     "jsdom": "^29.1.1",
     "vite": "^6.4.2",

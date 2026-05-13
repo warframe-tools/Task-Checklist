@@ -291,12 +291,12 @@ function formatCountdown(ms) {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
-function parseDuration(str) {
+export function parseDuration(str) {
     // Returns the duration in milliseconds of the given "duration string".
     // Duration strings look like "14d 5h 20m 15s", for number of days, hours
     // minutes, and seconds. All parts are optional. Spaces are optional.
     // Case insensitive. Integers only.
-    if (!str) {return undefined;}
+    if (!str || typeof str !== "string") {return undefined;}
 
     const map = {
         "d": MILLISECONDS_PER_DAY,
@@ -319,7 +319,7 @@ function parseDuration(str) {
 
 export function isDst(date, timezone) {
     // returns whether the given date is in Daylight Saving Time in the named timezone
-    if (typeof date === "number") {date = new Date(date);}
+    if (typeof date === "number" || typeof date === "string") {date = new Date(date);}
 
     const dateFormat = Intl.DateTimeFormat("en-CA", {timeZone: timezone, timeZoneName: "shortOffset"});
 
@@ -372,7 +372,7 @@ function displayOtherTaskCountdown(task) {
 
         if (now.getTime() < thisCycleLeaveTimestamp) { // task available
             const diff = thisCycleLeaveTimestamp - now.getTime();
-            resetTimer.textContent = `(Available for ${formatCountdown(diff)})`;
+            resetTimer.innerHTML = `(Available for <span class="tooltip" title="${new Date(thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
 
             // Leaving soon notification (Arrival notification is handled in runAutoResets, the same as always available tasks)
             if (diff < MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifiId] !== cycleNumber) {
@@ -381,11 +381,11 @@ function displayOtherTaskCountdown(task) {
                 saveData(false);
             }
         } else { // task not available
-            resetTimer.textContent = `(Available in ${formatCountdown(nextResetTimestamp - now.getTime())})`;
+            resetTimer.innerHTML = `(Available in <span class="tooltip" title="${new Date(nextResetTimestamp).toString()}">${formatCountdown(nextResetTimestamp - now.getTime())}</span>)`;
             if (checklistData.notificationsSent[leaveNotifiId]) {delete checklistData.notificationsSent[leaveNotifiId];}
         }
     } else { // always availalbe task
-        resetTimer.textContent = `(Resets in ${formatCountdown(nextResetTimestamp - now.getTime())})`;
+        resetTimer.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextResetTimestamp).toString()}">${formatCountdown(nextResetTimestamp - now.getTime())}</span>)`;
     }
 }
 
@@ -402,7 +402,7 @@ function displayLocalResetTimes() {
         const nextDailyResetTimestamp = getNextDailyMidnightUTC();
         const dailyDiff = nextDailyResetTimestamp - now;
         if (dailyResetTimeElement) {
-            dailyResetTimeElement.textContent = `(Resets in ${formatCountdown(dailyDiff)})`;
+            dailyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextDailyResetTimestamp).toString()}">${formatCountdown(dailyDiff)}</span>)`;
         }
 
         // Weekly
@@ -412,15 +412,15 @@ function displayLocalResetTimes() {
         }
         const weeklyDiff = nextWeeklyResetTimestamp - now;
         if (weeklyResetTimeElement) {
-            weeklyResetTimeElement.textContent = `(Resets in ${formatCountdown(weeklyDiff)})`;
+            weeklyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextWeeklyResetTimestamp).toString()}">${formatCountdown(weeklyDiff)}</span>)`;
         }
 
         // Other
         tasks.other.forEach((task) => displayOtherTaskCountdown(task));
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
-        if (dailyResetTimeElement) dailyResetTimeElement.textContent = `(Resets 00:00 UTC)`;
-        if (weeklyResetTimeElement) weeklyResetTimeElement.textContent = `(Resets Mon 00:00 UTC)`;
+        if (dailyResetTimeElement) dailyResetTimeElement.innerHTML = `(Resets 00:00 UTC)`;
+        if (weeklyResetTimeElement) weeklyResetTimeElement.innerHTML = `(Resets Mon 00:00 UTC)`;
     }
 }
 

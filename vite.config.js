@@ -31,6 +31,11 @@ export default defineConfig(({ mode }) => ({
     },
 
     test: {
-        environment: "jsdom"
+        environment: "jsdom",
+        restoreMocks: true,
+        coverage: {
+            reportsDirectory: "../.coverage",
+            exclude: ["img/"]
+        }
     }
 }));
