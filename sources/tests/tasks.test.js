@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import tasks from "../js/tasks.json" with {type: "json"};
-import { parseDuration } from "../js/app";
+import { parseDuration } from "../js/functions.js";
 
 describe("valildate task definitions", () => {
     describe("sections", () => {

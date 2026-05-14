@@ -1,6 +1,22 @@
 // --- sources/js/app.js ---
 console.log(`vite mode: ${import.meta.env.MODE}`);
 
+import {
+    modulo,
+    formatTimestamp,
+    getMostRecentMondayMidnightUTC,
+    getNextDailyMidnightUTC,
+    getUTCDateString,
+    getUTCDayOfYear,
+    formatCountdown,
+    parseDuration,
+    isDst,
+    calcCycleNumber,
+    makeInfoLineItem
+} from "./functions.js";
+
+import * as C from "./constants.js";
+
 import * as svgIcons from "./icons.js";
 
 // --- Configuration ---
@@ -20,13 +36,6 @@ const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 // only update DATA_STORAGE_KEY when the data storage format changes
 // in a backwards-uncompatible way (this should be *very* rare)
 const DATA_STORAGE_KEY = "warframeChecklistData_format1";
-
-const MILLISECONDS_PER_SECOND = 1000;
-const MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND;
-const MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE;
-const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR;
-
-const SERVER_TIMEZONE = "America/Toronto";  // used for determining Daylight Saving Time
 
 // --- Task Data ---
 import tasks from "./tasks.json" with {type: "json"};
@@ -71,10 +80,6 @@ let saveStatusTimeout;
 let countdownInterval;
 
 // --- Function Definitions ---
-
-function modulo(n, d) {
-    return ((n % d) + d) % d;
-}
 
 function initializeDOMElements() {
     bodyElement = document.body;
@@ -193,16 +198,6 @@ function loadThemePreference() {
     }
 }
 
-
-function formatTimestamp(timestamp) {
-    if (!timestamp) return 'Never';
-    try {
-        const date = new Date(timestamp);
-        if (isNaN(date.getTime())) return 'Invalid Date';
-        return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-    } catch (e) { console.error("Error formatting timestamp:", e); return 'Error'; }
-}
-
 function updateLastSavedDisplay(timestamp) {
     if (lastSavedTimestampElement) {
         lastSavedTimestampElement.textContent = `Last saved: ${formatTimestamp(timestamp)}`;
@@ -216,37 +211,6 @@ function showSaveStatus() {
     clearTimeout(saveStatusTimeout);
     saveStatusElement.style.opacity = '1';
     saveStatusTimeout = setTimeout(() => { saveStatusElement.style.opacity = '0'; }, 1500);
-}
-
-function getMostRecentMondayMidnightUTC() {
-    const now = new Date();
-    const currentUTCDay = now.getUTCDay();
-    const daysSinceMondayUTC = (currentUTCDay === 0) ? 6 : currentUTCDay - 1;
-
-    const mondayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    mondayUTC.setUTCDate(mondayUTC.getUTCDate() - daysSinceMondayUTC);
-    mondayUTC.setUTCHours(0, 0, 0, 0);
-    return mondayUTC.getTime();
-}
-
-function getNextDailyMidnightUTC() {
-    const now = new Date();
-    const tomorrowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
-    tomorrowUTC.setUTCHours(0, 0, 0, 0);
-    return tomorrowUTC.getTime();
-}
-
-function getUTCDateString(dateObj) {
-    const year = dateObj.getUTCFullYear();
-    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
-    const day = dateObj.getUTCDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-function getUTCDayOfYear(date) {
-    const startOfYear = Date.UTC(date.getUTCFullYear(), 0, 0);
-    const diff = date.getTime() - startOfYear;
-    return Math.floor(diff / MILLISECONDS_PER_DAY);
 }
 
 function setDailyBackground() {
@@ -272,84 +236,6 @@ function setDailyBackground() {
     });
 }
 
-function formatCountdown(ms) {
-    if (ms < 0) return "00:00:00";
-
-    let totalSeconds = Math.floor(ms / 1000);
-    let days = Math.floor(totalSeconds / (24 * 60 * 60));
-    totalSeconds %= (24 * 60 * 60);
-    let hours = Math.floor(totalSeconds / (60 * 60));
-    totalSeconds %= (60 * 60);
-    let minutes = Math.floor(totalSeconds / 60);
-    let seconds = totalSeconds % 60;
-
-    const pad = (num) => String(num).padStart(2, '0');
-
-    if (days > 0) {
-        return `${days}d ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-    }
-    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-}
-
-export function parseDuration(str) {
-    // Returns the duration in milliseconds of the given "duration string".
-    // Duration strings look like "14d 5h 20m 15s", for number of days, hours
-    // minutes, and seconds. All parts are optional. Spaces are optional.
-    // Case insensitive. Integers only.
-    if (!str || typeof str !== "string") {return undefined;}
-
-    const map = {
-        "d": MILLISECONDS_PER_DAY,
-        "h": MILLISECONDS_PER_HOUR,
-        "m": MILLISECONDS_PER_MINUTE,
-        "s": MILLISECONDS_PER_SECOND
-    };
-    return str.toLowerCase().matchAll(/((\d+)([a-z]))/g).toArray().reduce((acc, curr) => {
-        const n = parseInt(curr[2]);
-        let mult;
-        if (Object.hasOwn(map, curr[3])) {
-            mult = map[curr[3]];
-        } else {
-            console.warn(`unknown time multiplier '${curr[3]}'. Skipping "${curr[1]}" in "${str}"`);
-            mult = 0;
-        }
-        return acc + (n * mult);
-    }, 0);
-}
-
-export function isDst(date, timezone) {
-    // returns whether the given date is in Daylight Saving Time in the named timezone
-    if (typeof date === "number" || typeof date === "string") {date = new Date(date);}
-
-    const dateFormat = Intl.DateTimeFormat("en-CA", {timeZone: timezone, timeZoneName: "shortOffset"});
-
-    function wholeHourOffset(d) {
-        // returns the whole hour part of the UTC offset as an integer.
-        // note the existence of fractional timezones (India, Central Australia, Newfoundland, etc.)
-        const timeZoneName = dateFormat.formatToParts(d).find((p) => p.type === "timeZoneName").value;
-        return parseInt(timeZoneName.replace("GMT", "").split(":")[0], 10);
-    }
-
-    const janOffset = wholeHourOffset(new Date("2026-01-01T00:00:00Z"));
-    const julOffset = wholeHourOffset(new Date("2026-07-01T00:00:00Z"));
-    if (janOffset === julOffset) {return false;}
-    const currentOffset = wholeHourOffset(date);
-    const dstOffset = Math.max(janOffset, julOffset);
-    return currentOffset === dstOffset;
-}
-
-function calcCycleNumber(task, time) {
-    // calculates the cycleNumber (number of resets since the reference time) of the given task at the given time (a Date object or timestamp)
-    if (typeof time === "number") {time = new Date(time);}
-    const ref = new Date(task.ref || 0);
-    const period = parseDuration(task.period);
-    let diff = time.getTime() - ref.getTime();
-    if (task.observesDst && isDst(time, SERVER_TIMEZONE)) {
-        diff += MILLISECONDS_PER_HOUR;
-    }
-    return Math.floor(diff / period);
-}
-
 function displayOtherTaskCountdown(task) {
     const resetTimer = document.querySelector(`label[for=${task.id}] .other-countdown`);
     if (!resetTimer) return;
@@ -363,8 +249,8 @@ function displayOtherTaskCountdown(task) {
     let thisCycleLeaveTimestamp = prevResetTimestamp + parseDuration(task.duration);
 
     if (task.observesDst) {
-        if (isDst(nextResetTimestamp))      {nextResetTimestamp      -= MILLISECONDS_PER_HOUR;}
-        if (isDst(thisCycleLeaveTimestamp)) {thisCycleLeaveTimestamp -= MILLISECONDS_PER_HOUR;}
+        if (isDst(nextResetTimestamp, C.SERVER_TIMEZONE))      {nextResetTimestamp      -= C.MILLISECONDS_PER_HOUR;}
+        if (isDst(thisCycleLeaveTimestamp, C.SERVER_TIMEZONE)) {thisCycleLeaveTimestamp -= C.MILLISECONDS_PER_HOUR;}
     }
 
     if (task.duration) { // intermittently available task (e.g., Baro)
@@ -375,8 +261,8 @@ function displayOtherTaskCountdown(task) {
             resetTimer.innerHTML = `(Available for <span class="tooltip" title="${new Date(thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
 
             // Leaving soon notification (Arrival notification is handled in runAutoResets, the same as always available tasks)
-            if (diff < MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifiId] !== cycleNumber) {
-                showNotification(`${task.text.split(":")[0]} Leaving Soon!`, `Approximately ${Math.round(diff / MILLISECONDS_PER_MINUTE)} minutes remaining.`);
+            if (diff < C.MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifiId] !== cycleNumber) {
+                showNotification(`${task.text.split(":")[0]} Leaving Soon!`, `Approximately ${Math.round(diff / C.MILLISECONDS_PER_MINUTE)} minutes remaining.`);
                 checklistData.notificationsSent[leaveNotifiId] = cycleNumber;
                 saveData(false);
             }
@@ -408,7 +294,7 @@ function displayLocalResetTimes() {
         // Weekly
         let nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
         if (now >= nextWeeklyResetTimestamp) {
-            nextWeeklyResetTimestamp += 7 * MILLISECONDS_PER_DAY;
+            nextWeeklyResetTimestamp += 7 * C.MILLISECONDS_PER_DAY;
         }
         const weeklyDiff = nextWeeklyResetTimestamp - now;
         if (weeklyResetTimeElement) {
@@ -480,6 +366,7 @@ function runAutoResets() {
             if (checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[task.id] !== cycleNumber) {
                 showNotification(`${task.text.split(":")[0]} has reset!`, "Vendor stock may have updated.");
                 checklistData.notificationsSent[task.id] = cycleNumber;
+                saveData(false);
             }
         }
     });
@@ -841,14 +728,14 @@ function makeInfoLine(task, appendTo) {
             let prefix, period, cycleIndex;
             if (task.id.startsWith("weekly_")) {
                 prefix = "This&nbsp;Week";
-                period = 7 * MILLISECONDS_PER_DAY;
+                period = 7 * C.MILLISECONDS_PER_DAY;
                 if (ref.getUTCDay() !== 1) {
                     console.warn(`${task.id} cycle ref ${cycles[task.id].ref} is not a Monday`);
                 }
             }
             else if (task.id.startsWith("daily_")) {
                 prefix = "Today";
-                period = MILLISECONDS_PER_DAY;
+                period = C.MILLISECONDS_PER_DAY;
             }
             else {
                 prefix = "Current&nbsp;Cycle";
@@ -897,14 +784,6 @@ function makeInfoLine(task, appendTo) {
 
         taskInfoExpander.appendChild(taskInfoExpanderContent);
         appendTo.appendChild(taskInfoExpander);
-    }
-}
-
-function makeInfoLineItem(task, prop, iconToolTip, icon) {
-    if (task[prop]) {
-        return `<span class="${prop}"><span title="${iconToolTip}">${icon}</span>${task[prop]}</span><wbr />`;
-    } else {
-        return "";
     }
 }
 
