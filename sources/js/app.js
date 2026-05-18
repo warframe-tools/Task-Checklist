@@ -236,8 +236,43 @@ function setDailyBackground() {
     });
 }
 
-function displayOtherTaskCountdown(task) {
-    const resetTimer = document.querySelector(`label[for=${task.id}] .other-countdown`);
+function handleResets() {
+    displayLocalResetTimes();
+    runAutoResets();
+}
+
+function displayLocalResetTimes() {
+    try {
+        const now = new Date().getTime();
+
+        // Daily
+        const nextDailyResetTimestamp = getNextDailyMidnightUTC();
+        const dailyDiff = nextDailyResetTimestamp - now;
+        if (dailyResetTimeElement) {
+            dailyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextDailyResetTimestamp).toString()}">${formatCountdown(dailyDiff)}</span>)`;
+        }
+
+        // Weekly
+        let nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
+        if (now >= nextWeeklyResetTimestamp) {
+            nextWeeklyResetTimestamp += 7 * C.MILLISECONDS_PER_DAY;
+        }
+        const weeklyDiff = nextWeeklyResetTimestamp - now;
+        if (weeklyResetTimeElement) {
+            weeklyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextWeeklyResetTimestamp).toString()}">${formatCountdown(weeklyDiff)}</span>)`;
+        }
+
+        // Other
+        tasks.other.forEach((task) => displayOtherTaskCountdown(task));
+    } catch (e) {
+        console.error("Error calculating or displaying local reset times:", e);
+        if (dailyResetTimeElement) dailyResetTimeElement.innerHTML = `(Resets 00:00 UTC)`;
+        if (weeklyResetTimeElement) weeklyResetTimeElement.innerHTML = `(Resets Mon 00:00 UTC)`;
+    }
+}
+
+export function displayOtherTaskCountdown(task) {
+    const resetTimer = document.querySelector(`#${task.id} ~ .task-description .other-countdown`);
     if (!resetTimer) return;
 
     const now = new Date();
@@ -272,41 +307,6 @@ function displayOtherTaskCountdown(task) {
         }
     } else { // always availalbe task
         resetTimer.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextResetTimestamp).toString()}">${formatCountdown(nextResetTimestamp - now.getTime())}</span>)`;
-    }
-}
-
-function handleResets() {
-    displayLocalResetTimes();
-    runAutoResets();
-}
-
-function displayLocalResetTimes() {
-    try {
-        const now = new Date().getTime();
-
-        // Daily
-        const nextDailyResetTimestamp = getNextDailyMidnightUTC();
-        const dailyDiff = nextDailyResetTimestamp - now;
-        if (dailyResetTimeElement) {
-            dailyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextDailyResetTimestamp).toString()}">${formatCountdown(dailyDiff)}</span>)`;
-        }
-
-        // Weekly
-        let nextWeeklyResetTimestamp = getMostRecentMondayMidnightUTC();
-        if (now >= nextWeeklyResetTimestamp) {
-            nextWeeklyResetTimestamp += 7 * C.MILLISECONDS_PER_DAY;
-        }
-        const weeklyDiff = nextWeeklyResetTimestamp - now;
-        if (weeklyResetTimeElement) {
-            weeklyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextWeeklyResetTimestamp).toString()}">${formatCountdown(weeklyDiff)}</span>)`;
-        }
-
-        // Other
-        tasks.other.forEach((task) => displayOtherTaskCountdown(task));
-    } catch (e) {
-        console.error("Error calculating or displaying local reset times:", e);
-        if (dailyResetTimeElement) dailyResetTimeElement.innerHTML = `(Resets 00:00 UTC)`;
-        if (weeklyResetTimeElement) weeklyResetTimeElement.innerHTML = `(Resets Mon 00:00 UTC)`;
     }
 }
 
@@ -374,23 +374,6 @@ function runAutoResets() {
         saveData();
         populateSection(otherList, tasks.other, checklistData.progress);
         updateSectionControls('other-tasks-section')
-    }
-}
-
-function saveData(showStatus = true) {
-    hideError();
-    checklistData.lastSaved = new Date().toISOString();
-    try {
-        localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(checklistData));
-        updateLastSavedDisplay(checklistData.lastSaved);
-        if (showStatus) { showSaveStatus(); }
-    } catch (e) {
-        console.error("Error saving data to localStorage:", e);
-        let userMessage = "Could not save progress.";
-        if (e.name === 'QuotaExceededError' || (e.code && (e.code === 22 || e.code === 1014))) {
-            userMessage = "Could not save progress. Browser storage might be full.";
-        }
-        displayError(userMessage);
     }
 }
 
@@ -1018,11 +1001,33 @@ function updateSectionControls(sectionElementId) {
     }
 }
 
-function loadAndInitializeApp() {
-    initializeDOMElements();
-    hideError();
-    loadThemePreference();
+export function stopCountdown() {
+    if (countdownInterval) clearInterval(countdownInterval);
+}
 
+export function startCountdown() {
+    stopCountdown();
+    countdownInterval = setInterval(handleResets, 1000);
+}
+
+function saveData(showStatus = true) {
+    hideError();
+    checklistData.lastSaved = new Date().toISOString();
+    try {
+        localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(checklistData));
+        updateLastSavedDisplay(checklistData.lastSaved);
+        if (showStatus) { showSaveStatus(); }
+    } catch (e) {
+        console.error("Error saving data to localStorage:", e);
+        let userMessage = "Could not save progress.";
+        if (e.name === 'QuotaExceededError' || (e.code && (e.code === 22 || e.code === 1014))) {
+            userMessage = "Could not save progress. Browser storage might be full.";
+        }
+        displayError(userMessage);
+    }
+}
+
+function loadData() {
     const savedData = localStorage.getItem(DATA_STORAGE_KEY);
     if (savedData) {
         try {
@@ -1044,11 +1049,16 @@ function loadAndInitializeApp() {
             checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {}, lastTaskResetTimes: {}, notificationPreferences: {}, notificationsSent: {} };
         }
     }
+}
 
+export function loadAndInitializeApp() {
+    initializeDOMElements();
+    hideError();
+    loadThemePreference();
+    loadData();
     setDailyBackground();
+
     handleResets();
-    if (countdownInterval) clearInterval(countdownInterval);
-    countdownInterval = setInterval(handleResets, 1000);
 
     populateSection(dailyList, tasks.daily, checklistData.progress);
     populateSection(weeklyList, tasks.weekly, checklistData.progress);
@@ -1105,21 +1115,25 @@ function loadAndInitializeApp() {
         toggle.addEventListener('click', handleSectionToggle);
     });
 
-    document.getElementById('checklist-container').addEventListener('click', function(event) {
-        if (event.target.classList.contains('hide-section-button')) {
-            const sectionId = event.target.dataset.sectionId;
-            if (sectionId) {
-                const sectionElement = document.getElementById(sectionId);
-                if (sectionElement) {
-                    checklistData.manuallyHiddenSections[sectionId] = true;
-                    sectionElement.classList.add('section-is-hidden-by-user');
-                    event.target.classList.remove('visible');
-                    saveData(false);
-                    console.log(`Section ${sectionId} manually hidden.`);
+    try {
+        document.getElementById('checklist-container').addEventListener('click', function(event) {
+            if (event.target.classList.contains('hide-section-button')) {
+                const sectionId = event.target.dataset.sectionId;
+                if (sectionId) {
+                    const sectionElement = document.getElementById(sectionId);
+                    if (sectionElement) {
+                        checklistData.manuallyHiddenSections[sectionId] = true;
+                        sectionElement.classList.add('section-is-hidden-by-user');
+                        event.target.classList.remove('visible');
+                        saveData(false);
+                        console.log(`Section ${sectionId} manually hidden.`);
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.error("Checklist container not found!");
+    }
 
 
     if (errorCloseButton) {
@@ -1154,6 +1168,7 @@ function loadAndInitializeApp() {
 document.addEventListener('DOMContentLoaded', () => {
     try {
         loadAndInitializeApp();
+        startCountdown();
     } catch(error) {
         console.error("Critical Error during app.js initialization:", error);
         const errDisp = document.getElementById('error-display');

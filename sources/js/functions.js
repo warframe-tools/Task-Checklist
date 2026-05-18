@@ -97,6 +97,7 @@ export function parseDuration(str) {
 
 export function isDst(date, timezone) {
     // returns whether the given date is in Daylight Saving Time in the named timezone
+    if (typeof date === "undefined" || Number.isNaN(date)) {return undefined;}
     if (typeof date === "number" || typeof date === "string") {date = new Date(date);}
 
     const dateFormat = Intl.DateTimeFormat("en-CA", {timeZone: timezone, timeZoneName: "shortOffset"});

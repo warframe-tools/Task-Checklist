@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => ({
         restoreMocks: true,
         coverage: {
             reportsDirectory: "../.coverage",
-            exclude: ["img/"]
+            exclude: ["img/", "*.json"]
         }
     }
 }));

@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { isDst, parseDuration } from "../js/app.js";
+import { isDst, parseDuration } from "../js/functions.js";
 
 describe("Daylight Saving Time", () => {
     test.for([
