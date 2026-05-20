@@ -896,20 +896,16 @@ function resetSection(section) {
         sectionElementId = 'weekly-tasks-section';
     }
     let didReset = false;
-    taskList.forEach(task => {
+
+    function resetTask(task) {
         if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
             checklistData.progress[task.id] = false;
             didReset = true;
         }
-        if (task.subtasks) {
-            task.subtasks.forEach(subtask => { //FIXME: recursion
-                if (checklistData.progress[subtask.id] && !checklistData.hiddenTasks[subtask.id]) {
-                    checklistData.progress[subtask.id] = false;
-                    didReset = true;
-                }
-            });
-        }
-    });
+        if (task.subtasks) {task.subtasks.forEach(resetTask);}
+    }
+    taskList.forEach(resetTask);
+
     const now = new Date().toISOString();
     if (section === "daily") {checklistData.lastDailyReset = now;}
     else if (section === "weekly") {checklistData.lastWeeklyReset = now;}
