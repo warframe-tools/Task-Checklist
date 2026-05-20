@@ -75,5 +75,21 @@
             { "text": "Amber Archon Shard", "icon": "ArchonShardNira.png" },
             { "text": "Crimson Archon Shard", "icon": "ArchonShardAmar.png" }
         ]
+    },
+    "other_baro": {
+        "ref": "2022-12-30T09:00:00-05:00",
+        "order": [
+            { "text": "Strata Relay, Earth" },
+            { "text": "Larunda Relay, Mercury" },
+            { "text": "Kronia Relay, Saturn" },
+            { "text": "Orcus Relay, Pluto" }
+        ]
+    },
+    "other_eleanor": {
+        "ref": "2025-03-18",
+        "order": [
+            { "text": "Hema, Sporothrix, Catabolyst, Pox, Dual Torxica, Mire, and Motovore" },
+            { "text": "Bassocyst, Bubonico, Synapse, Tysis, Caustacyst, Hirudo, and Pathocyst" }
+        ]
     }
 }

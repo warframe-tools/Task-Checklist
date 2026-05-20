@@ -1,8 +1,9 @@
 // --- sources/js/functions.js ---
-// Functions that don't manipulate or depend on the DOM or global variables,
-// and have no side effects (apart from console messages).
-// Functions that generate HTML or DOM elements are allowed here,
-// as long as they don't actually insert them into the document
+/** Functions that don't manipulate or depend on the DOM or global variables,
+ * and have no side effects (apart from console messages).
+ * Functions that generate HTML or DOM elements are allowed here,
+ * as long as they don't actually insert them into the document
+ */
 
 import * as C from "./constants.js";
 
@@ -69,11 +70,12 @@ export function formatCountdown(ms) {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
+/** Returns the duration in milliseconds of the given "duration string".
+ * Duration strings look like "14d 5h 20m 15s", for number of days, hours
+ * minutes, and seconds. All parts are optional. Spaces are optional.
+ * Case insensitive. Integers only.
+ */
 export function parseDuration(str) {
-    // Returns the duration in milliseconds of the given "duration string".
-    // Duration strings look like "14d 5h 20m 15s", for number of days, hours
-    // minutes, and seconds. All parts are optional. Spaces are optional.
-    // Case insensitive. Integers only.
     if (!str || typeof str !== "string") {return undefined;}
 
     const map = {
@@ -95,8 +97,8 @@ export function parseDuration(str) {
     }, 0);
 }
 
+/** returns whether the given date is in Daylight Saving Time in the named timezone */
 export function isDst(date, timezone) {
-    // returns whether the given date is in Daylight Saving Time in the named timezone
     if (typeof date === "undefined" || Number.isNaN(date)) {return undefined;}
     if (typeof date === "number" || typeof date === "string") {date = new Date(date);}
 
@@ -117,9 +119,9 @@ export function isDst(date, timezone) {
     return currentOffset === dstOffset;
 }
 
+/** calculates the cycleNumber (number of resets since the reference time) of the given task at the given time (a Date object or timestamp) */
 export function calcCycleNumber(task, time) {
-    // calculates the cycleNumber (number of resets since the reference time) of the given task at the given time (a Date object or timestamp)
-    if (typeof time === "number") {time = new Date(time);}
+    time = new Date(time);
     const ref = new Date(task.ref || 0);
     const period = parseDuration(task.period);
     let diff = time.getTime() - ref.getTime();
@@ -135,4 +137,25 @@ export function makeInfoLineItem(task, prop, iconToolTip, icon) {
     } else {
         return "";
     }
+}
+
+/** Calculate the next task time(s) from the given task at the given date */
+export function calcTaskTimes(task, date) {
+    date = new Date(date);
+    const ref = new Date(task.ref || 0);
+    const period = parseDuration(task.period);
+    const cycleNumber = calcCycleNumber(task, date);
+    const prevResetTimestamp = ref.getTime() + (cycleNumber * period);
+    let nextResetTimestamp = prevResetTimestamp + period;
+    let thisCycleLeaveTimestamp = prevResetTimestamp + parseDuration(task.duration);
+
+    if (task.observesDst) {
+        if (isDst(nextResetTimestamp, C.SERVER_TIMEZONE))      {nextResetTimestamp      -= C.MILLISECONDS_PER_HOUR;}
+        if (isDst(thisCycleLeaveTimestamp, C.SERVER_TIMEZONE)) {thisCycleLeaveTimestamp -= C.MILLISECONDS_PER_HOUR;}
+    }
+
+    let isAvailable = true;
+    if (task.duration) {isAvailable = (date.getTime() < thisCycleLeaveTimestamp);}
+
+    return {nextResetTimestamp, thisCycleLeaveTimestamp, isAvailable};
 }

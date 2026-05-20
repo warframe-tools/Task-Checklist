@@ -10,9 +10,9 @@ import {
     getUTCDayOfYear,
     formatCountdown,
     parseDuration,
-    isDst,
     calcCycleNumber,
-    makeInfoLineItem
+    makeInfoLineItem,
+    calcTaskTimes,
 } from "./functions.js";
 
 import * as C from "./constants.js";
@@ -111,7 +111,7 @@ function initializeDOMElements() {
     scheduleDialog = document.getElementById("cycle-schedule");
 
     backgroundDivs = [];
-    dailyBackgroundImageIds.forEach(id => {
+    dailyBackgroundImageIds.forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
             backgroundDivs.push(el);
@@ -237,8 +237,8 @@ function setDailyBackground() {
 }
 
 function handleResets() {
-    displayLocalResetTimes();
     runAutoResets();
+    displayLocalResetTimes();
 }
 
 function displayLocalResetTimes() {
@@ -276,24 +276,14 @@ export function displayOtherTaskCountdown(task) {
     if (!resetTimer) return;
 
     const now = new Date();
-    const ref = new Date(task.ref || 0);
-    const period = parseDuration(task.period);
-    const cycleNumber = calcCycleNumber(task, now);
-    const prevResetTimestamp = ref.getTime() + (cycleNumber * period);
-    let nextResetTimestamp = prevResetTimestamp + period;
-    let thisCycleLeaveTimestamp = prevResetTimestamp + parseDuration(task.duration);
-
-    if (task.observesDst) {
-        if (isDst(nextResetTimestamp, C.SERVER_TIMEZONE))      {nextResetTimestamp      -= C.MILLISECONDS_PER_HOUR;}
-        if (isDst(thisCycleLeaveTimestamp, C.SERVER_TIMEZONE)) {thisCycleLeaveTimestamp -= C.MILLISECONDS_PER_HOUR;}
-    }
+    const taskTimes = calcTaskTimes(task, now);
 
     if (task.duration) { // intermittently available task (e.g., Baro)
         const leaveNotifiId = `${task.id}/departure`;
 
-        if (now.getTime() < thisCycleLeaveTimestamp) { // task available
-            const diff = thisCycleLeaveTimestamp - now.getTime();
-            resetTimer.innerHTML = `(Available for <span class="tooltip" title="${new Date(thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
+        if (taskTimes.isAvailable) {
+            const diff = taskTimes.thisCycleLeaveTimestamp - now.getTime();
+            resetTimer.innerHTML = `(Available for <span class="tooltip" title="${new Date(taskTimes.thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
 
             // Leaving soon notification (Arrival notification is handled in runAutoResets, the same as always available tasks)
             if (diff < C.MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifiId] !== cycleNumber) {
@@ -302,11 +292,11 @@ export function displayOtherTaskCountdown(task) {
                 saveData(false);
             }
         } else { // task not available
-            resetTimer.innerHTML = `(Available in <span class="tooltip" title="${new Date(nextResetTimestamp).toString()}">${formatCountdown(nextResetTimestamp - now.getTime())}</span>)`;
+            resetTimer.innerHTML = `(Available in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
             if (checklistData.notificationsSent[leaveNotifiId]) {delete checklistData.notificationsSent[leaveNotifiId];}
         }
     } else { // always availalbe task
-        resetTimer.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextResetTimestamp).toString()}">${formatCountdown(nextResetTimestamp - now.getTime())}</span>)`;
+        resetTimer.innerHTML = `(Resets in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
     }
 }
 
@@ -346,8 +336,8 @@ function runAutoResets() {
 
         const cycleNumber = calcCycleNumber(task, now);
         const lastResetTime = checklistData.lastTaskResetTimes[task.id] || 0;
-        const lastResetCycleNumber = calcCycleNumber(task, new Date(lastResetTime));
-        if (cycleNumber > lastResetCycleNumber) {
+        const lastResetCycleNumber = calcCycleNumber(task, lastResetTime);
+        if (cycleNumber > lastResetCycleNumber || !calcTaskTimes(task, now).isAvailable) {
             // Reset task
             if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
                 checklistData.progress[task.id] = false;
@@ -407,6 +397,8 @@ function showNotification(title, body) {
 }
 
 function createChecklistItem(task, isChecked, isSubtask = false) {
+    const isAvailable = calcTaskTimes(task, new Date()).isAvailable;
+
     const listItem = document.createElement('li');
     listItem.classList.add('task-item');
     if (checklistData.hiddenTasks[task.id]) {
@@ -418,10 +410,20 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     checkbox.type = 'checkbox';
     checkbox.id = task.id;
     checkbox.checked = isChecked;
-    checkbox.classList.add('position-relative');
+    if (!isAvailable) {
+        checkbox.indeterminate = true;
+    }
     if (isSubtask) {
         checkbox.dataset.parentId = task.parentId;
     }
+
+    // Lock unavailable task
+    checkbox.addEventListener("click", (event) => {
+        // onchange happens *after* the checkbox state has changed. onclick happens *before*.
+        if (!isAvailable) {
+            event.preventDefault(); // changing the state of the checkbox and then firing onchange is the default action. Don't do it.
+        }
+    });
 
     // Task Icon
     const icon = document.createElement('img');
@@ -492,7 +494,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         const taskText = document.createElement('span');
         taskText.textContent = task.text;
         taskText.classList.add("task-text");
-        if (isChecked) taskDescription.classList.add('checked');
+        if (isChecked) {taskDescription.classList.add("checked");}
+        if (!isAvailable) {taskDescription.classList.add("unavailable");}
         taskDescription.appendChild(taskText);
         makeInfoLine(task, taskDescription);
         parentHeaderDiv.appendChild(taskDescription);
@@ -513,7 +516,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         subtaskList.id = `${task.id}-subtasks`;
         subtaskList.classList.add('list-none', 'pl-0', 'mt-1', 'subtask-list');
         if (task.subtasks && Array.isArray(task.subtasks)) {
-            task.subtasks.forEach(subtask => {
+            task.subtasks.forEach((subtask) => {
                 subtask.parentId = task.id;
                 const subtaskIsChecked = checklistData.progress[subtask.id] || false;
                 const subtaskItem = createChecklistItem(subtask, subtaskIsChecked, true);
@@ -551,7 +554,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             checklistData.progress[task.id] = currentlyChecked;
             taskText.classList.toggle('checked', currentlyChecked);
 
-            task.subtasks.forEach(subtask => {
+            task.subtasks.forEach((subtask) => {
                 const subCheckbox = document.getElementById(subtask.id);
 
                 // this is kind of a stupid hack: We can recursively fire events with dispatchEvent, but those events
@@ -582,7 +585,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         makeInfoLine(task, label);
 
         label.classList.add("task-description");
-        if (isChecked) { label.classList.add('checked'); }
+        if (isChecked) { label.classList.add("checked"); }
+        if (!isAvailable) { label.classList.add("unavailable"); }
 
         listItem.appendChild(checkbox);
         if (task.icon) { listItem.appendChild(icon); }
@@ -590,7 +594,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         listItem.appendChild(controlsContainer);
 
         // Checkbox Changed
-        checkbox.addEventListener('change', (event) => {
+        checkbox.addEventListener("change", (event) => {
             let currentlyChecked;
             if ("detail" in event) {
                 currentlyChecked = event.detail;
@@ -600,7 +604,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
             event.target.checked = currentlyChecked;
             checklistData.progress[task.id] = currentlyChecked;
-            label.classList.toggle('checked', currentlyChecked);
+            label.classList.toggle("checked", currentlyChecked);
 
             // Update parent task checkboxes
             let t = task;
@@ -608,15 +612,15 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
                 let parentTaskDefinition = getTaskById(t.parentId)
 
                 if (parentTaskDefinition && parentTaskDefinition.subtasks) {
-                    const allSubtasksChecked = parentTaskDefinition.subtasks.every(st => checklistData.progress[st.id]);
+                    const allSubtasksChecked = parentTaskDefinition.subtasks.every((st) => checklistData.progress[st.id]);
                     checklistData.progress[parentTaskDefinition.id] = allSubtasksChecked;
 
                     const parentCheckbox = document.getElementById(parentTaskDefinition.id);
-                    const parentContainer = parentCheckbox ? parentCheckbox.closest('.parent-task-container') : null;
-                    const parentTextSpan = parentContainer ? parentContainer.querySelector('.parent-task-header .task-description') : null;
+                    const parentContainer = parentCheckbox ? parentCheckbox.closest(".parent-task-container") : null;
+                    const parentTextSpan = parentContainer ? parentContainer.querySelector(".parent-task-header .task-description") : null;
 
-                    if (parentCheckbox) parentCheckbox.checked = allSubtasksChecked;
-                    if (parentTextSpan) parentTextSpan.classList.toggle('checked', allSubtasksChecked);
+                    if (parentCheckbox) {parentCheckbox.checked = allSubtasksChecked;}
+                    if (parentTextSpan) {parentTextSpan.classList.toggle("checked", allSubtasksChecked);}
                 }
 
                 t = parentTaskDefinition;  // move up a level
@@ -640,7 +644,7 @@ function makeCycleIcon(cycleData) {
     }
 }
 
-function showScheduleAction(task, period, cycleIndex) {
+function showScheduleAction(task, period, cycleIndex, isAvailable) {
     const cycleCount = cycles[task.id].order.length;
 
     return () => {
@@ -661,12 +665,12 @@ function showScheduleAction(task, period, cycleIndex) {
 
         const now = new Date();
         const ref = new Date(cycles[task.id].ref);
-        const cyclesSinceRef = Math.floor((now.getTime() - ref.getTime()) / period);
+        const cyclesSinceRef = Math.floor((now.getTime() - ref.getTime()) / period) + (isAvailable ? 0 : 1); // add 1 if unavailable to skip the current cycle for unavailable intermittent tasks
         const currentCycleStartTime = ref.getTime() + (period * cyclesSinceRef);
 
         for (let i = 0; i <= cycleCount; i++) {
             let date = "Now";
-            if (i !== 0) {
+            if (i !== 0 || !isAvailable) {
                 const rowCycleStartDate = new Date(currentCycleStartTime + (period * i));
                 date = rowCycleStartDate.toISOString().split("T")[0]; // toISOString is always in UTC, which is what we want. The part before "T" is the date
             }
@@ -709,6 +713,7 @@ function makeInfoLine(task, appendTo) {
             const cycleCount = cycles[task.id].order.length;
 
             let prefix, period, cycleIndex;
+            const isAvailable = calcTaskTimes(task, now).isAvailable;
             if (task.id.startsWith("weekly_")) {
                 prefix = "This&nbsp;Week";
                 period = 7 * C.MILLISECONDS_PER_DAY;
@@ -722,10 +727,13 @@ function makeInfoLine(task, appendTo) {
             }
             else {
                 prefix = "Current&nbsp;Cycle";
-                console.error(`cycles are not implemented for this task (${task.id})`);
+                if (!isAvailable) {prefix = "Next&nbsp;Cycle";}
+                period = parseDuration(task.period);
             }
+
             cycleIndex = modulo(Math.floor((now.getTime() - ref.getTime()) / period), cycleCount);
-            console.log(`${task.id} cycleNumber ${cycleIndex}`);
+            if (!isAvailable) {cycleIndex++;}
+            console.log(`${task.id} cycleIndex ${cycleIndex}`);
             const cycleData = cycles[task.id].order[cycleIndex];
 
             const cyclePrefix = document.createElement("span");
@@ -742,7 +750,7 @@ function makeInfoLine(task, appendTo) {
             showSchedule.type = "button";
             showSchedule.classList.add("show-schedule-btn");
             showSchedule.innerHTML = "Show&nbsp;Schedule";
-            showSchedule.addEventListener("click", showScheduleAction(task, period, cycleIndex));
+            showSchedule.addEventListener("click", showScheduleAction(task, period, cycleIndex, isAvailable));
             currentCycle.appendChild(showSchedule);
 
             taskInfoExpanderContent.appendChild(currentCycle);
@@ -805,7 +813,7 @@ function populateSection(sectionElement, taskList, progress) {
         return;
     }
     sectionElement.innerHTML = '';
-    taskList.forEach(task => {
+    taskList.forEach((task) => {
         const isChecked = progress[task.id] || false;
         const listItem = createChecklistItem(task, isChecked);
         sectionElement.appendChild(listItem);
@@ -832,7 +840,7 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
     }
 
     if (!confirmState[confirmKey].isConfirming) {
-        Object.keys(confirmState).forEach(key => {
+        Object.keys(confirmState).forEach((key) => {
             if (key !== confirmKey && confirmState[key].isConfirming) {
                 let btnElement, btnText;
                 if (key === 'all') { btnElement = resetButton; btnText = 'Reset All Checks'; }
@@ -950,8 +958,8 @@ function unhideAllAction() {
     checklistData.manuallyHiddenSections = {};
     saveData(false);
 
-    document.querySelectorAll('.task-item.hidden-task').forEach(item => item.classList.remove('hidden-task'));
-    document.querySelectorAll('section.section-is-hidden-by-user').forEach(section => section.classList.remove('section-is-hidden-by-user'));
+    document.querySelectorAll(".task-item.hidden-task").forEach((item) => item.classList.remove("hidden-task"));
+    document.querySelectorAll("section.section-is-hidden-by-user").forEach((section) => section.classList.remove("section-is-hidden-by-user"));
 
     populateSection(dailyList, tasks.daily, checklistData.progress);
     populateSection(weeklyList, tasks.weekly, checklistData.progress);
@@ -988,7 +996,7 @@ function updateSectionControls(sectionElementId) {
         return;
     }
 
-    const allTasksIndividuallyHidden = allTaskItems.every(item => item.classList.contains('hidden-task'));
+    const allTasksIndividuallyHidden = allTaskItems.every((item) => item.classList.contains("hidden-task"));
 
     if (allTasksIndividuallyHidden) {
         hideSectionButton.classList.add('visible');
@@ -1107,8 +1115,8 @@ export function loadAndInitializeApp() {
         optionsCloseButton.addEventListener('click', toggleMenu);
     } else { console.error("Options close button not found!"); }
 
-    sectionToggles.forEach(toggle => {
-        toggle.addEventListener('click', handleSectionToggle);
+    sectionToggles.forEach((toggle) => {
+        toggle.addEventListener("click", handleSectionToggle);
     });
 
     try {

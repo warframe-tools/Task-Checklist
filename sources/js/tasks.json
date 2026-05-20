@@ -264,7 +264,8 @@
                     "text": "Acrithis: Check daily Arcane and Captura offering.",
                     "icon": "Acrithis.png",
                     "location": "Duviri/Dormizone",
-                    "npc": "Acrithis"
+                    "npc": "Acrithis",
+                    "prereq": "Drifter Intrinsics: Opportunity Rank 9 (for Arcanes)"
                 },
                 {
                     "id": "daily_ticker_crew",

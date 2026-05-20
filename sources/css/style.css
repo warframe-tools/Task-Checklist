@@ -83,6 +83,12 @@ a.git-hash-text {
     text-decoration: line-through;
     color: var(--text-label-checked);
 }
+.task-description.unavailable {
+    cursor: not-allowed;
+}
+.task-description.unavailable .task-text {
+    font-style: italic;
+}
 .task-item.hidden-task {
     display: none !important;
 }
@@ -150,14 +156,29 @@ input[type="checkbox"] {
     background-color: var(--checkbox-bg);
     flex-shrink: 0;
 }
+input[type="checkbox"]::after {
+    position: absolute;
+    font-size: 0.8rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 input[type="checkbox"]:checked {
     background-color: var(--checkbox-checked-bg);
     border-color: var(--checkbox-checked-border);
 }
 input[type="checkbox"]:checked::after {
-    content: '✔'; position: absolute;
-    color: white; font-size: 0.8rem;
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    content: "✔";
+    color: var(--checkbox-check-color);
+}
+input[type="checkbox"]:indeterminate {
+    background-color: var(--checkbox-locked-bg);
+    border-color: var(--checkbox-locked-border);
+    cursor: not-allowed;
+}
+input[type="checkbox"]:indeterminate::after {
+    content: "\1F512\FE0E"; /* LOCK + VARIATION SELECTOR-15 (text presentation) */
+    color: var(--checkbox-lock-color);
 }
 li.task-item {
     display: flex;
@@ -339,7 +360,7 @@ body:not(.light-mode) img.icon-filter {
         text-underline-offset: 0.25em;
     }
     th:before, th:after {
-        content: "\00a0\00a0\00a0\00a0";
+        content: "\00a0\00a0\00a0\00a0"; /* some no-break spaces added so the underline extends a bit on both sides */
     }
     tbody tr:first-child td {
         font-weight: 600;
