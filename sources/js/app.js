@@ -41,18 +41,29 @@ const DATA_STORAGE_KEY = "warframeChecklistData_format1";
 import tasks from "./tasks.json" with {type: "json"};
 import cycles from "./cycles.json" with {type: "json"};
 
+function _prepTasks() {
+    function prep(period) {
+        return (task) => {
+            if (task.ref) { // alternate ref tasks need a period for countdown and reset to work correctly
+                task.period = period;
+            }
+        }
+    }
+    tasks.daily.forEach(prep("1d"));
+    tasks.weekly.forEach(prep("7d"));
+}
+_prepTasks();
+
 const taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
 function iconURL(iconName) {
     return taskIcons["../img/icons/" + iconName];
 }
 
 // --- DOM Elements (defined after DOMContentLoaded) ---
-let bodyElement, contentElement, themeToggleButton, hamburgerButton, slideoutMenuOverlay, menuContentBox, optionsCloseButton,
-    dailyList, weeklyList, otherList, resetDailyButton, resetWeeklyButton, resetButton, unhideTasksButton,
-    lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement, weeklyResetTimeElement,
-    errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton, appVersionElement, gitHashElement,
-    wfVersionElement, scheduleDialog,
-    backgroundDivs = [];
+let bodyElement, themeToggleButton, hamburgerButton, slideoutMenuOverlay, optionsCloseButton, resetDailyButton,
+    resetWeeklyButton, resetButton, unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles,
+    dailyResetTimeElement, weeklyResetTimeElement, errorDisplayElement, errorMessageElement, errorCloseButton,
+    errorCopyButton, appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, backgroundDivs = [];
 
 
 // --- State Variables ---
@@ -83,15 +94,10 @@ let countdownInterval;
 
 function initializeDOMElements() {
     bodyElement = document.body;
-    contentElement = document.querySelector('.checklist-content');
     themeToggleButton = document.getElementById('theme-toggle-button');
     hamburgerButton = document.getElementById('hamburger-button');
     slideoutMenuOverlay = document.getElementById('slideout-menu-overlay');
-    menuContentBox = document.getElementById('menu-content-box');
     optionsCloseButton = document.querySelector('#menu-content-box .menu-close-button');
-    dailyList = document.querySelector('#daily-tasks-content ul');
-    weeklyList = document.querySelector('#weekly-tasks-content ul');
-    otherList = document.querySelector('#other-tasks-content ul');
     resetDailyButton = document.getElementById('reset-daily-button');
     resetWeeklyButton = document.getElementById('reset-weekly-button');
     resetButton = document.getElementById('reset-button');
@@ -263,6 +269,8 @@ function displayLocalResetTimes() {
         }
 
         // Other
+        tasks.daily.forEach((task) => displayOtherTaskCountdown(task));
+        tasks.weekly.forEach((task) => displayOtherTaskCountdown(task));
         tasks.other.forEach((task) => displayOtherTaskCountdown(task));
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
@@ -309,7 +317,7 @@ function runAutoResets() {
     let lastDailyResetUTCString = lastDailyResetDate ? getUTCDateString(lastDailyResetDate) : null;
     if (!lastDailyResetUTCString || lastDailyResetUTCString !== todayUTCString) {
         console.log(`Performing daily auto-reset (UTC). Today: ${todayUTCString}, Last Reset: ${lastDailyResetUTCString}`);
-        resetSection("daily");
+        resetSection("daily", false);
     }
 
     const lastWeeklyResetTimestamp = checklistData.lastWeeklyReset ? new Date(checklistData.lastWeeklyReset).getTime() : null;
@@ -317,54 +325,64 @@ function runAutoResets() {
     if (!lastWeeklyResetTimestamp || lastWeeklyResetTimestamp < mostRecentMondayUTCTimestamp) {
         if (nowUTCTimestamp >= mostRecentMondayUTCTimestamp) {
             console.log(`Performing weekly auto-reset (UTC). Current Time: ${nowUTCTimestamp}, Last Reset: ${lastWeeklyResetTimestamp}, Target Monday: ${mostRecentMondayUTCTimestamp}`);
-            resetSection("weekly");
+            resetSection("weekly", false);
         }
     }
 
-    let didResetOther = false;
-    if (!checklistData.lastTaskResetTimes) checklistData.lastTaskResetTimes = {};
-    if (!checklistData.notificationsSent) checklistData.notificationsSent = {};
+    if (!checklistData.lastTaskResetTimes) { checklistData.lastTaskResetTimes = {}; }
+    if (!checklistData.notificationsSent) { checklistData.notificationsSent = {}; }
 
-    tasks.other.forEach((task) => {
-        if (!task.period) {
-            console.error(`[${task.id}] other_* tasks MUST specify a "period"`);
-            return;
+    for (const section of ["daily", "weekly", "other"]) {
+        const didReset = tasks[section].map(otherTaskReset).some((r) => r);
+        if (didReset) {
+            saveData();
+            populateSection(section);
         }
-        if (!task.ref) {
-            console.warn(`[${task.id}] other_* tasks SHOULD specify a "ref". The default ref of 0 ("1970-01-01T00:00:00Z") will be used otherwise.`)
-        }
-
-        const cycleNumber = calcCycleNumber(task, now);
-        const lastResetTime = checklistData.lastTaskResetTimes[task.id] || 0;
-        const lastResetCycleNumber = calcCycleNumber(task, lastResetTime);
-        if (cycleNumber > lastResetCycleNumber || !calcTaskTimes(task, now).isAvailable) {
-            // Reset task
-            if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
-                checklistData.progress[task.id] = false;
-                console.log(`Resetting task: ${task.id}`);
-                didResetOther = true;
-            }
-            checklistData.lastTaskResetTimes[task.id] = now.getTime();
-
-            // Delete old notification record
-            const notifSent = checklistData.notificationsSent[task.id];
-            if (notifSent && notifSent !== cycleNumber) {
-                delete checklistData.notificationsSent[task.id];
-            }
-
-            // Send and record new notification
-            if (checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[task.id] !== cycleNumber) {
-                showNotification(`${task.text.split(":")[0]} has reset!`, "Vendor stock may have updated.");
-                checklistData.notificationsSent[task.id] = cycleNumber;
-                saveData(false);
-            }
-        }
-    });
-    if (didResetOther) {
-        saveData();
-        populateSection(otherList, tasks.other, checklistData.progress);
-        updateSectionControls('other-tasks-section')
     }
+}
+
+function otherTaskReset(task) {
+    const section = task.id.split("_")[0];
+    if (["daily", "weekly"].includes(section) && !task.ref) { // daily and weekly tasks with an alternate ref are handled as "other" tasks
+        return false;
+    } else if (!task.period) {
+        console.error(`[${task.id}] other_* tasks MUST specify a "period"`);
+        return false;
+    }
+    if (!task.ref) {
+        console.warn(`[${task.id}] other_* tasks SHOULD specify a "ref". The default ref of 0 ("1970-01-01T00:00:00Z") will be used otherwise.`)
+    }
+
+    let didReset = false;
+
+    const now = new Date();
+    const cycleNumber = calcCycleNumber(task, now);
+    const lastResetTime = checklistData.lastTaskResetTimes[task.id] || 0;
+    const lastResetCycleNumber = calcCycleNumber(task, lastResetTime);
+    if (cycleNumber > lastResetCycleNumber || !calcTaskTimes(task, now).isAvailable) {
+        // Reset task
+        if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
+            checklistData.progress[task.id] = false;
+            console.log(`Resetting task: ${task.id}`);
+            didReset = true;
+        }
+        checklistData.lastTaskResetTimes[task.id] = now.getTime();
+
+        // Delete old notification record
+        const notifSent = checklistData.notificationsSent[task.id];
+        if (notifSent && notifSent !== cycleNumber) {
+            delete checklistData.notificationsSent[task.id];
+        }
+
+        // Send and record new notification
+        if (checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[task.id] !== cycleNumber) {
+            showNotification(`${task.text.split(":")[0]} has reset!`, "Vendor stock may have updated.");
+            checklistData.notificationsSent[task.id] = cycleNumber;
+            saveData(false);
+        }
+    }
+
+    return didReset;
 }
 
 async function requestNotificationPermission() {
@@ -569,6 +587,9 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     } else {
         const label = document.createElement('label');
         label.htmlFor = task.id;
+        label.classList.add("task-description");
+        if (isChecked) { label.classList.add("checked"); }
+        if (!isAvailable) { label.classList.add("unavailable"); }
 
         // Task Text
         label.innerHTML = `<span class="task-text">${task.text}</span>`;
@@ -583,10 +604,6 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
         // Info Line & Cycle Schedule
         makeInfoLine(task, label);
-
-        label.classList.add("task-description");
-        if (isChecked) { label.classList.add("checked"); }
-        if (!isAvailable) { label.classList.add("unavailable"); }
 
         listItem.appendChild(checkbox);
         if (task.icon) { listItem.appendChild(icon); }
@@ -807,14 +824,17 @@ function _getSubtaskById(task, id) {
     return undefined;
 }
 
-function populateSection(sectionElement, taskList, progress) {
+function populateSection(section) {
+    const sectionElement = document.querySelector(`#${section}-tasks-content ul`);
+    const taskList = tasks[section];
+
     if (!sectionElement) {
         console.error("Section element not found for population:", sectionElement);
         return;
     }
     sectionElement.innerHTML = '';
     taskList.forEach((task) => {
-        const isChecked = progress[task.id] || false;
+        const isChecked = checklistData.progress[task.id] || false;
         const listItem = createChecklistItem(task, isChecked);
         sectionElement.appendChild(listItem);
     });
@@ -824,7 +844,7 @@ function populateSection(sectionElement, taskList, progress) {
 }
 
 function resetSpecificButtonState(buttonElement, defaultText, stateKey) {
-    if (!buttonElement || !confirmState[stateKey]) return;
+    if (!buttonElement || !confirmState[stateKey]) { return };
     clearTimeout(confirmState[stateKey].timeout);
     confirmState[stateKey].timeout = null;
     confirmState[stateKey].isConfirming = false;
@@ -887,50 +907,42 @@ function resetAllAction() {
     console.log("Checklist reset complete.");
 }
 
-function resetSection(section) {
+function resetSection(section, resetAltRefTasks=false) {
     const validSections = ["daily", "weekly"];
     if (!validSections.includes(section)) {
         console.error("Section '%s' is not a valid section name: %s", section, validSections);
         return;
     }
-    let taskList, sectionElement, sectionElementId;
-    if (section === "daily") {
-        taskList = tasks.daily;
-        sectionElement = dailyList;
-        sectionElementId = 'daily-tasks-section';
-    } else if (section === "weekly") {
-        taskList = tasks.weekly;
-        sectionElement = weeklyList;
-        sectionElementId = 'weekly-tasks-section';
-    }
-    let didReset = false;
+
+    let didReset = 0;
 
     function resetTask(task) {
-        if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
+        if (task.ref && !resetAltRefTasks) {
+            didReset += otherTaskReset(task);
+        } else if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
             checklistData.progress[task.id] = false;
-            didReset = true;
+            didReset++;
         }
         if (task.subtasks) {task.subtasks.forEach(resetTask);}
     }
-    taskList.forEach(resetTask);
+    tasks[section].forEach(resetTask);
 
     const now = new Date().toISOString();
     if (section === "daily") {checklistData.lastDailyReset = now;}
     else if (section === "weekly") {checklistData.lastWeeklyReset = now;}
     saveData();
     if (didReset) {
-        populateSection(sectionElement, taskList, checklistData.progress);
-        updateSectionControls(sectionElementId);
+        populateSection(section);
     }
-    console.log("%s checks reset.", section);
+    console.log(`${section} checks reset.`);
 }
 
 function resetDailyAction() {
-    resetSection("daily");
+    resetSection("daily", true);
 }
 
 function resetWeeklyAction() {
-    resetSection("weekly");
+    resetSection("weekly", true);
 }
 
 function handleSectionToggle(event) {
@@ -961,20 +973,17 @@ function unhideAllAction() {
     document.querySelectorAll(".task-item.hidden-task").forEach((item) => item.classList.remove("hidden-task"));
     document.querySelectorAll("section.section-is-hidden-by-user").forEach((section) => section.classList.remove("section-is-hidden-by-user"));
 
-    populateSection(dailyList, tasks.daily, checklistData.progress);
-    populateSection(weeklyList, tasks.weekly, checklistData.progress);
-    populateSection(otherList, tasks.other, checklistData.progress);
-    ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
+    ["daily", "weekly", "other"].forEach(populateSection);
     console.log("All tasks and sections unhidden.");
     toggleMenu();
 }
 
 function updateSectionControls(sectionElementId) {
     const sectionElement = document.getElementById(sectionElementId);
-    if (!sectionElement) return;
+    if (!sectionElement) { return; }
 
     const hideSectionButton = sectionElement.querySelector('.hide-section-button');
-    if (!hideSectionButton) return;
+    if (!hideSectionButton) { return; }
 
     if (checklistData.manuallyHiddenSections[sectionElementId]) {
         sectionElement.classList.add('section-is-hidden-by-user');
@@ -1064,13 +1073,8 @@ export function loadAndInitializeApp() {
 
     handleResets();
 
-    populateSection(dailyList, tasks.daily, checklistData.progress);
-    populateSection(weeklyList, tasks.weekly, checklistData.progress);
-    populateSection(otherList, tasks.other, checklistData.progress);
+    ["daily", "weekly", "other"].forEach(populateSection);
     updateLastSavedDisplay(checklistData.lastSaved);
-
-    ['daily-tasks-section', 'weekly-tasks-section', 'other-tasks-section'].forEach(updateSectionControls);
-
 
     // Setup event listeners
     if (appVersionElement) appVersionElement.textContent = APP_VERSION;

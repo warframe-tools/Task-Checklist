@@ -128,7 +128,9 @@
             "icon": "Sortie.png",
             "location": "Base of Operations",
             "terminal": "Navigation",
-            "prereq": "The War Within"
+            "prereq": "The War Within",
+            "ref": "2015-12-03T12:00:00-05:00",
+            "observesDst": true
         },
         {
             "id": "daily_focus",

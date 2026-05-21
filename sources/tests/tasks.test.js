@@ -45,6 +45,8 @@ describe("valildate task definitions", () => {
                 expect(task, 'other_* tasks MUST specify a "period"').toHaveProperty("period");
                 expect(parseDuration(task.period), `"${task.period}" is not a valid period`).toBeGreaterThan(0);
                 expect.soft(task, 'other_* tasks SHOULD specify a "ref". The default ref of 0 ("1970-01-01T00:00:00Z") will be used otherwise.').toHaveProperty("ref");
+            } else {
+                expect(task, "Daily and weekly tasks MUST NOT specify a period").not.toHaveProperty("period");
             }
         });
     });
