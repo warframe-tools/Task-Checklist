@@ -3,15 +3,11 @@
 
 /* --- Background Image Styles --- */
 /* Paths are relative to this style.css file (e.g., if style.css is in sources/css/ and images are in sources/img/) */
-#bg-image-0 {
-    background-image: url('../img/garuda-fortuna.webp');
-}
-#bg-image-1 {
-    background-image: url('../img/gara-eidolon.webp');
-}
-#bg-image-2 {
-    background-image: url('../img/heart-of-deimos-warframe.webp');
-}
+#bg-image-0 { background-image: url('../img/garuda-fortuna.webp'); }
+#bg-image-1 { background-image: url('../img/gara-eidolon.webp'); }
+#bg-image-2 { background-image: url('../img/heart-of-deimos-warframe.webp'); }
+#bg-image-3 { background-image: url('../img/duviri.webp'); }
+#bg-image-4 { background-image: url('../img/perita.webp'); }
 /* Add more #bg-image-X rules if you have more images */
 
 .daily-background-image {

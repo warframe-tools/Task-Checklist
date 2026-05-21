@@ -24,7 +24,9 @@ import * as svgIcons from "./icons.js";
 const dailyBackgroundImageIds = [
     'bg-image-0',
     'bg-image-1',
-    'bg-image-2'
+    'bg-image-2',
+    'bg-image-3',
+    'bg-image-4',
     // Add more IDs if you add more background image divs in HTML
 ];
 const APP_VERSION = "4.0";
