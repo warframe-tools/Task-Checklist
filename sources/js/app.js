@@ -128,41 +128,47 @@ function initializeDOMElements() {
 }
 
 function displayError(message) {
-    if (!errorDisplayElement || !errorMessageElement) return;
+    if (!errorDisplayElement || !errorMessageElement) { return; }
     console.error("Displaying Error:", message);
     errorMessageElement.textContent = message;
-    errorDisplayElement.classList.add('visible');
-    if (errorCopyButton) errorCopyButton.textContent = 'Copy';
+    errorDisplayElement.classList.add("visible");
+    if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
 }
 
 function hideError() {
-    if (!errorDisplayElement) return;
-    errorDisplayElement.classList.remove('visible');
+    if (!errorDisplayElement) { return; }
+    errorDisplayElement.classList.remove("visible");
     errorMessageElement.textContent = '';
-    if (errorCopyButton) errorCopyButton.textContent = 'Copy';
+    if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
 }
 
 function copyErrorToClipboard() {
     const errorMessage = errorMessageElement.textContent;
     if (!errorMessage || !navigator.clipboard) {
         console.warn("Clipboard API not available or no error message to copy.");
-        if (errorCopyButton) errorCopyButton.textContent = 'Failed';
-        setTimeout(() => { if (errorCopyButton) errorCopyButton.textContent = 'Copy'; }, 2000);
+        if (errorCopyButton) { errorCopyButton.textContent = "Failed"; }
+        setTimeout(() => {
+            if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
+        }, 2000);
         return;
     }
     navigator.clipboard.writeText(errorMessage).then(() => {
         console.log("Error message copied to clipboard.");
-        if (errorCopyButton) errorCopyButton.textContent = 'Copied!';
-        setTimeout(() => { if (errorCopyButton) errorCopyButton.textContent = 'Copy'; }, 2000);
-    }).catch(err => {
-        console.error('Failed to copy error message: ', err);
-        if (errorCopyButton) errorCopyButton.textContent = 'Failed';
-        setTimeout(() => { if (errorCopyButton) errorCopyButton.textContent = 'Copy'; }, 2000);
+        if (errorCopyButton) { errorCopyButton.textContent = "Copied!"; }
+        setTimeout(() => {
+            if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
+        }, 2000);
+    }).catch((err) => {
+        console.error("Failed to copy error message: ", err);
+        if (errorCopyButton) { errorCopyButton.textContent = "Failed"; }
+        setTimeout(() => {
+            if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
+        }, 2000);
     });
 }
 
 function applyTheme(theme) {
-    if (!bodyElement || !themeToggleButton) return;
+    if (!bodyElement || !themeToggleButton) { return; }
 
     if (theme === 'light') {
         bodyElement.classList.add('light-mode');
@@ -213,7 +219,7 @@ function updateLastSavedDisplay(timestamp) {
 }
 
 function showSaveStatus() {
-    if (!saveStatusElement) return;
+    if (!saveStatusElement) { return; }
     clearTimeout(saveStatusTimeout);
     saveStatusElement.style.opacity = '1';
     saveStatusTimeout = setTimeout(() => { saveStatusElement.style.opacity = '0'; }, 1500);
@@ -274,14 +280,14 @@ function displayLocalResetTimes() {
         tasks.other.forEach((task) => displayOtherTaskCountdown(task));
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
-        if (dailyResetTimeElement) dailyResetTimeElement.innerHTML = `(Resets 00:00 UTC)`;
-        if (weeklyResetTimeElement) weeklyResetTimeElement.innerHTML = `(Resets Mon 00:00 UTC)`;
+        if (dailyResetTimeElement) { dailyResetTimeElement.innerHTML = `(Resets 00:00 UTC)`; }
+        if (weeklyResetTimeElement) { weeklyResetTimeElement.innerHTML = `(Resets Mon 00:00 UTC)`; }
     }
 }
 
 export function displayOtherTaskCountdown(task) {
     const resetTimer = document.querySelector(`#${task.id} ~ .task-description .other-countdown`);
-    if (!resetTimer) return;
+    if (!resetTimer) { return; }
 
     const now = new Date();
     const taskTimes = calcTaskTimes(task, now);
@@ -465,7 +471,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         notificationButton.title = `Toggle notifications for ${task.text.split(':')[0]}`;
 
         notificationButton.innerHTML = svgIcons.bellIcon;
-        if(checklistData.notificationPreferences[task.id]) notificationButton.classList.add('active');
+        if (checklistData.notificationPreferences[task.id]) { notificationButton.classList.add("active"); }
 
         notificationButton.addEventListener('click', async (e) => {
             e.stopPropagation();
@@ -867,7 +873,7 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
                 else if (key === 'daily') { btnElement = resetDailyButton; btnText = 'Reset Daily Checks'; }
                 else if (key === 'weekly') { btnElement = resetWeeklyButton; btnText = 'Reset Weekly Checks'; }
                 else if (key === 'unhide') { btnElement = unhideTasksButton; btnText = 'Unhide All Tasks'; }
-                if(btnElement) {
+                if (btnElement) {
                     resetSpecificButtonState(btnElement, btnText, key);
                 }
             }
@@ -947,11 +953,11 @@ function resetWeeklyAction() {
 
 function handleSectionToggle(event) {
     const header = event.target.closest('.section-toggle');
-    if (!header) return;
+    if (!header) { return; }
 
     const contentId = header.getAttribute('aria-controls');
     const contentDiv = document.getElementById(contentId);
-    if (!contentDiv) return;
+    if (!contentDiv) { return; }
 
     const isExpanded = header.getAttribute('aria-expanded') === 'true';
     header.setAttribute('aria-expanded', !isExpanded);
@@ -1015,7 +1021,7 @@ function updateSectionControls(sectionElementId) {
 }
 
 export function stopCountdown() {
-    if (countdownInterval) clearInterval(countdownInterval);
+    if (countdownInterval) { clearInterval(countdownInterval); }
 }
 
 export function startCountdown() {
@@ -1077,16 +1083,16 @@ export function loadAndInitializeApp() {
     updateLastSavedDisplay(checklistData.lastSaved);
 
     // Setup event listeners
-    if (appVersionElement) appVersionElement.textContent = APP_VERSION;
-    else console.error("App version element not found!");
+    if (appVersionElement) { appVersionElement.textContent = APP_VERSION; }
+    else { console.error("App version element not found!"); }
 
     if (gitHashElement) {
         gitHashElement.textContent = GIT_COMMIT_HASH;
         gitHashElement.href = `https://github.com/warframe-tools/Task-Checklist/tree/${GIT_COMMIT_HASH_LONG}`;
-    } else console.error("git hash element not found!");
+    } else { console.error("git hash element not found!"); }
 
-    if (wfVersionElement) wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`;
-    else console.error("Warframe version element not found!");
+    if (wfVersionElement) { wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`; }
+    else { console.error("Warframe version element not found!"); }
 
     if (resetDailyButton) { resetDailyButton.addEventListener('click', () => handleResetConfirmation(resetDailyButton, 'daily', 'Reset Daily Checks', resetDailyAction)); }
     else { console.error("Reset Daily button element not found!"); }
@@ -1173,17 +1179,17 @@ export function loadAndInitializeApp() {
 }
 
 // --- Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     try {
         loadAndInitializeApp();
         startCountdown();
     } catch(error) {
         console.error("Critical Error during app.js initialization:", error);
-        const errDisp = document.getElementById('error-display');
-        const errMsg = document.getElementById('error-message');
-        if(errDisp && errMsg) {
+        const errDisp = document.getElementById("error-display");
+        const errMsg = document.getElementById("error-message");
+        if (errDisp && errMsg) {
             errMsg.textContent = "A critical error occurred during application startup. Please check the console.";
-            errDisp.classList.add('visible');
+            errDisp.classList.add("visible");
         } else {
             alert("A critical error occurred during application startup. Please check the console.");
         }
