@@ -125,7 +125,6 @@ body {
     min-height: 100vh;
     background-color: #111827;
     color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
     position: relative;
     --backdrop-color: hsl(from var(--bg-content) h s calc(l / 1.5) / 60%);
 }
@@ -134,7 +133,6 @@ body::before {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background-color: rgba(0, 0, 0, 0.6);
-    transition: background-color 0.3s ease;
     z-index: -1;
 }
 body.light-mode::before {
@@ -145,7 +143,6 @@ body.light-mode::before {
 .checklist-content {
     background-color: var(--bg-content);
     color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
     position: relative;
     z-index: 1;
 }
@@ -158,7 +155,6 @@ body.light-mode::before {
     align-items: center;
     padding: 0.5rem 0.25rem;
     border-radius: 0.25rem;
-    transition: background-color 0.15s ease-in-out;
 }
 .checklist-content h2 .reset-time-local {
     font-size: 0.75rem;
@@ -172,6 +168,13 @@ body.light-mode::before {
     margin-bottom: 0.5rem;
 }
 .checklist-content .border-b { border-color: var(--border-color); }
+
+/* Theme switching animation */
+@media (prefers-reduced-motion: no-preference) {
+    body { transition: background-color 0.3s ease, color 0.3s ease; }
+    body::before { transition: background-color 0.3s ease; }
+    .checklist-content { transition: background-color 0.3s ease, color 0.3s ease; }
+}
 
 /* --- Collapsible Section Basics --- */
 .collapse-icon {
@@ -189,8 +192,12 @@ body.light-mode::before {
     grid-template-rows: 1fr;
     overflow: hidden;
     opacity: 1;
-    transition: grid-template-rows 0.5s cubic-bezier(.23,1,.32,1), opacity 0.5s ease-in-out;
     padding-left: 0.5rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .section-content, .subtask-collapsible {
+        transition: grid-template-rows 0.5s cubic-bezier(.23,1,.32,1), opacity 0.5s ease-in-out;
+    }
 }
 .section-content.collapsed, .subtask-collapsible.collapsed {
     opacity: 0.5;
@@ -221,40 +228,19 @@ body.light-mode::before {
 body.light-mode #moon-icon { display: none; }
 body:not(.light-mode) #sun-icon { display: none; }
 
-/* --- Hamburger Menu Overlay Basics --- */
-.popover {
+/* --- Menu Overlay Basics --- */
+dialog {
     background-color: var(--menu-panel-bg);
     border: 1px solid var(--menu-panel-border);
     box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    padding: 1.5rem;
     border-radius: 0.5rem;
 }
-#slideout-menu-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: var(--backdrop-color);
-    backdrop-filter: var(--backdrop-filter);
-    z-index: 999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+dialog > div {
+    padding: 1.5rem;
 }
-#slideout-menu-overlay.open {
-    display: flex;
-    opacity: 1;
-}
-#menu-content-box {
+#options-menu {
     width: 90%;
     max-width: 300px;
-    transform: scale(0.95);
-    opacity: 0;
-    transition: transform 0.2s ease-out 0.1s, opacity 0.2s ease-out 0.1s;
-}
-#slideout-menu-overlay.open #menu-content-box {
-    transform: scale(1);
-    opacity: 1;
 }
 .menu-header {
     display: flex;

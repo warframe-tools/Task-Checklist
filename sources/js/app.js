@@ -62,10 +62,10 @@ function iconURL(iconName) {
 }
 
 // --- DOM Elements (defined after DOMContentLoaded) ---
-let bodyElement, themeToggleButton, hamburgerButton, slideoutMenuOverlay, optionsCloseButton, resetDailyButton,
-    resetWeeklyButton, resetButton, unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles,
-    dailyResetTimeElement, weeklyResetTimeElement, errorDisplayElement, errorMessageElement, errorCloseButton,
-    errorCopyButton, appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, backgroundDivs = [];
+let bodyElement, themeToggleButton, hamburgerButton, optionsMenu, resetDailyButton, resetWeeklyButton, resetButton,
+    unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement,
+    weeklyResetTimeElement, errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton,
+    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, backgroundDivs = [];
 
 
 // --- State Variables ---
@@ -98,8 +98,7 @@ function initializeDOMElements() {
     bodyElement = document.body;
     themeToggleButton = document.getElementById('theme-toggle-button');
     hamburgerButton = document.getElementById('hamburger-button');
-    slideoutMenuOverlay = document.getElementById('slideout-menu-overlay');
-    optionsCloseButton = document.querySelector('#menu-content-box .menu-close-button');
+    optionsMenu = document.getElementById("options-menu");
     resetDailyButton = document.getElementById('reset-daily-button');
     resetWeeklyButton = document.getElementById('reset-weekly-button');
     resetButton = document.getElementById('reset-button');
@@ -967,12 +966,6 @@ function handleSectionToggle(event) {
     console.log(`Toggled section ${contentId} to ${!isExpanded ? 'expanded' : 'collapsed'}`);
 }
 
-function toggleMenu() {
-    if (slideoutMenuOverlay) {
-        slideoutMenuOverlay.classList.toggle('open');
-    }
-}
-
 function unhideAllAction() {
     checklistData.hiddenTasks = {};
     checklistData.manuallyHiddenSections = {};
@@ -983,7 +976,7 @@ function unhideAllAction() {
 
     ["daily", "weekly", "other"].forEach(populateSection);
     console.log("All tasks and sections unhidden.");
-    toggleMenu();
+    optionsMenu.close();
 }
 
 function updateSectionControls(sectionElementId) {
@@ -1112,20 +1105,8 @@ export function loadAndInitializeApp() {
     if (themeToggleButton) { themeToggleButton.addEventListener('click', handleThemeToggle); }
     else { console.error("Theme toggle button not found!"); }
 
-    if (hamburgerButton) { hamburgerButton.addEventListener('click', toggleMenu); }
+    if (hamburgerButton) { hamburgerButton.addEventListener('click', () => {optionsMenu.showModal();}); }
     else { console.error("Hamburger button not found!"); }
-
-    if (slideoutMenuOverlay) {
-        slideoutMenuOverlay.addEventListener('click', function(event) {
-            if (event.target === slideoutMenuOverlay) {
-                toggleMenu();
-            }
-        });
-    } else { console.error("Slideout menu overlay not found!"); }
-
-    if (optionsCloseButton) {
-        optionsCloseButton.addEventListener('click', toggleMenu);
-    } else { console.error("Options close button not found!"); }
 
     sectionToggles.forEach((toggle) => {
         toggle.addEventListener("click", handleSectionToggle);
@@ -1160,22 +1141,22 @@ export function loadAndInitializeApp() {
         errorCopyButton.addEventListener('click', copyErrorToClipboard);
     } else { console.error("Error copy button not found!"); }
 
-    if (scheduleDialog) {
+    for (const dialog of document.getElementsByTagName("dialog")) {
         // clicking inside the dialog's top-level div does nothing
-        scheduleDialog.querySelector(":scope > div").addEventListener("click", (e) => {
+        dialog.querySelector(":scope > div").addEventListener("click", (e) => {
             e.stopPropagation();
         });
 
         // clicking the close button...
-        scheduleDialog.querySelector(":scope .menu-close-button").addEventListener("click", () => {
-            scheduleDialog.close();
+        dialog.querySelector(":scope .menu-close-button").addEventListener("click", () => {
+            dialog.close();
         });
 
         // clicking anywhere else on the dialog (i.e., the anywhere else the page (the ::backdrop)) will close it
-        scheduleDialog.addEventListener("click", () => {
-            scheduleDialog.close();
+        dialog.addEventListener("click", () => {
+            dialog.close();
         });
-    } else { console.error("Schedule dialog not found!"); }
+    }
 
     console.log(`Warframe Checklist App Initialized (v${APP_VERSION} (${GIT_COMMIT_HASH})) from app.js.`);
 }

@@ -59,7 +59,8 @@
                         </svg>
                     </button>
                     <button id="hamburger-button" aria-label="Open menu">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
                     </button>
             </div>
@@ -135,8 +136,8 @@
         </p>
     </div>
 
-    <div id="slideout-menu-overlay">
-        <div id="menu-content-box" class="popover">
+    <dialog id="options-menu">
+        <div id="menu-content-box">
             <header class="menu-header">
                 <h2 class="menu-title">Options</h2>
                 <button class="menu-close-button" aria-label="Close menu">&times;</button>
@@ -146,9 +147,9 @@
             <button id="reset-button" class="menu-btn">Reset All Checks</button>
             <button id="unhide-tasks-button" class="menu-btn">Unhide All Tasks</button>
         </div>
-    </div>
+    </dialog>
 
-    <dialog id="cycle-schedule" class="popover">
+    <dialog id="cycle-schedule">
         <div>
             <header class="menu-header">
                 <h2 class="menu-title"><img class="task-icon" />Schedule for <span id="schedule-title">X</span></h2>

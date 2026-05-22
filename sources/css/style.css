@@ -254,7 +254,7 @@ li.parent-task-container {
     opacity: 1;
     color: var(--menu-close-btn-hover-color);
 }
-#slideout-menu-overlay .menu-btn {
+#options-menu .menu-btn {
     display: block;
     width: 100%;
     text-align: left;
@@ -262,9 +262,50 @@ li.parent-task-container {
     margin-right: 0;
     margin-bottom: 0.75rem;
 }
-#slideout-menu-overlay .menu-btn:last-child {
+#options-menu .menu-btn:last-child {
     margin-bottom: 0;
 }
+
+/* Dialogs */
+dialog::backdrop {
+    background-color: var(--backdrop-color);
+    backdrop-filter: var(--backdrop-filter);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    dialog {
+        --dialog-anim-duration: 0.15s;
+        --dialog-anim-easing: ease-out;
+        transition: transform var(--dialog-anim-duration) cubic-bezier(.25,1,.5,1),
+                    opacity var(--dialog-anim-duration) var(--dialog-anim-easing),
+                    display var(--dialog-anim-duration) allow-discrete,
+                    overlay var(--dialog-anim-duration) allow-discrete;
+        transform: scale(1);
+        opacity: 1;
+        @starting-style { /* this section is necessary for the opening animation */
+            transform: scale(0.95);
+            opacity: 0;
+        }
+    }
+    dialog:not([open]) { /* this section is necessary for the closing animation (closing animation doesn't work in Firefox) */
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    dialog::backdrop {
+        transition: background-color var(--dialog-anim-duration) var(--dialog-anim-easing),
+                    backdrop-filter var(--dialog-anim-duration) var(--dialog-anim-easing);
+        @starting-style { /* opening */
+            background-color: transparent;
+            backdrop-filter: none;
+        }
+    }
+    dialog:not([open])::backdrop { /* closing */
+        background-color: transparent;
+        backdrop-filter: none;
+    }
+}
+
 
 /* Task Icons */
 .task-icon {
@@ -295,7 +336,9 @@ body:not(.light-mode) img.icon-filter {
     display: grid;
     grid-template-rows: 1fr;
     overflow: hidden;
-    transition: grid-template-rows 200ms; /* https://css-tricks.com/css-grid-can-do-auto-height-transitions/ */
+}
+@media (prefers-reduced-motion: no-preference) {
+    .task-info-expander { transition: grid-template-rows 200ms; /* https://css-tricks.com/css-grid-can-do-auto-height-transitions/ */ }
 }
 .task-item .checked .task-info-expander {
     grid-template-rows: 0fr;
@@ -337,11 +380,6 @@ body:not(.light-mode) img.icon-filter {
     background-color: var(--theme-toggle-hover-bg);
     border-color: var(--theme-toggle-hover-border);
     color: var(--text-label);
-}
-
-#cycle-schedule::backdrop {
-    background-color: var(--backdrop-color);
-    backdrop-filter: var(--backdrop-filter);
 }
 
 #cycle-schedule {
