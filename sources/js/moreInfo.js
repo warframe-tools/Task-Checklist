@@ -3,13 +3,13 @@
  */
 
 export default {
-    daily_first_win_bonus: `<p>Your first completed mission of the day gives double <em>base credit rewards</em>. This only applies to the end-of-misson bonus, and does <strong>not</strong> apply to credits picked up in the mission.</p>
+    daily_first_win_bonus: `<p>Your first completed mission after the daily reset gives double <em>base credit rewards</em>. This only applies to the end-of-mission bonus, and does <strong>not</strong> apply to credits picked up in the mission.</p>
     <p>It also does <strong>not</strong> apply to the following mission types and locations:</p>
     <ul>
         <li><strong>The Index</strong></li>
         <li>Open Worlds (including Profit Taker)</li>
         <li>Zariman</li>
-        <li>Höllvania (including Techrot safes).</li>
+        <li>Höllvania (including Techrot safes)</li>
     </ul>
     <p>Completing any of these missions will consume the bonus without awarding extra credits.</p>
     <p>The bonus <strong>does</strong> stack with Credit Boosters, Credit Blessings, and double Credit events. Travelling to a relay or other non-mission area does <strong>not</strong> consume the bonus.</p>
@@ -48,5 +48,6 @@ export default {
             </tr>
         </tbody>
     </table>
-    <p>See <a href="https://wiki.warframe.com/w/Daily_Tribute#Daily_First_Win_Bonus">Daily First Win Bonus</a>, <a href="https://wiki.warframe.com/w/Dark_Sectors">Dark Sectors</a>, and <a href="https://wiki.warframe.com/w/Mission#Locations">Mission</a> on the wiki for more details.</p>`
+    <p>See <a href="https://wiki.warframe.com/w/Daily_Tribute#Daily_First_Win_Bonus">Daily First Win Bonus</a>, <a href="https://wiki.warframe.com/w/Dark_Sectors">Dark Sectors</a>, and <a href="https://wiki.warframe.com/w/Mission#Locations">Mission</a> on the wiki for more details.</p>
+    <p>(There's currently a visual bug where the bonus credits don't appear on the mission completion screen. They <em>are</em> still added to your account though.)</p>`
 }

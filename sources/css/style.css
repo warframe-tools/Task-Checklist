@@ -269,7 +269,7 @@ li.parent-task-container {
 /* Dialogs */
 dialog {
     color: var(--text-label);
-    max-width: 56rem;
+    max-width: 52rem;
 }
 dialog::backdrop {
     background-color: var(--backdrop-color);
