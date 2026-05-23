@@ -42,12 +42,16 @@ const DATA_STORAGE_KEY = "warframeChecklistData_format1";
 // --- Task Data ---
 import tasks from "./tasks.json" with {type: "json"};
 import cycles from "./cycles.json" with {type: "json"};
+import moreInfo from "./moreInfo.js";
 
 function _prepTasks() {
     function prep(period) {
         return (task) => {
             if (task.ref) { // alternate ref tasks need a period for countdown and reset to work correctly
                 task.period = period;
+            }
+            if (task.id in moreInfo) {
+                task.moreInfo = moreInfo[task.id];
             }
         }
     }
@@ -65,7 +69,7 @@ function iconURL(iconName) {
 let bodyElement, themeToggleButton, hamburgerButton, optionsMenu, resetDailyButton, resetWeeklyButton, resetButton,
     unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement,
     weeklyResetTimeElement, errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton,
-    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, backgroundDivs = [];
+    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, backgroundDivs = [];
 
 
 // --- State Variables ---
@@ -116,6 +120,7 @@ function initializeDOMElements() {
     gitHashElement = document.querySelector('.git-hash-text');
     wfVersionElement = document.querySelector('.warframe-version-text');
     scheduleDialog = document.getElementById("cycle-schedule");
+    moreInfoDialog = document.getElementById("more-info");
 
     backgroundDivs = [];
     dailyBackgroundImageIds.forEach((id) => {
@@ -668,21 +673,25 @@ function makeCycleIcon(cycleData) {
     }
 }
 
+function taskDialogHeaderSetup(task, dialog) {
+    dialog.querySelector(":scope header .title").innerText = task.text.split(":")[0]; // take the task text up to the first ":" as the dialog title
+
+    let taskIcon = dialog.querySelector(":scope .menu-title img.task-icon");
+    taskIcon.className = "task-icon"; // remove possible `icon-filter` from previous opening
+    taskIcon.src = "";
+    if (task.icon) {
+        taskIcon.src = iconURL(`tasks/${task.icon}`);
+        if (!task.noIconFilter) {
+            taskIcon.classList.add("icon-filter");
+        }
+    }
+}
+
 function showScheduleAction(task, period, cycleIndex, isAvailable) {
     const cycleCount = cycles[task.id].order.length;
 
     return () => {
-        document.getElementById("schedule-title").innerText = task.text.split(":")[0]; // take the task text up to the first ":" as the dialog title
-
-        let taskIcon = scheduleDialog.querySelector(":scope .menu-title img.task-icon");
-        taskIcon.className = "task-icon";
-        taskIcon.src = "";
-        if (task.icon) {
-            taskIcon.src = iconURL(`tasks/${task.icon}`);
-            if (!task.noIconFilter) {
-                taskIcon.classList.add('icon-filter')
-            }
-        }
+        taskDialogHeaderSetup(task, scheduleDialog);
 
         const tbody = scheduleDialog.querySelector(":scope tbody");
         tbody.innerHTML = "";
@@ -716,9 +725,17 @@ function showScheduleAction(task, period, cycleIndex, isAvailable) {
     }
 }
 
+function showMoreInfoAction(task) {
+    return () => {
+        taskDialogHeaderSetup(task, moreInfoDialog);
+        document.getElementById("more-info-content").innerHTML = task.moreInfo;
+        moreInfoDialog.showModal();
+    }
+}
+
 function makeInfoLine(task, appendTo) {
     const hasCycle = Object.hasOwn(cycles, task.id);
-    const hasInfoLine = ["location", "npc", "terminal", "prereq", "info"].some((prop) => task[prop]);
+    const hasInfoLine = ["location", "npc", "terminal", "prereq", "info", "moreInfo"].some((prop) => task[prop]);
 
     if (hasCycle || hasInfoLine) {
         const taskInfoExpander = document.createElement("div");
@@ -772,7 +789,7 @@ function makeInfoLine(task, appendTo) {
 
             const showSchedule = document.createElement("button");
             showSchedule.type = "button";
-            showSchedule.classList.add("show-schedule-btn");
+            showSchedule.classList.add("more-info-btn");
             showSchedule.innerHTML = "Show&nbsp;Schedule";
             showSchedule.addEventListener("click", showScheduleAction(task, period, cycleIndex, isAvailable));
             currentCycle.appendChild(showSchedule);
@@ -793,6 +810,17 @@ function makeInfoLine(task, appendTo) {
             infoLineHTML += makeInfoLineItem(task, "prereq", "Requirements", svgIcons.prereqIcon);
             infoLineHTML += makeInfoLineItem(task, "info", "Info", svgIcons.infoIcon);
             infoLine.innerHTML = infoLineHTML;
+
+            if (task.moreInfo) {
+                const showMoreInfo = document.createElement("button");
+                showMoreInfo.type = "button";
+                showMoreInfo.classList.add("more-info-btn");
+                showMoreInfo.innerHTML = "More&nbsp;Info";
+                showMoreInfo.addEventListener("click", showMoreInfoAction(task));
+                const span = document.createElement("span");
+                span.appendChild(showMoreInfo);
+                infoLine.appendChild(span);
+            }
 
             taskInfoExpanderContent.appendChild(infoLine);
         }

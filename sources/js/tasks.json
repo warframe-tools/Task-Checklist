@@ -20,6 +20,13 @@
             "terminal": "Foundry"
         },
         {
+            "id": "daily_first_win_bonus",
+            "text": "Daily First Win Bonus: Get double base credit reward on your first mission.",
+            "icon": "DoubleCreditEvent.png",
+            "location": "Base of Operations",
+            "terminal": "Navigation"
+        },
+        {
             "id": "daily_syndicate_gain",
             "text": "Faction Syndicates: Gain daily standing cap with your pledged Syndicate(s).",
             "icon": "ReputationSmall.png",
@@ -114,13 +121,6 @@
                     "prereq": "The Hex (Quest)"
                 }
             ]
-        },
-        {
-            "id": "daily_dark_sector",
-            "text": "Dark Sector Mission (Early Game): Complete one Dark Sector mission first for double credits (if needed & pre-Index).",
-            "icon": "IconInfested.png",
-            "location": "Base of Operations",
-            "terminal": "Navigation"
         },
         {
             "id": "daily_sortie",
@@ -432,7 +432,7 @@
                     "prereq": "Angels of the Zariman"
                 },
                 {
-                    "id": "weekly_acridies",
+                    "id": "weekly_acrithis",
                     "text": "Acrithis: Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).",
                     "icon": "Acrithis.png",
                     "location": "Duviri/Dormizone",

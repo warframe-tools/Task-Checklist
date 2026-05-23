@@ -267,6 +267,10 @@ li.parent-task-container {
 }
 
 /* Dialogs */
+dialog {
+    color: var(--text-label);
+    max-width: 56rem;
+}
 dialog::backdrop {
     background-color: var(--backdrop-color);
     backdrop-filter: var(--backdrop-filter);
@@ -366,7 +370,7 @@ body:not(.light-mode) img.icon-filter {
 }
 
 /* Cycle Schedule */
-.show-schedule-btn {
+.more-info-btn {
     display: inline-block;
     padding: 0 0.375em;
     border-radius: 0.375rem;
@@ -376,15 +380,14 @@ body:not(.light-mode) img.icon-filter {
     font-size: 75%;
     vertical-align: text-bottom;
 }
-.show-schedule-btn:hover {
+.more-info-btn:hover {
     background-color: var(--theme-toggle-hover-bg);
     border-color: var(--theme-toggle-hover-border);
     color: var(--text-label);
 }
 
-#cycle-schedule {
+#cycle-schedule, #more-info {
     table {
-        color: var(--text-label);
         margin: auto;
     }
     thead {
@@ -396,6 +399,9 @@ body:not(.light-mode) img.icon-filter {
     th:before, th:after {
         content: "\00a0\00a0\00a0\00a0"; /* some no-break spaces added so the underline extends a bit on both sides */
     }
+}
+
+#cycle-schedule {
     tbody tr:first-child td {
         font-weight: 600;
     }
@@ -410,6 +416,29 @@ body:not(.light-mode) img.icon-filter {
         font-size: 75%;
         color: var(--text-muted);
         text-align: center;
+    }
+}
+
+/* More Info */
+#more-info {
+    p:not(:last-child):not(:has(+ :is(ul, table))), table {
+        margin-bottom: 1em;
+    }
+    ul {
+        list-style: "\2212   " outside;
+        padding-left: 2em;
+    }
+    th, td {
+        text-align: center;
+        padding: 0 0.5em;
+    }
+    a {
+        color: var(--link-color);
+        text-decoration: underline;
+        transition: color 0.2s ease;
+    }
+    a:hover {
+        color: var(--link-hover-color);
     }
 }
 
