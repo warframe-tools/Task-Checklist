@@ -399,18 +399,20 @@ body:not(.light-mode) img.icon-filter {
     th:before, th:after {
         content: "\00a0\00a0\00a0\00a0"; /* some no-break spaces added so the underline extends a bit on both sides */
     }
-}
-
-#cycle-schedule {
-    tbody tr:first-child td {
-        font-weight: 600;
+    :is(th, td):not(:last-child) {
+        padding-right: 1em;
     }
     td {
         vertical-align: top;
     }
-    tr > :first-child:not(.cycle-repeats) {
+    th, td:not(:has(.cycle-icon)) {
         text-align: center;
-        padding-right: 1em;
+    }
+}
+
+#cycle-schedule {
+    tbody tr:first-child {
+        font-weight: 600;
     }
     .cycle-repeats {
         font-size: 75%;
@@ -430,7 +432,6 @@ body:not(.light-mode) img.icon-filter {
     }
     th, td {
         text-align: center;
-        padding: 0 0.5em;
     }
     a {
         color: var(--link-color);

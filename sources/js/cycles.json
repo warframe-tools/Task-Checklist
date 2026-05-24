@@ -1,95 +1,188 @@
 {
     "weekly_ayatan": {
         "ref": "2026-01-26",
-        "order": [
-            { "text": "Ayatan Sah Sculpture", "icon": "OroFusexA.png" },
-            { "text": "Ayatan Ayr Sculpture", "icon": "OroFusexB.png" },
-            { "text": "Ayatan Orta Sculpture", "icon": "OroFusexC.png" },
-            { "text": "Ayatan Vaya Sculpture", "icon": "OroFusexD.png" },
-            { "text": "Ayatan Piv Sculpture", "icon": "OroFusexE.png" },
-            { "text": "Ayatan Valana Sculpture", "icon": "OroFusexG.png" }
+        "columns": [
+            {
+                "name": "Item",
+                "order": [
+                    { "text": "Ayatan Sah Sculpture", "icon": "OroFusexA.png" },
+                    { "text": "Ayatan Ayr Sculpture", "icon": "OroFusexB.png" },
+                    { "text": "Ayatan Orta Sculpture", "icon": "OroFusexC.png" },
+                    { "text": "Ayatan Vaya Sculpture", "icon": "OroFusexD.png" },
+                    { "text": "Ayatan Piv Sculpture", "icon": "OroFusexE.png" },
+                    { "text": "Ayatan Valana Sculpture", "icon": "OroFusexG.png" }
+                ]
+            },
+            {
+                "name": "Tileset",
+                "order": [
+                    { "text": "Orokin Derelict (Deimos)", "icon": "FactionInfested.png" },
+                    { "text": "Orokin Tower (Void)", "icon": "FactionOrokin.png" },
+                    { "text": "Orokin Derelict (Deimos)", "icon": "FactionInfested.png" },
+                    { "text": "Orokin Tower (Void)", "icon": "FactionOrokin.png" },
+                    { "text": "Orokin Derelict (Deimos)", "icon": "FactionInfested.png" },
+                    { "text": "Orokin Tower (Void)", "icon": "FactionOrokin.png" }
+                ]
+            }
         ]
     },
     "weekly_kahl_garrison": {
         "ref": "2026-01-12",
-        "order": [
-            { "text": "Sneaky Sabotage", "icon": "FactionCorpus.png" },
-            { "text": "Junk Run", "icon": "FactionGrineer.png" },
-            { "text": "Prison Break", "icon": "SentientSymbol.png" }
+        "columns": [
+            {
+                "name": "Mission",
+                "order": [
+                    { "text": "Sneaky Sabotage", "icon": "FactionCorpus.png" },
+                    { "text": "Junk Run", "icon": "FactionGrineer.png" },
+                    { "text": "Prison Break", "icon": "SentientSymbol.png" }
+                ]
+            },
+            {
+                "name": "Tileset",
+                "order": [
+                    { "text": "Spaceport (Orb Vallis, Venus)" },
+                    { "text": "Grineer Forest (Earth)" },
+                    { "text": "Murex" }
+                ]
+            }
         ]
     },
     "weekly_archon_hunt": {
         "ref": "2026-01-12",
-        "order": [
-            { "text": "Azure Archon Shard", "icon": "ArchonShardBoreal.png" },
-            { "text": "Crimson Archon Shard", "icon": "ArchonShardAmar.png" },
-            { "text": "Amber Archon Shard", "icon": "ArchonShardNira.png" }
+        "columns": [
+            {
+                "name": "Item",
+                "order": [
+                    { "text": "Azure Archon Shard", "icon": "ArchonShardBoreal.png" },
+                    { "text": "Crimson Archon Shard", "icon": "ArchonShardAmar.png" },
+                    { "text": "Amber Archon Shard", "icon": "ArchonShardNira.png" }
+                ]
+            },
+            {
+                "name": "Boss",
+                "order": [
+                    { "text": "Archon Boreal" },
+                    { "text": "Archon Amar" },
+                    { "text": "Archon Nira" }
+                ]
+            },
+            {
+                "name": "Tileset",
+                "order": [
+                    { "text": "Grineer Forest (Earth)", "icon": "FactionGrineer.png" },
+                    { "text": "Grineer Settlement (Mars)", "icon": "FactionGrineer.png" },
+                    { "text": "Corpus Gas City (Jupiter)", "icon": "FactionAmalgam.png" }
+                ]
+            }
         ]
     },
     "weekly_duviri_circuit": {
         "ref": "2026-01-26",
-        "order": [
-            { "text": "Blueprints for Excalibur, Trinity, or Ember", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Loki, Mag, or Rhino", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Ash, Frost, or Nyx", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Saryn, Vauban, or Nova", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Nekros, Valkyr, or Oberon", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Hydroid, Mirage, or Limbo", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Mesa, Chroma, or Atlas", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Ivara, Inaros, or Titania", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Nidus, Octavia, or Harrow", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Gara, Khora, or Revenant", "icon": "IconWarframe_256.png", "iconFilter": true },
-            { "text": "Blueprints for Garuda, Baruuk, or Hildryn", "icon": "IconWarframe_256.png", "iconFilter": true }
+        "columns": [
+            {
+                "name": "Items",
+                "order": [
+                    { "text": "Blueprints for Excalibur, Trinity, or Ember", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Loki, Mag, or Rhino", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Ash, Frost, or Nyx", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Saryn, Vauban, or Nova", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Nekros, Valkyr, or Oberon", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Hydroid, Mirage, or Limbo", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Mesa, Chroma, or Atlas", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Ivara, Inaros, or Titania", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Nidus, Octavia, or Harrow", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Gara, Khora, or Revenant", "icon": "IconWarframe_256.png", "iconFilter": true },
+                    { "text": "Blueprints for Garuda, Baruuk, or Hildryn", "icon": "IconWarframe_256.png", "iconFilter": true }
+                ]
+            }
         ]
     },
     "weekly_duviri_circuit_sp": {
         "ref": "2026-01-05",
-        "order": [
-            { "text": "Incarnon Adapters for Braton, Kunai, Lato, Paris, and Skana", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
-            { "text": "Incarnon Adapters for Angstrum, Anku, Boar, Gammacor, and Gorgon", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
-            { "text": "Incarnon Adapters for Bo, Furax, Furis, Latron, and Strun", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
-            { "text": "Incarnon Adapters for Boltor, Bronco, Ceramic Dagger, Lex, and Magistar", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
-            { "text": "Incarnon Adapters for Atomos, Dual Ichor, Dual Toxocyst, Miter, and Torid", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
-            { "text": "Incarnon Adapters for Ack & Brunt, Burston, Nami Solo, Soma, and Vasto", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
-            { "text": "Incarnon Adapters for Despair, Dread, Hate, Sibear, and Zylok", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
-            { "text": "Incarnon Adapters for Cestra, Dera, Okina, Sicarus, and Sybaris", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true }
+        "columns": [
+            {
+                "name": "Items",
+                "order": [
+                    { "text": "Incarnon Adapters for Braton, Kunai, Lato, Paris, and Skana", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
+                    { "text": "Incarnon Adapters for Angstrum, Anku, Boar, Gammacor, and Gorgon", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
+                    { "text": "Incarnon Adapters for Bo, Furax, Furis, Latron, and Strun", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
+                    { "text": "Incarnon Adapters for Boltor, Bronco, Ceramic Dagger, Lex, and Magistar", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
+                    { "text": "Incarnon Adapters for Atomos, Dual Ichor, Dual Toxocyst, Miter, and Torid", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
+                    { "text": "Incarnon Adapters for Ack & Brunt, Burston, Nami Solo, Soma, and Vasto", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
+                    { "text": "Incarnon Adapters for Despair, Dread, Hate, Sibear, and Zylok", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
+                    { "text": "Incarnon Adapters for Cestra, Dera, Okina, Sicarus, and Sybaris", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true }
+                ]
+            }
         ]
     },
     "weekly_teshin": {
         "ref": "2026-02-02",
-        "order": [
-            { "text": "Umbra Forma Blueprint", "icon": "FormaUmbra.png" },
-            { "text": "50,000 Kuva", "icon": "Kuva.png" },
-            { "text": "Kitgun Riven Mod", "icon": "OmegaModIconRendered256.png" },
-            { "text": "3x Built Forma", "icon": "FormaPack.png" },
-            { "text": "Zaw Riven Mod", "icon": "OmegaModIconRendered256.png" },
-            { "text": "30,000 Endo", "icon": "EndoIconRenderLarge.png" },
-            { "text": "Rifle Riven Mod", "icon": "OmegaModIconRendered256.png" },
-            { "text": "Shotgun Riven Mod", "icon": "OmegaModIconRendered256.png" }
+        "columns": [
+            {
+                "name": "Item",
+                "order": [
+                    { "text": "Umbra Forma Blueprint", "icon": "FormaUmbra.png" },
+                    { "text": "50,000 Kuva", "icon": "Kuva.png" },
+                    { "text": "Kitgun Riven Mod", "icon": "OmegaModIconRendered256.png" },
+                    { "text": "3x Built Forma", "icon": "FormaPack.png" },
+                    { "text": "Zaw Riven Mod", "icon": "OmegaModIconRendered256.png" },
+                    { "text": "30,000 Endo", "icon": "EndoIconRenderLarge.png" },
+                    { "text": "Rifle Riven Mod", "icon": "OmegaModIconRendered256.png" },
+                    { "text": "Shotgun Riven Mod", "icon": "OmegaModIconRendered256.png" }
+                ]
+            },
+            {
+                "name": "Price",
+                "order": [
+                    { "text": "150", "icon": "SteelEssence.png" },
+                    { "text": "55", "icon": "SteelEssence.png" },
+                    { "text": "75", "icon": "SteelEssence.png" },
+                    { "text": "75", "icon": "SteelEssence.png" },
+                    { "text": "75", "icon": "SteelEssence.png" },
+                    { "text": "150", "icon": "SteelEssence.png" },
+                    { "text": "75", "icon": "SteelEssence.png" },
+                    { "text": "75", "icon": "SteelEssence.png" }
+                ]
+            }
         ]
     },
     "weekly_bird3": {
         "ref": "2026-01-12",
-        "order": [
-            { "text": "Azure Archon Shard", "icon": "ArchonShardBoreal.png" },
-            { "text": "Amber Archon Shard", "icon": "ArchonShardNira.png" },
-            { "text": "Crimson Archon Shard", "icon": "ArchonShardAmar.png" }
+        "columns": [
+            {
+                "name": "Item",
+                "order": [
+                    { "text": "Azure Archon Shard", "icon": "ArchonShardBoreal.png" },
+                    { "text": "Amber Archon Shard", "icon": "ArchonShardNira.png" },
+                    { "text": "Crimson Archon Shard", "icon": "ArchonShardAmar.png" }
+                ]
+            }
         ]
     },
     "other_baro": {
         "ref": "2022-12-30T09:00:00-05:00",
-        "order": [
-            { "text": "Strata Relay, Earth" },
-            { "text": "Larunda Relay, Mercury" },
-            { "text": "Kronia Relay, Saturn" },
-            { "text": "Orcus Relay, Pluto" }
+        "columns": [
+            {
+                "name": "Location",
+                "order": [
+                    { "text": "Strata Relay, Earth" },
+                    { "text": "Larunda Relay, Mercury" },
+                    { "text": "Kronia Relay, Saturn" },
+                    { "text": "Orcus Relay, Pluto (MR 8+)" }
+                ]
+            }
         ]
     },
     "other_eleanor": {
         "ref": "2025-03-18",
-        "order": [
-            { "text": "Hema, Sporothrix, Catabolyst, Pox, Dual Torxica, Mire, and Motovore" },
-            { "text": "Bassocyst, Bubonico, Synapse, Tysis, Caustacyst, Hirudo, and Pathocyst" }
+        "columns": [
+            {
+                "name": "Coda Weapons",
+                "order": [
+                    { "text": "Hema, Sporothrix, Catabolyst, Pox, Dual Torxica, Mire, and Motovore" },
+                    { "text": "Bassocyst, Bubonico, Synapse, Tysis, Caustacyst, Hirudo, and Pathocyst" }
+                ]
+            }
         ]
     }
 }
