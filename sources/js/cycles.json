@@ -116,6 +116,30 @@
             }
         ]
     },
+    "weekly_calendar" : {
+        "ref": "2024-12-16",
+        "columns": [
+            {
+                "name": "Season",
+                "order": [
+                    { "text": "Winter", "icon": "RetroSeasonalWinterIcon_.png" },
+                    { "text": "Spring", "icon": "RetroSeasonalSpringIcon_.png" },
+                    { "text": "Summer", "icon": "RetroSeasonalSummerIcon_.png" },
+                    { "text": "Autumn", "icon": "RetroSeasonalAutumnIcon_.png" }
+                ]
+            },
+            {
+                "name": "Increased Spawns",
+                "align": "left",
+                "order": [
+                    { "text": "❄️ Arctic Eximus" },
+                    { "text": "🟢 Jade Light Eximus" },
+                    { "text": "🔥 Arson Eximus" },
+                    { "text": "🧲 Energy Leech Eximus" }
+                ]
+            }
+        ]
+    },
     "weekly_teshin": {
         "ref": "2026-02-02",
         "columns": [
