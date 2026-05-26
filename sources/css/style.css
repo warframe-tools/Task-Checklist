@@ -408,6 +408,9 @@ body:not(.light-mode) img.icon-filter {
     th, td:not(:has(.cycle-icon)) {
         text-align: center;
     }
+    td:has(.cycle-icon) {
+        text-align: left;
+    }
 }
 
 #cycle-schedule {

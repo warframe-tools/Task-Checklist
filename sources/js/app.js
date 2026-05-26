@@ -726,7 +726,8 @@ function showScheduleAction(task, period, cycleIndex, isAvailable) {
 
             for (const column of cycles[task.id].columns) {
                 const cellData = column.order[modulo(cycleIndex + i, cycleCount)];
-                row += `<td>${makeCycleIcon(cellData)}${cellData.text}</td>`;
+                const align = column.align ? ` style="text-align: ${column.align}"` : "";
+                row += `<td${align}>${makeCycleIcon(cellData)}${cellData.text}</td>`;
             }
 
             row += "</tr>";

@@ -60,10 +60,11 @@
             },
             {
                 "name": "Boss",
+                "align": "left",
                 "order": [
-                    { "text": "Archon Boreal" },
-                    { "text": "Archon Amar" },
-                    { "text": "Archon Nira" }
+                    { "text": "🦉 Archon Boreal" },
+                    { "text": "🐺 Archon Amar" },
+                    { "text": "🐍 Archon Nira" }
                 ]
             },
             {
