@@ -1,12 +1,12 @@
 // vite.config.js
 import { defineConfig } from "vite";
-import { createHtmlPlugin } from "vite-plugin-html";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 
 process.env.VITE_GIT_COMMIT_HASH = execSync("git rev-parse HEAD").toString().trim(); // only updated on vite restart
+process.env.VITE_CRITICAL_CSS = `<style type="text/css">\n${fs.readFileSync(path.resolve(__dirname, "sources/css/critical.css"), "utf-8")}\n</style>`;
 
 export default defineConfig(({ mode }) => ({
     root: "sources",
@@ -14,14 +14,6 @@ export default defineConfig(({ mode }) => ({
     cacheDir: "../.vite",
 
     plugins: [
-        mode !== "test" ? createHtmlPlugin({
-            minify: true,
-            inject: {
-                data: {
-                    criticalCss: `<style type="text/css">\n${fs.readFileSync(path.resolve(__dirname, "sources/css/critical.css"), "utf-8")}\n</style>`,
-                },
-            },
-        }) : null,
         mode === "release" ? viteSingleFile({removeViteModuleLoader: true}) : null,
     ],
 
