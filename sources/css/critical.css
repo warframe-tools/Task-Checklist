@@ -145,8 +145,26 @@ body.light-mode::before {
     color: var(--text-primary);
     position: relative;
     z-index: 1;
+    max-width: 48rem;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+                0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
-.checklist-content h1 { color: var(--text-header); }
+#site-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.checklist-content h1 {
+    color: var(--text-header);
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    font-weight: 700;
+}
 .checklist-content h2 {
     color: var(--text-header);
     cursor: pointer;
@@ -155,6 +173,14 @@ body.light-mode::before {
     align-items: center;
     padding: 0.5rem 0.25rem;
     border-radius: 0.25rem;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.checklist-content h2 > span:first-of-type {
+    flex-grow: 1;
 }
 .checklist-content h2 .reset-time-local {
     font-size: 0.75rem;
@@ -167,13 +193,16 @@ body.light-mode::before {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
-.checklist-content .border-b { border-color: var(--border-color); }
 
 /* Theme switching animation */
 @media (prefers-reduced-motion: no-preference) {
     body { transition: background-color 0.3s ease, color 0.3s ease; }
     body::before { transition: background-color 0.3s ease; }
     .checklist-content { transition: background-color 0.3s ease, color 0.3s ease; }
+}
+
+#checklist-container > section {
+    margin-bottom: 2rem;
 }
 
 /* --- Collapsible Section Basics --- */
@@ -208,7 +237,11 @@ body.light-mode::before {
 }
 
 /* --- Theme Toggle & Hamburger Button Basics --- */
-#theme-toggle-button, #hamburger-button {
+#site-controls {
+    display: flex;
+    align-items: center;
+}
+#site-header button {
     font-weight: 600;
     padding: 0.375rem;
     border-radius: 0.375rem;
@@ -219,8 +252,9 @@ body.light-mode::before {
     cursor: pointer;
     line-height: 1.5;
 }
-#theme-toggle-button { margin-right: 0.5rem; }
-#theme-toggle-button svg, #hamburger-button svg {
+#site-header button:not(:last-of-type) { margin-right: 0.5rem; }
+#site-header button:not(:first-of-type) { margin-left: 0.5rem; }
+#site-header button svg {
     width: 1.25rem;
     height: 1.25rem;
     fill: currentColor;

@@ -467,7 +467,6 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
     // Hide/Notif Controls
     const controlsContainer = document.createElement('div');
-    controlsContainer.classList.add('ml-auto');
 
     // Notif Button
     if (task.id.startsWith('other_')) {
@@ -511,7 +510,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         listItem.classList.add('parent-task-container');
 
         const parentHeaderDiv = document.createElement('div');
-        parentHeaderDiv.classList.add('parent-task-header', 'mb-1', 'w-full');
+        parentHeaderDiv.classList.add('parent-task-header');
         parentHeaderDiv.setAttribute('aria-expanded', 'true');
         parentHeaderDiv.setAttribute('aria-controls', `${task.id}-subtasks`);
 
@@ -544,7 +543,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         subtaskCollapsible.classList.add("subtask-collapsible");
         const subtaskList = document.createElement('ul');
         subtaskList.id = `${task.id}-subtasks`;
-        subtaskList.classList.add('list-none', 'pl-0', 'mt-1', 'subtask-list');
+        subtaskList.classList.add('subtask-list');
         if (task.subtasks && Array.isArray(task.subtasks)) {
             task.subtasks.forEach((subtask) => {
                 subtask.parentId = task.id;
