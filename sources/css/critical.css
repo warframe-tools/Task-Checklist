@@ -115,6 +115,23 @@ body.light-mode {
     --notification-btn-active-color: #22c55e;
 }
 
+:where(img, svg) {
+    display: block;
+}
+
+:where(blockquote, dd, dl, figure, h1, h2, h3, h4, h5, h6, hr, p, pre, menu, ol, ul) {
+    margin: 0;
+}
+
+:where(dialog) {
+    padding: 0;
+    position: fixed;
+}
+
+:where(button, input, optgroup, select, textarea) {
+    padding: 0;
+}
+
 /* --- Base Body Styles --- */
 body {
     font-family: 'Inter', sans-serif;

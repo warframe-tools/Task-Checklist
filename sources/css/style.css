@@ -98,6 +98,7 @@ footer {
 
 a.git-hash-text {
     text-decoration: underline;
+    color: inherit;
 }
 
 /* --- Collapsible Section Styles (Non-Critical Parts) --- */
