@@ -9,7 +9,9 @@
         @import url(../node_modules/sanitize.css/sanitize.css);
         @import url(../node_modules/sanitize.css/forms.css);
     </style>
-    %VITE_CRITICAL_CSS%
+    <style type="text/css">
+        @import url(css/critical.css);
+    </style>
     <link rel="stylesheet" href="css/style.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="css/style.css"></noscript>
 </head>
