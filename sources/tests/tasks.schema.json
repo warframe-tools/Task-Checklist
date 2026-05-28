@@ -1,0 +1,144 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Warframe Task Checklist tasks",
+
+    "type": "object",
+    "properties": {
+        "daily": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/task", "$comment": "base task schema",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "$comment": "augment task definition with an id pattern for this section",
+                        "type": "string",
+                        "pattern": "^daily_"
+                    },
+                    "subtasks": { "$ref": "#/properties/daily", "$comment": "propagate augmented task definition to nested subtasks" }
+                },
+                "not": { "required": ["period"] }
+            }
+        },
+        "weekly": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/task",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": "^weekly_"
+                    },
+                    "subtasks": { "$ref": "#/properties/weekly" }
+                },
+                "not": { "required": ["period"] }
+            }
+        },
+        "other": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/task",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": "^other_"
+                    },
+                    "subtasks": { "$ref": "#/properties/other" }
+                },
+                "required": ["period", "ref"]
+            }
+        }
+    },
+    "required": ["daily", "weekly", "other"],
+    "additionalProperties": false,
+
+    "$defs": {
+        "task": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "unique identifier for the task",
+                    "type": "string"
+                },
+                "text": {
+                    "description": "displayed text of the task",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "icon for the task, relative to `sources/img/tasks`",
+                    "type": "string"
+                },
+                "noIconFilter": {
+                    "description": "set to `true` to use the `icon` in color as-is. Otherwise, it will be converted to monochrome black or white depending on the theme",
+                    "type": "boolean",
+                    "default": false
+                },
+                "location": {
+                    "description": "in-game location where you initiate the task",
+                    "type": "string"
+                },
+                "npc": {
+                    "description": "NPC to talk to to initiate the task",
+                    "type": "string"
+                },
+                "terminal": {
+                    "description": "interactive terminal used to initiate the task",
+                    "type": "string"
+                },
+                "prereq": {
+                    "description": "task prerequisites (e.g. completed quest, syndicate rank)",
+                    "type": "string"
+                },
+                "info": {
+                    "description": "a short bit of additional info about the task, displayed below the `text` on the main task list. For extended information in a dialog, use `moreInfo.js`",
+                    "type": "string"
+                },
+                "period": {
+                    "description": "how often the task resets",
+                    "$ref": "#/$defs/timePeriod"
+                },
+                "duration": {
+                    "description": "how long the task is available for after resetting until it becomes unavailable",
+                    "$ref": "#/$defs/timePeriod"
+                },
+                "ref": {
+                    "description": "reference time when the task reset. Resets are calculated to occur at `ref + n * period` where `n` is an integer",
+                    "type": "string",
+                    "anyOf": [
+                        { "format": "date-time" },
+                        { "format": "date" }
+                    ]
+                },
+                "observesDst": {
+                    "description": "whether the task's reset time shifts by 1 hour when Daylight Saving Time changes",
+                    "type": "boolean",
+                    "default": false
+                },
+                "subtasks": {
+                    "description": "tasks grouped under this parent task",
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/task" }
+                }
+            },
+            "additionalProperties": false,
+            "required": ["id", "text"],
+            "dependentSchemas": {
+                "npc": {
+                    "not": {
+                        "required": ["terminal"],
+                        "description": "if `npc` is present, then `terminal` is forbidden"
+                    }
+                }
+            }
+        },
+
+        "timePeriod": {
+            "description": "a period of time / a duration",
+            "type": "string",
+            "pattern": "^(0*[1-9]\\d*[DdHhMmSs] ?)+$",
+            "$comment": "this is more strict than `parseDuration` actually allows"
+        }
+    }
+}

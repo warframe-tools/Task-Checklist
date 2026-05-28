@@ -31,6 +31,8 @@
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.5",
     "@vitest/ui": "^4.1.5",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "jsdom": "^29.1.1",
     "sanitize.css": "^13.0.0",
     "vite": "^8.0.14",
