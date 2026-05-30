@@ -1,0 +1,70 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Warframe Task Checklist cycle data",
+
+    "type": "object",
+    "$comment": "all properties must be a task `id` in `tasks.json`",
+    "additionalProperties": false,
+    "patternProperties": {
+        "^(daily|weekly|other)_": {
+            "type": "object",
+            "required": ["ref", "columns"],
+            "additionalProperties": false,
+            "properties": {
+                "ref": {
+                    "description": "reference time when the first cycle item began",
+                    "type": "string",
+                    "anyOf": [
+                        { "format": "date-time" },
+                        { "format": "date" }
+                    ]
+                },
+                "columns": {
+                    "description": "list of columns in the 'Show Schedule' dialog for this cycle. The currently active item from the FIRST column is also shown on the main task list.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["name", "order"],
+                        "additionalProperties": false,
+                        "properties": {
+                            "name": {
+                                "description": "the column header (e.g. Item, Tileset)",
+                                "type": "string"
+                            },
+                            "align": {
+                                "description": "text-align CSS value to set for this column. When not specified, `order` items without `icon` behave as `center`, and as `left` with `icon`.",
+                                "type": "string",
+                                "enum": ["left", "right", "center", "justify", "start", "end", "match-parent"]
+                            },
+                            "order": {
+                                "description": "the order in which items are cyclically available. All `order` arrays under the same `columns` must be the same length.",
+                                "$comment": "`order` length equality is checked in `tasks.test.js`",
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "required": ["text"],
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "text": {
+                                            "description": "name of the item",
+                                            "type": "string"
+                                        },
+                                        "icon": {
+                                            "description": "icon for the item, relative to `sources/img/icons/cycles`",
+                                            "type": "string"
+                                        },
+                                        "iconFilter": {
+                                            "description": "set to `true` to convert the `icon` to monochrome black or white depending on the theme. Otherwise, it will be used in color as-is. Note the opposite name and default bahaviour to `tasks.json`",
+                                            "type": "boolean",
+                                            "default": false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -67,7 +67,7 @@
                     "type": "string"
                 },
                 "icon": {
-                    "description": "icon for the task, relative to `sources/img/tasks`",
+                    "description": "icon for the task, relative to `sources/img/icons/tasks`",
                     "type": "string"
                 },
                 "noIconFilter": {
