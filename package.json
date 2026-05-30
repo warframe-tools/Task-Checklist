@@ -1,7 +1,7 @@
 {
   "name": "task-checklist",
-  "version": "2.4.0",
-  "description": "A Warframe Task Checklist to track daily, weekly, and other tasks. Built with HTML, CSS (Tailwind via CDN), and vanilla JavaScript, processed with Vite.",
+  "version": "4.0",
+  "description": "A Warframe Task Checklist to track daily, weekly, and other tasks. Built with HTML, CSS, and vanilla JavaScript, processed with Vite.",
   "type": "module",
   "scripts": {
     "dev": "vite",

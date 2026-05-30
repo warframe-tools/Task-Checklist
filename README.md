@@ -1,4 +1,4 @@
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/warframe-tools/Task-Checklist) ![HTML5 Badge](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=fff&style=flat) ![CSS3 Badge](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=fff&style=flat) ![JavaScript Badge](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000&style=flat) 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/warframe-tools/Task-Checklist) ![HTML5 Badge](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=fff&style=flat) ![CSS3 Badge](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=fff&style=flat) ![JavaScript Badge](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000&style=flat)
 
 # Warframe Task Checklist Web App
 
@@ -10,7 +10,7 @@ The hosted version of this application will be updated (if changes are made) on 
 
 ## Description
 
-This tool provides checklists for common recurring activities in Warframe. It saves your progress directly in your browser's local storage, automatically resets daily and weekly tasks based on UTC time, and offers a few customization options. The application is built using HTML, CSS (with Tailwind CSS via CDN for rapid styling), vanilla JavaScript, and is processed with Vite for an optimized production build.
+This tool provides checklists for common recurring activities in Warframe. It saves your progress directly in your browser's local storage, automatically resets daily and weekly tasks based on UTC time, and offers a few customization options. The application is built using HTML, CSS, vanilla JavaScript, and is processed with Vite for an optimized production build.
 
 ## Fan Made Reviews/Showcase
 
@@ -60,9 +60,8 @@ This tool provides checklists for common recurring activities in Warframe. It sa
     * Includes a "Copy" button in the error display for easy reporting.
 * **Performance Optimizations:**
     * **Vite Build Process:** The application is built using Vite, which optimizes and bundles JavaScript and CSS, including filename hashing for efficient cache-busting.
-    * **Critical CSS Inlining:** Critical CSS is inlined in the deployed `index.html` via `vite-plugin-html` to ensure the fastest possible initial paint. Non-critical CSS is loaded asynchronously.
+    * **Critical CSS Inlining:** Critical CSS is inlined in the deployed `index.html` to ensure the fastest possible initial paint. Non-critical CSS is loaded asynchronously.
     * **Self-Hosted Fonts:** The "Inter" font is self-hosted to reduce external dependencies and improve load times.
-* **Responsive Design:** Styled with Tailwind CSS for a generally responsive layout.
 * **Footer Information:** Includes links to relevant resources (WarframeTools, GitHub, License, Warframe Hub, Warframe Wiki, FrameHub), app version, and current Warframe version.
 
 ## How to Use
@@ -131,9 +130,11 @@ If you find this tool useful, consider supporting its development!
 
 ## Credits
 
-* **Vite:** [https://vitejs.dev/](https://vitejs.dev/)
-* **Tailwind CSS:** [https://tailwindcss.com/](https://tailwindcss.com/)
-* **Inter Font:** Self-hosted.(https://fonts.google.com/specimen/Inter).
+* **Vite:** [vite.dev](https://vite.dev/)
+* **Inter Font:** Self-hosted. (https://fonts.google.com/specimen/Inter)
+* **Heroicons:** [heroicons.com](https://heroicons.com/)
+* [sanitize.css](https://www.npmjs.com/package/sanitize.css)
+* [Vitest](https://vitest.dev/) and [Ajv](https://ajv.js.org/) for automated testing tools.
 * Task list based on information discussed in the Warframe community.
 * @AnSq for the full overhaul and major features.
 
@@ -141,7 +142,7 @@ If you find this tool useful, consider supporting its development!
 
 This is an unofficial fan-made tool. Warframe and all related assets are the intellectual property of Digital Extremes Ltd. This project is not affiliated with, endorsed by, or sponsored by Digital Extremes Ltd.
 
-> [!NOTE] 
+> [!NOTE]
 > The warframetools.com website uses [**Cloudflare Analytics**](https://www.cloudflare.com/web-analytics/) to view privacy friendly analytics information for visitors. You are free to use a tracker blocker, and it will not affect the tool from working. If you are not comfortable with this, please download and use it locally, or fork the repository and host it yourself on your own [Github Pages](https://pages.github.com/).
 
 ## License
