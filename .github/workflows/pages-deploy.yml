@@ -1,10 +1,14 @@
 # Workflow for building with Vite and deploying to GitHub Pages
-name: Build with Vite and Deploy to Pages on Weekly Reset
+name: Build with Vite and Deploy to Pages
 
 on:
   # Runs on weekly reset (UTC 00:00, Monday)
   #schedule:
   #  - cron: '0 0 * * 1'
+
+  # Runs when you publish a release
+  release:
+    types: [published]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,38 +27,38 @@ concurrency:
 
 jobs:
   # Build job
-  build: 
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22' 
-          cache: 'npm' 
+          node-version: '24'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install 
+        run: npm install
 
       - name: Build project with Vite
-        run: npm run build 
+        run: npm run build
 
       - name: Check time (for debugging)
         run: date -u
 
       - name: Setup Pages (this action prepares for artifact upload)
-        uses: actions/configure-pages@v5 
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3 
+        uses: actions/upload-pages-artifact@v5
         with:
-          path: './pages' 
+          path: './pages'
 
   # Deploy job
   deploy:
-    needs: build 
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -62,4 +66,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v5
