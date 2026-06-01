@@ -189,6 +189,7 @@
         "columns": [
             {
                 "name": "Location",
+                "align": "left",
                 "order": [
                     { "text": "Strata Relay, Earth" },
                     { "text": "Larunda Relay, Mercury" },
