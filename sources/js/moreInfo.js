@@ -2,6 +2,22 @@
  * If a task's id appears in the exported object, that value gets attached to the task as the `moreInfo` property by `_prepTasks()`.
  */
 
+import * as C from "./constants.js";
+import { iconURL } from "./functions.js";
+
+function _factionIcon(name) {
+    const src = iconURL(`tasks/syndicates/${name}`);
+    return `<img class="icon-filter inline-icon" src="${src}">`;
+}
+const factions = `<p>The Faction Syndicates are
+                 ${_factionIcon("FactionSigilRebels.png")}Steel Meridian,
+                 ${_factionIcon("FactionSigilJudge.png")}Arbiters of Hexis,
+                 ${_factionIcon("FactionSigilOracle.png")}Cephalon Suda,
+                 ${_factionIcon("FactionSigilBusiness.png")}The Perrin Sequence,
+                 ${_factionIcon("FactionSigilAssassins.png")}Red Veil,
+                 and ${_factionIcon("FactionSigilChurch.png")}New Loka.</p>
+                 <p>Pledge your loyalty to a faction syndicate at the Syndicates console in your ${C.BASE_OF_OPERATIONS_TOOLTIP}.</p>`
+
 export default {
     daily_first_win_bonus: `<p>Your first completed mission after the daily reset gives double <em>base credit rewards</em>. This only applies to the end-of-mission bonus, and does <strong>not</strong> apply to credits picked up in the mission.</p>
     <p>It also does <strong>not</strong> apply to the following mission types and locations:</p>
@@ -49,5 +65,8 @@ export default {
         </tbody>
     </table>
     <p>See <a href="https://wiki.warframe.com/w/Daily_Tribute#Daily_First_Win_Bonus">Daily First Win Bonus</a>, <a href="https://wiki.warframe.com/w/Dark_Sectors">Dark Sectors</a>, and <a href="https://wiki.warframe.com/w/Mission#Locations">Mission</a> on the wiki for more details.</p>
-    <p>(There's currently a visual bug where the bonus credits don't appear on the mission completion screen. They <em>are</em> still added to your account though.)</p>`
+    <p>(There's currently a visual bug where the bonus credits don't appear on the mission completion screen. They <em>are</em> still added to your account though.)</p>`,
+
+    daily_syndicate_gain: factions,
+    daily_syndicate_spend: factions
 }

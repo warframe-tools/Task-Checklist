@@ -437,7 +437,7 @@ body:not(.light-mode) img.icon-filter {
         text-decoration: underline var(--menu-panel-border) 1px;
         text-underline-offset: 0.25em;
     }
-    th:before, th:after {
+    th::before, th::after {
         content: "\00a0\00a0\00a0\00a0"; /* some no-break spaces added so the underline extends a bit on both sides */
     }
     :is(th, td):not(:last-child) {
@@ -485,6 +485,14 @@ body:not(.light-mode) img.icon-filter {
     a:hover {
         color: var(--link-hover-color);
     }
+}
+
+.inline-icon {
+    height: 1em;
+    width: 1em;
+    display: inline;
+    vertical-align: -10%;
+    margin: 0 0.125em;
 }
 
 /* Info Line */

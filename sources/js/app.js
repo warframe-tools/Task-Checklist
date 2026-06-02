@@ -3,6 +3,8 @@ console.log(`vite mode: ${import.meta.env.MODE}`);
 
 import {
     modulo,
+    iconURL,
+    makeCycleIcon,
     formatTimestamp,
     getMostRecentMondayMidnightUTC,
     getNextDailyMidnightUTC,
@@ -36,7 +38,7 @@ const WARFRAME_VERSION = "42.0.7.1";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 // only update DATA_STORAGE_KEY when the data storage format changes
-// in a backwards-uncompatible way (this should be *very* rare)
+// in a backwards-incompatible way (this should be *very* rare)
 const DATA_STORAGE_KEY = "warframeChecklistData_format1";
 
 // --- Task Data ---
@@ -59,11 +61,6 @@ function _prepTasks() {
     tasks.weekly.forEach(prep("7d"));
 }
 _prepTasks();
-
-const taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
-function iconURL(iconName) {
-    return taskIcons["../img/icons/" + iconName];
-}
 
 // --- DOM Elements (defined after DOMContentLoaded) ---
 let bodyElement, themeToggleButton, hamburgerButton, optionsMenu, resetDailyButton, resetWeeklyButton, resetButton,
@@ -299,23 +296,23 @@ export function displayOtherTaskCountdown(task) {
     const taskTimes = calcTaskTimes(task, now);
 
     if (task.duration) { // intermittently available task (e.g., Baro)
-        const leaveNotifiId = `${task.id}/departure`;
+        const leaveNotifId = `${task.id}/departure`;
 
         if (taskTimes.isAvailable) {
             const diff = taskTimes.thisCycleLeaveTimestamp - now.getTime();
             resetTimer.innerHTML = `(Available for <span class="tooltip" title="${new Date(taskTimes.thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
 
             // Leaving soon notification (Arrival notification is handled in runAutoResets, the same as always available tasks)
-            if (diff < C.MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifiId] !== cycleNumber) {
+            if (diff < C.MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifId] !== cycleNumber) {
                 showNotification(`${task.text.split(":")[0]} Leaving Soon!`, `Approximately ${Math.round(diff / C.MILLISECONDS_PER_MINUTE)} minutes remaining.`);
-                checklistData.notificationsSent[leaveNotifiId] = cycleNumber;
+                checklistData.notificationsSent[leaveNotifId] = cycleNumber;
                 saveData(false);
             }
         } else { // task not available
             resetTimer.innerHTML = `(Available in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
-            if (checklistData.notificationsSent[leaveNotifiId]) {delete checklistData.notificationsSent[leaveNotifiId];}
+            if (checklistData.notificationsSent[leaveNotifId]) {delete checklistData.notificationsSent[leaveNotifId];}
         }
-    } else { // always availalbe task
+    } else { // always available task
         resetTimer.innerHTML = `(Resets in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
     }
 }
@@ -659,19 +656,6 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     return listItem;
 }
 
-function makeCycleIcon(cycleData) {
-    if (cycleData.icon) {
-        const src = iconURL(`cycles/${cycleData.icon}`)
-        let classList = "cycle-icon";
-        if (cycleData.iconFilter) {
-            classList += " icon-filter";
-        }
-        return `<img class="${classList}" src="${src}">`;
-    } else {
-        return "";
-    }
-}
-
 function taskDialogHeaderSetup(task, dialog) {
     dialog.querySelector(":scope header .title").innerText = task.text.split(":")[0]; // take the task text up to the first ":" as the dialog title
 
@@ -815,7 +799,7 @@ function makeInfoLine(task, appendTo) {
             infoLine.classList.add('info-line');
             let infoLineHTML = "";
             infoLineHTML += makeInfoLineItem(task, "location", "Location", svgIcons.locationIcon);
-            infoLineHTML = infoLineHTML.replace('Base of Operations', '<span class="tooltip" title="Orbiter, Drifter\'s Camp, or Backroom">$&</span>');
+            infoLineHTML = infoLineHTML.replace('Base of Operations', C.BASE_OF_OPERATIONS_TOOLTIP);
             infoLineHTML += makeInfoLineItem(task, "npc", "NPC", svgIcons.npcIcon);
             infoLineHTML += makeInfoLineItem(task, "terminal", "Terminal", svgIcons.terminalIcon);
             infoLineHTML += makeInfoLineItem(task, "prereq", "Requirements", svgIcons.prereqIcon);

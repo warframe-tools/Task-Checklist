@@ -11,6 +11,24 @@ export function modulo(n, d) {
     return ((n % d) + d) % d;
 }
 
+const taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
+export function iconURL(iconName) {
+    return taskIcons["../img/icons/" + iconName];
+}
+
+export function makeCycleIcon(cycleData) {
+    if (cycleData.icon) {
+        const src = iconURL(`cycles/${cycleData.icon}`)
+        let classList = "cycle-icon";
+        if (cycleData.iconFilter) {
+            classList += " icon-filter";
+        }
+        return `<img class="${classList}" src="${src}">`;
+    } else {
+        return "";
+    }
+}
+
 export function formatTimestamp(timestamp) {
     if (!timestamp) return 'Never';
     try {

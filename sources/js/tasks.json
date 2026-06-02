@@ -30,6 +30,7 @@
             "id": "daily_syndicate_gain",
             "text": "Faction Syndicates: Gain daily standing cap with your pledged Syndicate(s).",
             "icon": "ReputationSmall.png",
+            "prereq": "Mastery Rank 3",
             "info": "Gain affinity in any mission to increase faction standing"
         },
         {
@@ -37,7 +38,8 @@
             "text": "Faction Syndicates: If maxed on standing, spend it (Relic packs, Vosfor packs, etc.).",
             "icon": "ReputationSmall.png",
             "location": "Base of Operations/Any Relay",
-            "terminal": "Syndicates"
+            "terminal": "Syndicates",
+            "prereq": "Mastery Rank 3"
         },
         {
             "id": "daily_world_syndicate_parent",
@@ -279,7 +281,7 @@
                 },
                 {
                     "id": "daily_marie",
-                    "text": "Marie: Purchase Operator and amp mods.",
+                    "text": "Marie: Purchase Tektolyst mods and arcanes, and Perita and Descendia resources.",
                     "icon": "Wisp.png",
                     "location": "La Cathédrale (Sanctum Anatomica, Deimos)",
                     "npc": "Marie",
@@ -425,7 +427,7 @@
                 },
                 {
                     "id": "weekly_yonta",
-                    "text": "Archimedian Yonta: Buy weekly Kuva with Voidplumes.",
+                    "text": "Archimedean Yonta: Buy weekly Kuva with Voidplumes.",
                     "icon": "Yonta.png",
                     "location": "Chrysalith, Zariman",
                     "npc": "Yonta",
@@ -433,7 +435,7 @@
                 },
                 {
                     "id": "weekly_acrithis",
-                    "text": "Acrithis: Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed).",
+                    "text": "Acrithis: Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed). Buy Kuva with Scuttler Husks.",
                     "icon": "Acrithis.png",
                     "location": "Duviri/Dormizone",
                     "npc": "Acrithis",
