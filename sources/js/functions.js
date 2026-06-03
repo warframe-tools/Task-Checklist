@@ -70,15 +70,15 @@ export function getUTCDayOfYear(date) {
 }
 
 export function formatCountdown(ms) {
-    if (ms < 0) return "00:00:00";
+    if (ms <= 0) { return "00:00:00"; }
 
-    let totalSeconds = Math.floor(ms / 1000);
-    let days = Math.floor(totalSeconds / (24 * 60 * 60));
-    totalSeconds %= (24 * 60 * 60);
-    let hours = Math.floor(totalSeconds / (60 * 60));
-    totalSeconds %= (60 * 60);
-    let minutes = Math.floor(totalSeconds / 60);
-    let seconds = totalSeconds % 60;
+    const days = Math.floor(ms / C.MILLISECONDS_PER_DAY);
+    ms %= C.MILLISECONDS_PER_DAY;
+    const hours = Math.floor(ms / C.MILLISECONDS_PER_HOUR);
+    ms %= C.MILLISECONDS_PER_HOUR;
+    const minutes = Math.floor(ms / C.MILLISECONDS_PER_MINUTE);
+    ms %= C.MILLISECONDS_PER_MINUTE;
+    const seconds = Math.floor(ms / C.MILLISECONDS_PER_SECOND);
 
     const pad = (num) => String(num).padStart(2, '0');
 
@@ -129,8 +129,9 @@ export function isDst(date, timezone) {
         return parseInt(timeZoneName.replace("GMT", "").split(":")[0], 10);
     }
 
-    const janOffset = wholeHourOffset(new Date("2026-01-01T00:00:00Z"));
-    const julOffset = wholeHourOffset(new Date("2026-07-01T00:00:00Z"));
+    const year = date.getUTCFullYear();
+    const janOffset = wholeHourOffset(new Date(Date.UTC(year, 0, 1)));
+    const julOffset = wholeHourOffset(new Date(Date.UTC(year, 6, 1)));
     if (janOffset === julOffset) {return false;}
     const currentOffset = wholeHourOffset(date);
     const dstOffset = Math.max(janOffset, julOffset);

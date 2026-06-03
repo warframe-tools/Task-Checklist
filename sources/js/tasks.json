@@ -281,7 +281,7 @@
                 },
                 {
                     "id": "daily_marie",
-                    "text": "Marie: Purchase Tektolyst mods and arcanes, and Perita and Descendia resources.",
+                    "text": "Marie: Purchase Tektolyst mods, arcanes, and Perita/Descendia resources.",
                     "icon": "Wisp.png",
                     "location": "La Cathédrale (Sanctum Anatomica, Deimos)",
                     "npc": "Marie",

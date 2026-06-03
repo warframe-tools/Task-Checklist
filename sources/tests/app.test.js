@@ -1,7 +1,6 @@
 /// <reference types="vitest/jsdom" />
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import fs from "node:fs";
 import * as app from "../js/app.js";
 
 beforeEach(() => {
@@ -11,8 +10,6 @@ beforeEach(() => {
 afterEach(() => {
     vi.useRealTimers();
 })
-
-// document.getElementsByTagName("head")[0].outerHTML = fs.readFileSync("sources/index.html");
 
 describe("displayOtherTaskCountdown({period, duration, ref, observesDst})", () => {
     beforeEach(() => {
