@@ -3,15 +3,11 @@
 
 /* --- Background Image Styles --- */
 /* Paths are relative to this style.css file (e.g., if style.css is in sources/css/ and images are in sources/img/) */
-#bg-image-0 {
-    background-image: url('../img/garuda-fortuna.webp');
-}
-#bg-image-1 {
-    background-image: url('../img/gara-eidolon.webp');
-}
-#bg-image-2 {
-    background-image: url('../img/heart-of-deimos-warframe.webp');
-}
+#bg-image-0 { background-image: url('../img/garuda-fortuna.webp'); }
+#bg-image-1 { background-image: url('../img/gara-eidolon.webp'); }
+#bg-image-2 { background-image: url('../img/heart-of-deimos-warframe.webp'); }
+#bg-image-3 { background-image: url('../img/duviri.webp'); }
+#bg-image-4 { background-image: url('../img/perita.webp'); }
 /* Add more #bg-image-X rules if you have more images */
 
 .daily-background-image {
@@ -31,19 +27,40 @@
 .checklist-content h2:hover {
     background-color: var(--section-header-hover-bg);
 }
-.checklist-content label, .parent-task-header .task-text { color: var(--text-label); }
-.checklist-content #last-saved-timestamp,
-.checklist-content #storage-notice {
+.checklist-content .task-description { color: var(--text-label); }
+
+#save-info {
+    margin-top: 1rem;
+    text-align: right;
     color: var(--text-muted);
     font-size: 0.75rem;
+}
+#save-info p {
     margin-top: 0.25rem;
 }
-.checklist-content .italic { color: var(--text-secondary); }
-.checklist-content .text-xs { color: var(--text-muted); }
+#save-status {
+    color: rgb(22 163 74 / 1);
+    opacity: 0;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition: opacity 0.5s ease-in-out;
+}
+.reminder-notice {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-style: italic;
+    margin-top: 2rem;
+}
+
+footer {
+    text-align: center;
+}
 
 .checklist-content .footer-links {
     font-size: 0.75rem;
     color: var(--text-muted);
+    margin-top: 2rem;
 }
 .checklist-content .footer-links a {
     color: var(--link-color);
@@ -59,28 +76,56 @@
     margin: 0 0.1rem;
 }
 
+#footer-info {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+}
+.warframe-version-text {
+    margin-top: 0.25rem;
+}
+.disclaimer-text {
+    margin-top: 0.5rem;
+    padding: 0 1rem;
+}
+
+.section-content ul {
+    list-style: none;
+    margin-top: 0.5rem;
+    padding: 0;
+}
+
 a.git-hash-text {
     text-decoration: underline;
+    color: inherit;
 }
 
 /* --- Collapsible Section Styles (Non-Critical Parts) --- */
-.subtask-list {
-    margin-left: 1.5rem;
-    padding-left: 0;
-    list-style: none;
+.section-content .subtask-list {
+    margin-left: 2rem;
+    margin-top: 0.25rem;
 }
 .parent-task-header {
     display: flex;
-    align-items: center;
+    align-items: start;
+    cursor: pointer;
+    margin-bottom: 0.25rem;
+}
+.task-description {
+    flex: 1 1 0%;
+    margin-left: 0.5rem;
     cursor: pointer;
 }
-.parent-task-header .task-text {
-    flex-grow: 1;
-    margin-left: 0.5rem;
-}
-.task-text.checked, label.checked {
+.task-description.checked {
     text-decoration: line-through;
     color: var(--text-label-checked);
+}
+.task-description.unavailable {
+    cursor: not-allowed;
+}
+.task-description.unavailable .task-text {
+    font-style: italic;
 }
 .task-item.hidden-task {
     display: none !important;
@@ -128,10 +173,11 @@ a.git-hash-text {
 .hide-section-button.visible {
     display: inline-block;
 }
-.baro-countdown, .eight-hour-countdown {
+.other-countdown {
     font-size: 0.75rem;
     color: var(--baro-timer-color);
-    margin-left: 0.25rem;
+    margin-left: 0.4rem;
+    display: inline-block;
 }
 
 
@@ -148,14 +194,29 @@ input[type="checkbox"] {
     background-color: var(--checkbox-bg);
     flex-shrink: 0;
 }
+input[type="checkbox"]::after {
+    position: absolute;
+    font-size: 0.8rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 input[type="checkbox"]:checked {
     background-color: var(--checkbox-checked-bg);
     border-color: var(--checkbox-checked-border);
 }
 input[type="checkbox"]:checked::after {
-    content: '✔'; position: absolute;
-    color: white; font-size: 0.8rem;
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    content: "✔";
+    color: var(--checkbox-check-color);
+}
+input[type="checkbox"]:indeterminate {
+    background-color: var(--checkbox-locked-bg);
+    border-color: var(--checkbox-locked-border);
+    cursor: not-allowed;
+}
+input[type="checkbox"]:indeterminate::after {
+    content: "\1F512\FE0E"; /* LOCK + VARIATION SELECTOR-15 (text presentation) */
+    color: var(--checkbox-lock-color);
 }
 li.task-item {
     display: flex;
@@ -166,8 +227,8 @@ li.parent-task-container {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    margin-bottom: 0;
 }
-#save-status { transition: opacity 0.5s ease-in-out; }
 
 /* --- Buttons (Base styles, colors set below) --- */
 .menu-btn {
@@ -230,11 +291,11 @@ li.parent-task-container {
  #error-close-button:hover { opacity: 1; }
 
 /* Hamburger Menu (Non-critical hover states) */
-#menu-close-button:hover {
+.menu-close-button:hover {
     opacity: 1;
     color: var(--menu-close-btn-hover-color);
 }
-#slideout-menu-overlay .menu-btn {
+#options-menu .menu-btn {
     display: block;
     width: 100%;
     text-align: left;
@@ -242,20 +303,196 @@ li.parent-task-container {
     margin-right: 0;
     margin-bottom: 0.75rem;
 }
-#slideout-menu-overlay .menu-btn:last-child {
+#options-menu .menu-btn:last-child {
     margin-bottom: 0;
 }
 
+/* Dialogs */
+dialog {
+    color: var(--text-label);
+    max-width: 52rem;
+}
+dialog::backdrop {
+    background-color: var(--backdrop-color);
+    backdrop-filter: var(--backdrop-filter);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    dialog {
+        --dialog-anim-duration: 0.15s;
+        --dialog-anim-easing: ease-out;
+        transition: transform var(--dialog-anim-duration) cubic-bezier(.25,1,.5,1),
+                    opacity var(--dialog-anim-duration) var(--dialog-anim-easing),
+                    display var(--dialog-anim-duration) allow-discrete,
+                    overlay var(--dialog-anim-duration) allow-discrete;
+        transform: scale(1);
+        opacity: 1;
+        @starting-style { /* this section is necessary for the opening animation */
+            transform: scale(0.95);
+            opacity: 0;
+        }
+    }
+    dialog:not([open]) { /* this section is necessary for the closing animation (closing animation doesn't work in Firefox) */
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    dialog::backdrop {
+        transition: background-color var(--dialog-anim-duration) var(--dialog-anim-easing),
+                    backdrop-filter var(--dialog-anim-duration) var(--dialog-anim-easing);
+        @starting-style { /* opening */
+            background-color: transparent;
+            backdrop-filter: none;
+        }
+    }
+    dialog:not([open])::backdrop { /* closing */
+        background-color: transparent;
+        backdrop-filter: none;
+    }
+}
+
+
 /* Task Icons */
-.task-item img, .parent-task-header img {
+.task-icon {
     height: 1.5em;
     width: 1.5em;
 }
-body.light-mode .task-item img.icon-filter, body.light-mode .parent-task-header img.icon-filter {
+body.light-mode img.icon-filter {
     filter: brightness(0) invert(0);
 }
-body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-task-header img.icon-filter {
+body:not(.light-mode) img.icon-filter {
     filter: brightness(0) invert(1);
+}
+
+.menu-title .task-icon {
+    /* height: 1em;
+    width: 1em; */
+    display: inline;
+    margin-right: 0.35em;
+    vertical-align: bottom;
+}
+.menu-title .task-icon[src=""] {
+    display: none;
+    margin: 0;
+}
+
+/* Collapsible Extra Task Info */
+.task-info-expander {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .task-info-expander { transition: grid-template-rows 200ms; /* https://css-tricks.com/css-grid-can-do-auto-height-transitions/ */ }
+}
+.task-item .checked .task-info-expander {
+    grid-template-rows: 0fr;
+}
+.task-info-expander > div {
+    min-height: 0;
+}
+
+/* Cycles */
+.current-cycle {
+    font-size: 90%;
+    color: color-mix(in hsl, var(--text-label) 50%, var(--text-secondary) 50%);
+    margin-left: 0.5em;
+    text-indent: calc(var(--current-cycle-svg-size) + var(--task-info-expander-svg-mr)) hanging;
+}
+.cycle-icon {
+    height: 1.25em;
+    width: 1.25em;
+    display: inline;
+    vertical-align: text-bottom;
+    margin: 0 0.25em;
+}
+.current-cycle span:last-of-type {
+    margin-right: 1em;
+}
+
+/* Cycle Schedule */
+.more-info-btn {
+    display: inline-block;
+    padding: 0 0.375em;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    border: 1px solid var(--theme-toggle-border);
+    background-color: transparent;
+    font-size: 75%;
+    vertical-align: text-bottom;
+}
+.more-info-btn:hover {
+    background-color: var(--theme-toggle-hover-bg);
+    border-color: var(--theme-toggle-hover-border);
+    color: var(--text-label);
+}
+
+#cycle-schedule, #more-info {
+    table {
+        margin: auto;
+    }
+    thead {
+        font-weight: 700;
+        font-size: 1.0625rem;
+        text-decoration: underline var(--menu-panel-border) 1px;
+        text-underline-offset: 0.25em;
+    }
+    th::before, th::after {
+        content: "\00a0\00a0\00a0\00a0"; /* some no-break spaces added so the underline extends a bit on both sides */
+    }
+    :is(th, td):not(:last-child) {
+        padding-right: 1em;
+    }
+    td {
+        vertical-align: top;
+    }
+    th, td:not(:has(.cycle-icon)) {
+        text-align: center;
+    }
+    td:has(.cycle-icon) {
+        text-align: left;
+    }
+}
+
+#cycle-schedule {
+    tbody tr:first-child {
+        font-weight: 600;
+    }
+    .cycle-repeats {
+        font-size: 75%;
+        color: var(--text-muted);
+        text-align: center;
+    }
+}
+
+/* More Info */
+#more-info {
+    p:not(:last-child):not(:has(+ :is(ul, table))), table {
+        margin-bottom: 1em;
+    }
+    ul {
+        list-style: "\2212   " outside;
+        padding-left: 2em;
+    }
+    th, td {
+        text-align: center;
+    }
+    a {
+        color: var(--link-color);
+        text-decoration: underline;
+        transition: color 0.2s ease;
+    }
+    a:hover {
+        color: var(--link-hover-color);
+    }
+}
+
+.inline-icon {
+    height: 1em;
+    width: 1em;
+    display: inline;
+    vertical-align: -10%;
+    margin: 0 0.125em;
 }
 
 /* Info Line */
@@ -263,7 +500,6 @@ body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-
     font-size: 75%;
     color: var(--text-secondary);
     margin-left: 0.5em;
-    min-height: 0;
 }
 .info-line > span:not(:last-of-type)::after {
     content: "|";
@@ -272,8 +508,8 @@ body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-
 .info-line > span {
     white-space: nowrap;
 }
-.info-line svg {
-    margin-right: 0.2em;
+.task-info-expander svg {
+    margin-right: var(--task-info-expander-svg-mr);
     display: inline;
     vertical-align: text-bottom;
 }
@@ -282,13 +518,4 @@ body:not(.light-mode) .task-item img.icon-filter, body:not(.light-mode) .parent-
 }
 .tooltip {
     text-decoration: underline dotted;
-}
-.info-line-expander {
-    display: grid;
-    grid-template-rows: 1fr;
-    overflow: hidden;
-    transition: grid-template-rows 100ms; /* https://css-tricks.com/css-grid-can-do-auto-height-transitions/ */
-}
-.task-item .checked .info-line-expander {
-    grid-template-rows: 0fr;
 }

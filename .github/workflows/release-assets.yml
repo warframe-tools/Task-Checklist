@@ -12,10 +12,15 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout code (GitHub Actions)
+        if: ${{ !env.ACT }}
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
+
+      - name: Checkout code (nektos/act local actions)
+        if: ${{ env.ACT }}
+        uses: actions/checkout@v6
 
       - name: Get Tag Name or Ref for Archives
         id: get_ref_name
@@ -37,9 +42,9 @@ jobs:
           echo "Using archive base name: Task-Checklist-${{ env.REF_FOR_ARCHIVE }}"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
@@ -60,8 +65,8 @@ jobs:
         run: |
           gh release upload "${{ github.event.release.tag_name }}" "./release/${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}.html" --clobber
 
-      - name: Upload Source Directory as Artifact (for manual/dispatch runs)
-        if: github.event_name == 'workflow_dispatch'
+      - name: Upload Release as Artifact (for manual/dispatch runs)
+        if: github.event_name == 'workflow_dispatch' || env.ACT
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.set_base_name.outputs.ARCHIVE_BASE_NAME }}

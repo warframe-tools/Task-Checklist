@@ -5,6 +5,9 @@
 /pages/
 /release/
 
+/.vite/
+/.coverage/
+
 # Log files
 *.log
 npm-debug.log*

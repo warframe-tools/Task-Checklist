@@ -1,13 +1,15 @@
 {
   "name": "task-checklist",
-  "version": "2.4.0",
-  "description": "A Warframe Task Checklist to track daily, weekly, and other tasks. Built with HTML, CSS (Tailwind via CDN), and vanilla JavaScript, processed with Vite.",
+  "version": "5.0",
+  "description": "A Warframe Task Checklist to track daily, weekly, and other tasks. Built with HTML, CSS, and vanilla JavaScript, processed with Vite.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "build-release": "vite build --mode release",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui --open=false --coverage"
   },
   "repository": {
     "type": "git",
@@ -27,8 +29,14 @@
   },
   "homepage": "https://warframetools.com/Task-Checklist/",
   "devDependencies": {
-    "vite": "^6.4.2",
-    "vite-plugin-html": "^3.2.2",
-    "vite-plugin-singlefile": "^2.3.0"
+    "@vitest/coverage-v8": "^4.1.5",
+    "@vitest/ui": "^4.1.5",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "jsdom": "^29.1.1",
+    "sanitize.css": "^13.0.0",
+    "vite": "^8.0.14",
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^4.1.5"
   }
 }

@@ -6,7 +6,7 @@ This security policy applies to the latest version of the Warframe Task Checklis
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.x.x   | :white_check_mark: |
+| 5.x.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
@@ -34,7 +34,7 @@ We are primarily interested in vulnerabilities such as:
 
 * **Cross-Site Scripting (XSS):** Vulnerabilities that could allow malicious scripts to run in another user's browser context (though the current application design minimizes this risk as it doesn't process external user-generated content).
 * **Data Exposure:** Issues related to the insecure handling or potential leakage of data stored in `localStorage` (though this data is local to the user's browser).
-* **Dependency Issues:** Vulnerabilities originating from the external dependencies used (e.g., Tailwind CSS CDN - although these are generally managed by the CDN provider).
+* **Dependency Issues:** Vulnerabilities originating from the external dependencies used.
 
 **Out of Scope:**
 
