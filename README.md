@@ -136,7 +136,7 @@ If you find this tool useful, consider supporting its development!
 * [sanitize.css](https://www.npmjs.com/package/sanitize.css)
 * [Vitest](https://vitest.dev/) and [Ajv](https://ajv.js.org/) for automated testing tools.
 * Task list based on information discussed in the Warframe community.
-* @AnSq for the full overhaul and major features.
+* [@AnSq](https://github.com/AnSq) for the full overhaul and major features.
 
 ## Disclaimer
 
