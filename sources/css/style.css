@@ -24,10 +24,10 @@
 }
 
 /* --- Content Box Element Styling (Non-Critical Parts) --- */
-.checklist-content h2:hover {
+h2:hover {
     background-color: var(--section-header-hover-bg);
 }
-.checklist-content .task-description { color: var(--text-label); }
+.task-description { color: var(--text-label); }
 
 #save-info {
     margin-top: 1rem;
@@ -57,21 +57,21 @@ footer {
     text-align: center;
 }
 
-.checklist-content .footer-links {
+.footer-links {
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-top: 2rem;
 }
-.checklist-content .footer-links a {
+.footer-links a {
     color: var(--link-color);
     text-decoration: underline;
     transition: color 0.2s ease;
     margin: 0 0.25rem;
 }
-.checklist-content .footer-links a:hover {
+.footer-links a:hover {
     color: var(--link-hover-color);
 }
-.checklist-content .footer-links span {
+.footer-links span {
     color: var(--text-muted);
     margin: 0 0.1rem;
 }
@@ -94,6 +94,7 @@ footer {
     list-style: none;
     margin-top: 0.5rem;
     padding: 0;
+    min-width: 0; /* be more aggressive about prventing text cutoff on very narrow screens */
 }
 
 a.git-hash-text {
@@ -505,7 +506,9 @@ body:not(.light-mode) img.icon-filter {
     content: "|";
     margin: 0 0.5em;
 }
-.info-line > span {
+.info-line > span > span {
+    /* keep the info line icon on the same line as the first word of the info line item.
+     * e.g.: {prereq_icon}[NO_BREAK]Mastery[BREAK_OK]Rank[BREAK_OK]3 */
     white-space: nowrap;
 }
 .task-info-expander svg {
@@ -518,4 +521,5 @@ body:not(.light-mode) img.icon-filter {
 }
 .tooltip {
     text-decoration: underline dotted;
+    cursor: pointer;
 }
