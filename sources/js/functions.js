@@ -126,7 +126,9 @@ export function isDst(date, timezone) {
         // returns the whole hour part of the UTC offset as an integer.
         // note the existence of fractional timezones (India, Central Australia, Newfoundland, etc.)
         const timeZoneName = dateFormat.formatToParts(d).find((p) => p.type === "timeZoneName").value;
-        return parseInt(timeZoneName.replace("GMT", "").split(":")[0], 10);
+        // a zero offset formats as bare "GMT" (no "+0"), which parses to NaN — treat it as 0
+        const offset = parseInt(timeZoneName.replace("GMT", "").split(":")[0], 10);
+        return Number.isNaN(offset) ? 0 : offset;
     }
 
     const year = date.getUTCFullYear();

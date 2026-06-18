@@ -180,8 +180,16 @@ body.light-mode::before {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 0.5rem 1rem;
     margin-bottom: 1rem;
+}
+/* take the remaining width and let the description wrap onto a new line, so the
+   controls stay on the title's line instead of dropping below (e.g. longer
+   translations like French) */
+#site-header hgroup {
+    flex: 1 1 0;
+    min-width: 0;
 }
 h1 {
     color: var(--text-header);
@@ -268,6 +276,7 @@ h2 .reset-time-local {
     display: flex;
     align-items: center;
     margin-left: auto;
+    flex-shrink: 0; /* keep the controls intact on the title's line; never wrap below */
 }
 #site-header button {
     font-weight: 600;
@@ -282,6 +291,93 @@ h2 .reset-time-local {
 }
 #site-header button:not(:last-of-type) { margin-right: 0.5rem; }
 #site-header button:not(:first-of-type) { margin-left: 0.5rem; }
+/* language switcher: custom dropdown (native <select> popups can't be themed) */
+#language-switcher {
+    position: relative;
+    margin-right: 0.5rem;
+}
+.lang-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--theme-toggle-border);
+    background-color: transparent;
+    color: var(--theme-toggle-color);
+    cursor: pointer;
+    line-height: 1.5;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.lang-trigger:hover {
+    background-color: var(--theme-toggle-hover-bg);
+    border-color: var(--theme-toggle-hover-border);
+}
+.lang-trigger:focus-visible {
+    outline: 2px solid var(--theme-toggle-hover-border);
+    outline-offset: 2px;
+}
+.lang-trigger .lang-chevron { width: 0.8rem; height: 0.8rem; flex-shrink: 0; transition: transform 0.2s ease; }
+#language-switcher.open .lang-chevron { transform: rotate(180deg); }
+.lang-current { font-variant-numeric: tabular-nums; }
+
+.lang-menu {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    right: 0;
+    min-width: 11rem;
+    margin: 0;
+    padding: 0.3rem;
+    list-style: none;
+    background-color: var(--menu-panel-bg);
+    border: 1px solid var(--menu-panel-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 60;
+}
+.lang-option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: background-color 0.15s ease;
+}
+.lang-option:hover,
+.lang-option:focus-visible {
+    background-color: var(--section-header-hover-bg);
+    outline: none;
+}
+.lang-option-code {
+    min-width: 1.75rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+}
+.lang-option-name { flex: 1; font-size: 0.875rem; }
+.lang-option.is-selected,
+.lang-option.is-selected .lang-option-code { color: var(--text-header); }
+.lang-check { width: 1rem; height: 1rem; flex-shrink: 0; color: var(--text-header); }
+
+/* "help translate" footer link, separated from the language list */
+.lang-help {
+    margin-top: 0.3rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--menu-panel-border);
+    color: var(--text-secondary);
+}
+.lang-help .lang-option-name { font-size: 0.8rem; }
+.lang-ext { width: 0.8rem; height: 0.8rem; flex-shrink: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    .lang-trigger .lang-chevron { transition: none; }
+}
 #site-header button svg {
     width: 1.25rem;
     height: 1.25rem;

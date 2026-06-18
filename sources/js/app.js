@@ -21,6 +21,9 @@ import * as C from "./constants.js";
 
 import * as svgIcons from "./icons.js";
 
+import * as i18n from "./i18n/i18n.js";
+import { t } from "./i18n/i18n.js";
+
 // --- Configuration ---
 // Array of background div IDs (must match IDs in sources/index.html)
 const dailyBackgroundImageIds = [
@@ -31,7 +34,7 @@ const dailyBackgroundImageIds = [
     'bg-image-4',
     // Add more IDs if you add more background image divs in HTML
 ];
-const APP_VERSION = "5.0.1";
+const APP_VERSION = "5.1.0";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
 const WARFRAME_VERSION = "42.0.11";
@@ -47,13 +50,17 @@ import cycles from "./cycles.json" with {type: "json"};
 import moreInfo from "./moreInfo.js";
 
 function _prepTasks() {
+    // overlay translations onto the task/cycle data first so everything downstream sees localized text
+    i18n.localizeTasks(tasks);
+    i18n.localizeCycles(cycles);
+
     function prep(period) {
         return (task) => {
             if (task.ref) { // alternate ref tasks need a period for countdown and reset to work correctly
                 task.period = period;
             }
             if (task.id in moreInfo) {
-                task.moreInfo = moreInfo[task.id];
+                task.moreInfo = i18n.getMoreInfo(task.id) ?? moreInfo[task.id];
             }
         }
     }
@@ -66,7 +73,7 @@ _prepTasks();
 let bodyElement, themeToggleButton, hamburgerButton, optionsMenu, resetDailyButton, resetWeeklyButton, resetButton,
     unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement,
     weeklyResetTimeElement, errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton,
-    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, backgroundDivs = [];
+    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, languageSwitcherElement, backgroundDivs = [];
 
 
 // --- State Variables ---
@@ -118,6 +125,7 @@ function initializeDOMElements() {
     wfVersionElement = document.querySelector('.warframe-version-text');
     scheduleDialog = document.getElementById("cycle-schedule");
     moreInfoDialog = document.getElementById("more-info");
+    languageSwitcherElement = document.getElementById("language-switcher");
 
     backgroundDivs = [];
     dailyBackgroundImageIds.forEach((id) => {
@@ -135,37 +143,37 @@ function displayError(message) {
     console.error("Displaying Error:", message);
     errorMessageElement.textContent = message;
     errorDisplayElement.classList.add("visible");
-    if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
+    if (errorCopyButton) { errorCopyButton.textContent = t("error.copy"); }
 }
 
 function hideError() {
     if (!errorDisplayElement) { return; }
     errorDisplayElement.classList.remove("visible");
     errorMessageElement.textContent = '';
-    if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
+    if (errorCopyButton) { errorCopyButton.textContent = t("error.copy"); }
 }
 
 function copyErrorToClipboard() {
     const errorMessage = errorMessageElement.textContent;
     if (!errorMessage || !navigator.clipboard) {
         console.warn("Clipboard API not available or no error message to copy.");
-        if (errorCopyButton) { errorCopyButton.textContent = "Failed"; }
+        if (errorCopyButton) { errorCopyButton.textContent = t("error.failed"); }
         setTimeout(() => {
-            if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
+            if (errorCopyButton) { errorCopyButton.textContent = t("error.copy"); }
         }, 2000);
         return;
     }
     navigator.clipboard.writeText(errorMessage).then(() => {
         console.log("Error message copied to clipboard.");
-        if (errorCopyButton) { errorCopyButton.textContent = "Copied!"; }
+        if (errorCopyButton) { errorCopyButton.textContent = t("error.copied"); }
         setTimeout(() => {
-            if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
+            if (errorCopyButton) { errorCopyButton.textContent = t("error.copy"); }
         }, 2000);
     }).catch((err) => {
         console.error("Failed to copy error message: ", err);
-        if (errorCopyButton) { errorCopyButton.textContent = "Failed"; }
+        if (errorCopyButton) { errorCopyButton.textContent = t("error.failed"); }
         setTimeout(() => {
-            if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
+            if (errorCopyButton) { errorCopyButton.textContent = t("error.copy"); }
         }, 2000);
     });
 }
@@ -188,7 +196,7 @@ function handleThemeToggle() {
         localStorage.setItem(THEME_STORAGE_KEY, newTheme);
     } catch (e) {
         console.error("Could not save theme preference:", e);
-        displayError("Could not save theme preference.");
+        displayError(t("errors.themeSaveFailed"));
     }
 }
 
@@ -215,7 +223,8 @@ function loadThemePreference() {
 
 function updateLastSavedDisplay(timestamp) {
     if (lastSavedTimestampElement) {
-        lastSavedTimestampElement.textContent = `Last saved: ${formatTimestamp(timestamp)}`;
+        const time = timestamp ? formatTimestamp(timestamp) : t("save.never");
+        lastSavedTimestampElement.textContent = t("save.lastSaved", { time });
     } else {
         console.error("lastSavedTimestampElement not found");
     }
@@ -264,7 +273,8 @@ function displayLocalResetTimes() {
         const nextDailyResetTimestamp = getNextDailyMidnightUTC();
         const dailyDiff = nextDailyResetTimestamp - now;
         if (dailyResetTimeElement) {
-            dailyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextDailyResetTimestamp).toString()}">${formatCountdown(dailyDiff)}</span>)`;
+            const timer = `<span class="tooltip" title="${new Date(nextDailyResetTimestamp).toString()}">${formatCountdown(dailyDiff)}</span>`;
+            dailyResetTimeElement.innerHTML = t("countdown.resetsInTimer", { timer });
         }
 
         // Weekly
@@ -274,7 +284,8 @@ function displayLocalResetTimes() {
         }
         const weeklyDiff = nextWeeklyResetTimestamp - now;
         if (weeklyResetTimeElement) {
-            weeklyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextWeeklyResetTimestamp).toString()}">${formatCountdown(weeklyDiff)}</span>)`;
+            const timer = `<span class="tooltip" title="${new Date(nextWeeklyResetTimestamp).toString()}">${formatCountdown(weeklyDiff)}</span>`;
+            weeklyResetTimeElement.innerHTML = t("countdown.resetsInTimer", { timer });
         }
 
         // Other
@@ -283,8 +294,8 @@ function displayLocalResetTimes() {
         tasks.other.forEach((task) => displayOtherTaskCountdown(task));
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
-        if (dailyResetTimeElement) { dailyResetTimeElement.innerHTML = `(Resets 00:00 UTC)`; }
-        if (weeklyResetTimeElement) { weeklyResetTimeElement.innerHTML = `(Resets Mon 00:00 UTC)`; }
+        if (dailyResetTimeElement) { dailyResetTimeElement.textContent = t("countdown.dailyFallback"); }
+        if (weeklyResetTimeElement) { weeklyResetTimeElement.textContent = t("countdown.weeklyFallback"); }
     }
 }
 
@@ -300,20 +311,24 @@ export function displayOtherTaskCountdown(task) {
 
         if (taskTimes.isAvailable) {
             const diff = taskTimes.thisCycleLeaveTimestamp - now.getTime();
-            resetTimer.innerHTML = `(Available for <span class="tooltip" title="${new Date(taskTimes.thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
+            const timer = `<span class="tooltip" title="${new Date(taskTimes.thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>`;
+            resetTimer.innerHTML = t("countdown.availableForTimer", { timer });
 
             // Leaving soon notification (Arrival notification is handled in runAutoResets, the same as always available tasks)
             if (diff < C.MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifId] !== cycleNumber) {
-                showNotification(`${task.text.split(":")[0]} Leaving Soon!`, `Approximately ${Math.round(diff / C.MILLISECONDS_PER_MINUTE)} minutes remaining.`);
+                const name = task.text.split(":")[0];
+                showNotification(t("notif.leavingSoonTitle", { name }), t("notif.leavingSoonBody", { minutes: Math.round(diff / C.MILLISECONDS_PER_MINUTE) }));
                 checklistData.notificationsSent[leaveNotifId] = cycleNumber;
                 saveData(false);
             }
         } else { // task not available
-            resetTimer.innerHTML = `(Available in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
+            const timer = `<span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>`;
+            resetTimer.innerHTML = t("countdown.availableInTimer", { timer });
             if (checklistData.notificationsSent[leaveNotifId]) {delete checklistData.notificationsSent[leaveNotifId];}
         }
     } else { // always available task
-        resetTimer.innerHTML = `(Resets in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
+        const timer = `<span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>`;
+        resetTimer.innerHTML = t("countdown.resetsInTimer", { timer });
     }
 }
 
@@ -385,7 +400,7 @@ function otherTaskReset(task) {
 
         // Send and record new notification
         if (checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[task.id] !== cycleNumber) {
-            showNotification(`${task.text.split(":")[0]} has reset!`, "Vendor stock may have updated.");
+            showNotification(t("notif.resetTitle", { name: task.text.split(":")[0] }), t("notif.resetBody"));
             checklistData.notificationsSent[task.id] = cycleNumber;
             saveData(false);
         }
@@ -397,7 +412,7 @@ function otherTaskReset(task) {
 async function requestNotificationPermission() {
     if (!("Notification" in window)) {
         console.warn("This browser does not support desktop notification");
-        alert("This browser does not support desktop notifications.");
+        alert(t("notif.noSupport"));
         return false;
     }
     if (Notification.permission === "granted") {
@@ -408,11 +423,11 @@ async function requestNotificationPermission() {
         if (permission === "granted") {
             return true;
         } else {
-            alert("Notification permission was denied. You can enable it in your browser settings.");
+            alert(t("notif.denied"));
             return false;
         }
     } else {
-        alert("Notification permission has been denied. Please enable it in your browser settings if you wish to receive notifications.");
+        alert(t("notif.deniedPersist"));
         return false;
     }
 }
@@ -469,8 +484,9 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     if (task.id.startsWith('other_')) {
         const notificationButton = document.createElement('button');
         notificationButton.classList.add('notification-toggle-btn');
-        notificationButton.setAttribute('aria-label', `Toggle notifications for ${task.text.split(':')[0]}`);
-        notificationButton.title = `Toggle notifications for ${task.text.split(':')[0]}`;
+        const notifLabel = t("notif.toggleFor", { name: task.text.split(':')[0] });
+        notificationButton.setAttribute('aria-label', notifLabel);
+        notificationButton.title = notifLabel;
 
         notificationButton.innerHTML = svgIcons.bellIcon;
         if (checklistData.notificationPreferences[task.id]) { notificationButton.classList.add("active"); }
@@ -491,8 +507,9 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     // Hide Button
     const hideButton = document.createElement('button');
     hideButton.classList.add('hide-task-btn');
-    hideButton.setAttribute('aria-label', `Hide task: ${task.text.split(':')[0]}`);
-    hideButton.title = `Hide task: ${task.text.split(':')[0]}`;
+    const hideLabel = t("notif.hideTask", { name: task.text.split(':')[0] });
+    hideButton.setAttribute('aria-label', hideLabel);
+    hideButton.title = hideLabel;
     hideButton.innerHTML = svgIcons.hideIcon;
     hideButton.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -606,7 +623,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         if (task.period) {
             const resetTimer = document.createElement("span");
             resetTimer.classList.add("other-countdown");
-            resetTimer.textContent = "(Loading...)";
+            resetTimer.textContent = t("countdown.loading");
             label.appendChild(resetTimer);
         }
 
@@ -681,7 +698,7 @@ function showScheduleAction(task, period, cycleIndex, isAvailable) {
         thead.innerHTML = "";
         tbody.innerHTML = "";
 
-        let header = `<tr><th>Date</th>`;
+        let header = `<tr><th>${t("schedule.date")}</th>`;
         for (const column of cycles[task.id].columns) {
             header += `<th>${column.name}</th>`;
         }
@@ -694,7 +711,7 @@ function showScheduleAction(task, period, cycleIndex, isAvailable) {
         const currentCycleStartTime = ref.getTime() + (period * cyclesSinceRef);
 
         for (let i = 0; i <= cycleCount; i++) {
-            let date = "Now";
+            let date = t("schedule.now");
             if (i !== 0 || !isAvailable) {
                 const rowCycleStartDate = new Date(currentCycleStartTime + (period * i));
                 date = rowCycleStartDate.toISOString().split("T")[0]; // toISOString is always in UTC, which is what we want. The part before "T" is the date
@@ -702,7 +719,7 @@ function showScheduleAction(task, period, cycleIndex, isAvailable) {
 
             let repeat = "";
             if (i === cycleCount) {
-                repeat = `<tr><td colspan="${cycles[task.id].columns.length + 1}" class="cycle-repeats">(Cycle Repeats)</td></tr>`;
+                repeat = `<tr><td colspan="${cycles[task.id].columns.length + 1}" class="cycle-repeats">${t("schedule.cycleRepeats")}</td></tr>`;
             }
 
             let row = `${repeat}<tr><td>${date}</td>`; // intermediate `row` variable is needed because manipulating `tbody.innerHTML` automatically adds `</tr>` tag
@@ -751,19 +768,19 @@ function makeInfoLine(task, appendTo) {
             let prefix, period, cycleIndex;
             const isAvailable = calcTaskTimes(task, now).isAvailable;
             if (task.id.startsWith("weekly_")) {
-                prefix = "This&nbsp;Week";
+                prefix = t("cycle.thisWeek");
                 period = 7 * C.MILLISECONDS_PER_DAY;
                 if (ref.getUTCDay() !== 1) {
                     console.warn(`${task.id} cycle ref ${cycles[task.id].ref} is not a Monday`);
                 }
             }
             else if (task.id.startsWith("daily_")) {
-                prefix = "Today";
+                prefix = t("cycle.today");
                 period = C.MILLISECONDS_PER_DAY;
             }
             else {
-                prefix = "Current&nbsp;Cycle";
-                if (!isAvailable) {prefix = "Next&nbsp;Cycle";}
+                prefix = t("cycle.currentCycle");
+                if (!isAvailable) {prefix = t("cycle.nextCycle");}
                 period = parseDuration(task.period);
             }
 
@@ -785,7 +802,7 @@ function makeInfoLine(task, appendTo) {
             const showSchedule = document.createElement("button");
             showSchedule.type = "button";
             showSchedule.classList.add("more-info-btn");
-            showSchedule.innerHTML = "Show&nbsp;Schedule";
+            showSchedule.innerHTML = t("info.showSchedule");
             showSchedule.addEventListener("click", showScheduleAction(task, period, cycleIndex, isAvailable));
             currentCycle.appendChild(showSchedule);
 
@@ -798,19 +815,19 @@ function makeInfoLine(task, appendTo) {
             const infoLine = document.createElement('div');
             infoLine.classList.add('info-line');
             let infoLineHTML = "";
-            infoLineHTML += makeInfoLineItem(task, "location", "Location", svgIcons.locationIcon);
-            infoLineHTML = infoLineHTML.replace('Base of Operations', C.BASE_OF_OPERATIONS_TOOLTIP);
-            infoLineHTML += makeInfoLineItem(task, "npc", "NPC", svgIcons.npcIcon);
-            infoLineHTML += makeInfoLineItem(task, "terminal", "Terminal", svgIcons.terminalIcon);
-            infoLineHTML += makeInfoLineItem(task, "prereq", "Requirements", svgIcons.prereqIcon);
-            infoLineHTML += makeInfoLineItem(task, "info", "Info", svgIcons.infoIcon);
+            infoLineHTML += makeInfoLineItem(task, "location", t("info.location"), svgIcons.locationIcon);
+            infoLineHTML = infoLineHTML.replace(t("baseOfOperations.label"), i18n.baseOfOperationsHTML());
+            infoLineHTML += makeInfoLineItem(task, "npc", t("info.npc"), svgIcons.npcIcon);
+            infoLineHTML += makeInfoLineItem(task, "terminal", t("info.terminal"), svgIcons.terminalIcon);
+            infoLineHTML += makeInfoLineItem(task, "prereq", t("info.requirements"), svgIcons.prereqIcon);
+            infoLineHTML += makeInfoLineItem(task, "info", t("info.info"), svgIcons.infoIcon);
             infoLine.innerHTML = infoLineHTML;
 
             if (task.moreInfo) {
                 const showMoreInfo = document.createElement("button");
                 showMoreInfo.type = "button";
                 showMoreInfo.classList.add("more-info-btn");
-                showMoreInfo.innerHTML = "More&nbsp;Info";
+                showMoreInfo.innerHTML = t("info.moreInfo");
                 showMoreInfo.addEventListener("click", showMoreInfoAction(task));
                 const span = document.createElement("span");
                 span.appendChild(showMoreInfo);
@@ -893,10 +910,10 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
         Object.keys(confirmState).forEach((key) => {
             if (key !== confirmKey && confirmState[key].isConfirming) {
                 let btnElement, btnText;
-                if (key === 'all') { btnElement = resetButton; btnText = 'Reset All Checks'; }
-                else if (key === 'daily') { btnElement = resetDailyButton; btnText = 'Reset Daily Checks'; }
-                else if (key === 'weekly') { btnElement = resetWeeklyButton; btnText = 'Reset Weekly Checks'; }
-                else if (key === 'unhide') { btnElement = unhideTasksButton; btnText = 'Unhide All Tasks'; }
+                if (key === 'all') { btnElement = resetButton; btnText = t("menu.resetAll"); }
+                else if (key === 'daily') { btnElement = resetDailyButton; btnText = t("menu.resetDaily"); }
+                else if (key === 'weekly') { btnElement = resetWeeklyButton; btnText = t("menu.resetWeekly"); }
+                else if (key === 'unhide') { btnElement = unhideTasksButton; btnText = t("menu.unhideAll"); }
                 if (btnElement) {
                     resetSpecificButtonState(btnElement, btnText, key);
                 }
@@ -910,7 +927,7 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
         resetSpecificButtonState(buttonElement, defaultText, confirmKey);
     } else {
         confirmState[confirmKey].isConfirming = true;
-        buttonElement.textContent = 'Are you Sure?';
+        buttonElement.textContent = t("menu.confirm");
         buttonElement.classList.add('confirming');
         clearTimeout(confirmState[confirmKey].timeout);
 
@@ -1056,9 +1073,9 @@ function saveData(showStatus = true) {
         if (showStatus) { showSaveStatus(); }
     } catch (e) {
         console.error("Error saving data to localStorage:", e);
-        let userMessage = "Could not save progress.";
+        let userMessage = t("errors.saveFailed");
         if (e.name === 'QuotaExceededError' || (e.code && (e.code === 22 || e.code === 1014))) {
-            userMessage = "Could not save progress. Browser storage might be full.";
+            userMessage = t("errors.saveFailedQuota");
         }
         displayError(userMessage);
     }
@@ -1082,7 +1099,7 @@ function loadData() {
             } else { console.warn("Invalid data format found in localStorage. Starting fresh."); }
         } catch (e) {
             console.error("Error parsing saved data:", e);
-            displayError("Failed to load saved progress. Data might be corrupted.");
+            displayError(t("errors.loadFailed"));
             checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {}, lastTaskResetTimes: {}, notificationPreferences: {}, notificationsSent: {} };
         }
     }
@@ -1090,6 +1107,8 @@ function loadData() {
 
 export function loadAndInitializeApp() {
     initializeDOMElements();
+    i18n.applyStaticTranslations();
+    i18n.setupLanguageSwitcher(languageSwitcherElement);
     hideError();
     loadThemePreference();
     loadData();
@@ -1109,19 +1128,19 @@ export function loadAndInitializeApp() {
         gitHashElement.href = `https://github.com/warframe-tools/Task-Checklist/tree/${GIT_COMMIT_HASH_LONG}`;
     } else { console.error("git hash element not found!"); }
 
-    if (wfVersionElement) { wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`; }
+    if (wfVersionElement) { wfVersionElement.textContent = t("footer.warframeVersion", { version: WARFRAME_VERSION }); }
     else { console.error("Warframe version element not found!"); }
 
-    if (resetDailyButton) { resetDailyButton.addEventListener('click', () => handleResetConfirmation(resetDailyButton, 'daily', 'Reset Daily Checks', resetDailyAction)); }
+    if (resetDailyButton) { resetDailyButton.addEventListener('click', () => handleResetConfirmation(resetDailyButton, 'daily', t("menu.resetDaily"), resetDailyAction)); }
     else { console.error("Reset Daily button element not found!"); }
 
-    if (resetWeeklyButton) { resetWeeklyButton.addEventListener('click', () => handleResetConfirmation(resetWeeklyButton, 'weekly', 'Reset Weekly Checks', resetWeeklyAction)); }
+    if (resetWeeklyButton) { resetWeeklyButton.addEventListener('click', () => handleResetConfirmation(resetWeeklyButton, 'weekly', t("menu.resetWeekly"), resetWeeklyAction)); }
     else { console.error("Reset Weekly button element not found!"); }
 
-    if (resetButton) { resetButton.addEventListener('click', () => handleResetConfirmation(resetButton, 'all', 'Reset All Checks', resetAllAction)); }
+    if (resetButton) { resetButton.addEventListener('click', () => handleResetConfirmation(resetButton, 'all', t("menu.resetAll"), resetAllAction)); }
     else { console.error("Reset All button element not found!"); }
 
-    if (unhideTasksButton) { unhideTasksButton.addEventListener('click', () => handleResetConfirmation(unhideTasksButton, 'unhide', 'Unhide All Tasks', unhideAllAction)); }
+    if (unhideTasksButton) { unhideTasksButton.addEventListener('click', () => handleResetConfirmation(unhideTasksButton, 'unhide', t("menu.unhideAll"), unhideAllAction)); }
     else { console.error("Unhide Tasks button not found!");}
 
 
@@ -1193,11 +1212,12 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Critical Error during app.js initialization:", error);
         const errDisp = document.getElementById("error-display");
         const errMsg = document.getElementById("error-message");
+        const criticalMessage = t("errors.critical");
         if (errDisp && errMsg) {
-            errMsg.textContent = "A critical error occurred during application startup. Please check the console.";
+            errMsg.textContent = criticalMessage;
             errDisp.classList.add("visible");
         } else {
-            alert("A critical error occurred during application startup. Please check the console.");
+            alert(criticalMessage);
         }
     }
 });
