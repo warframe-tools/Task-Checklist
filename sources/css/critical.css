@@ -180,8 +180,12 @@ body.light-mode::before {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 0.5rem;
     margin-bottom: 1rem;
+}
+#site-header hgroup {
+    flex: 1 1 0%;
 }
 h1 {
     color: var(--text-header);
@@ -280,8 +284,8 @@ h2 .reset-time-local {
     cursor: pointer;
     line-height: 1.5;
 }
-#site-header button:not(:last-of-type) { margin-right: 0.5rem; }
-#site-header button:not(:first-of-type) { margin-left: 0.5rem; }
+#site-controls > :not(:last-child) { margin-right: 0.5rem; }
+#site-controls > :not(:first-child) { margin-left: 0.5rem; }
 #site-header button svg {
     width: 1.25rem;
     height: 1.25rem;

@@ -376,7 +376,7 @@
                     "text": "Elite Temporal Archimedea: Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame).",
                     "icon": "Kaya_.png",
                     "location": "Höllvania Central Mall",
-                    "npc": "Kaya",
+                    "npc": "Kaya Velasco",
                     "prereq": "Rank 5 The Hex",
                     "info": "Costs 2 Search Pulses to unlock for the week"
                 }
@@ -411,6 +411,14 @@
             "icon": "Heat_d.png",
             "location": "Dark Refractory (Base of Operations)",
             "terminal": "Navigation"
+        },
+        {
+            "id": "weekly_clan_initiative",
+            "text": "Clan Weekly Initiatives: Earn rewards by playing with clan members.",
+            "icon": "Friends.png",
+            "location": "Any Mission*",
+            "terminal": "Menu &#x1F782; Communication &#x1F782; Clan",
+            "prereq": "Membership in a Clan"
         },
         {
             "id": "weekly_vendors",
@@ -458,6 +466,14 @@
                     "prereq": "Rank 5 Cavia"
                 },
                 {
+                    "id": "weekly_kaya",
+                    "text": "Kaya: Trade Pix Chips for Arcanes.",
+                    "icon": "Kaya_.png",
+                    "location": "Höllvania Central Mall",
+                    "npc": "Kaya Velasco",
+                    "prereq": "Elite Temporal Archimedea"
+                },
+                {
                     "id": "weekly_nightcap",
                     "text": "Nightcap: Trade Fergolyte for Kuva and Ayatan Sculpture.",
                     "icon": "MysteryShroom256_d.png",
@@ -472,6 +488,14 @@
                     "location": "Any Relay",
                     "npc": "Aspirant Zorba",
                     "prereq": "The Chains of Harrow"
+                },
+                {
+                    "id": "weekly_hunhow",
+                    "text": "Hunhow: Trade Emerald &amp; Crimson Talents for Kuva.",
+                    "icon": "MarkedForDeathStalker.png",
+                    "location": "Pontis Tower, Uranus",
+                    "npc": "Hunhow",
+                    "prereq": "Jade Shadows: Constellations"
                 }
             ]
         }

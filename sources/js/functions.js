@@ -178,3 +178,8 @@ export function calcTaskTimes(task, date) {
 
     return {nextResetTimestamp, thisCycleLeaveTimestamp, isAvailable};
 }
+
+export function factionIcon(name) {
+    const src = iconURL(`tasks/syndicates/${name}`);
+    return `<img class="icon-filter inline-icon" src="${src}">`;
+}
