@@ -99,7 +99,7 @@
         ]
     },
     "weekly_duviri_circuit_sp": {
-        "ref": "2026-01-05",
+        "ref": "2026-04-27",
         "columns": [
             {
                 "name": "Items",
@@ -111,7 +111,8 @@
                     { "text": "Incarnon Adapters for Atomos, Dual Ichor, Dual Toxocyst, Miter, and Torid", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
                     { "text": "Incarnon Adapters for Ack & Brunt, Burston, Nami Solo, Soma, and Vasto", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
                     { "text": "Incarnon Adapters for Despair, Dread, Hate, Sibear, and Zylok", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
-                    { "text": "Incarnon Adapters for Cestra, Dera, Okina, Sicarus, and Sybaris", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true }
+                    { "text": "Incarnon Adapters for Cestra, Dera, Okina, Sicarus, and Sybaris", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true },
+                    { "text": "Incarnon Adapters for Ballistica, Destreza, Obex, Stug, and Vectis", "icon": "IncarnonEvolveIconSmall.png", "iconFilter": true }
                 ]
             }
         ]

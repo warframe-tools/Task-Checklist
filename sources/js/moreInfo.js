@@ -3,19 +3,15 @@
  */
 
 import * as C from "./constants.js";
-import { iconURL } from "./functions.js";
+import { factionIcon } from "./functions.js";
 
-function _factionIcon(name) {
-    const src = iconURL(`tasks/syndicates/${name}`);
-    return `<img class="icon-filter inline-icon" src="${src}">`;
-}
 const factions = `<p>The Faction Syndicates are
-                 ${_factionIcon("FactionSigilRebels.png")}Steel Meridian,
-                 ${_factionIcon("FactionSigilJudge.png")}Arbiters of Hexis,
-                 ${_factionIcon("FactionSigilOracle.png")}Cephalon Suda,
-                 ${_factionIcon("FactionSigilBusiness.png")}The Perrin Sequence,
-                 ${_factionIcon("FactionSigilAssassins.png")}Red Veil,
-                 and ${_factionIcon("FactionSigilChurch.png")}New Loka.</p>
+                 ${factionIcon("FactionSigilRebels.png")}Steel Meridian,
+                 ${factionIcon("FactionSigilJudge.png")}Arbiters of Hexis,
+                 ${factionIcon("FactionSigilOracle.png")}Cephalon Suda,
+                 ${factionIcon("FactionSigilBusiness.png")}The Perrin Sequence,
+                 ${factionIcon("FactionSigilAssassins.png")}Red Veil,
+                 and ${factionIcon("FactionSigilChurch.png")}New Loka.</p>
                  <p>Pledge your loyalty to a faction syndicate at the Syndicates console in your ${C.BASE_OF_OPERATIONS_TOOLTIP}.</p>`
 
 export default {
@@ -68,5 +64,11 @@ export default {
     <p>(There's currently a visual bug where the bonus credits don't appear on the mission completion screen. They <em>are</em> still added to your account though.)</p>`,
 
     daily_syndicate_gain: factions,
-    daily_syndicate_spend: factions
+    daily_syndicate_spend: factions,
+
+    weekly_clan_initiative: `<p>Play in a squad with other members of your Clan to earn bonus resources for your Clan Vault. The bonus resources also contribute to your personal rewards track for the week. Progress is based on the amount of resources collected in missions with your clan members.</p>
+    <p>Each week, a random planet will reward double bonus Vault resources (and double reward track progress) for missions played there.</p>
+    <p>Check the current boosted planet and track your reward progress in the Clan menu.</p>
+    <p><strong>Note:</strong> You can use the "Clan Only" matchmaking option to join squads with your Clan or Alliance members, but playing with Alliance members does <em>not</em> give bonus Vault resources or reward progress.</p>
+    <p>* Descendia missions do not contribute to Clan Weekly Initiatives.</p>`
 }
