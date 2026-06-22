@@ -31,10 +31,10 @@ const dailyBackgroundImageIds = [
     'bg-image-4',
     // Add more IDs if you add more background image divs in HTML
 ];
-const APP_VERSION = "5.1";
+const APP_VERSION = "5.2";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
-const WARFRAME_VERSION = "43.0.2";
+const WARFRAME_VERSION = "43.0.3";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 // only update DATA_STORAGE_KEY when the data storage format changes
@@ -66,7 +66,8 @@ _prepTasks();
 let bodyElement, themeToggleButton, hamburgerButton, optionsMenu, resetDailyButton, resetWeeklyButton, resetButton,
     unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement,
     weeklyResetTimeElement, errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton,
-    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, backgroundDivs = [];
+    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, backgroundDivs,
+    hideCompletedToggle = [];
 
 
 // --- State Variables ---
@@ -86,7 +87,8 @@ let checklistData = {
     manuallyHiddenSections: {},
     lastTaskResetTimes: {},
     notificationPreferences: {},
-    notificationsSent: {}
+    notificationsSent: {},
+    hideCompletedTasks: false
 };
 
 let currentTheme = 'dark';
@@ -118,6 +120,7 @@ function initializeDOMElements() {
     wfVersionElement = document.querySelector('.warframe-version-text');
     scheduleDialog = document.getElementById("cycle-schedule");
     moreInfoDialog = document.getElementById("more-info");
+    hideCompletedToggle = document.getElementById("hide-completed");
 
     backgroundDivs = [];
     dailyBackgroundImageIds.forEach((id) => {
@@ -426,10 +429,13 @@ function showNotification(title, body) {
 function createChecklistItem(task, isChecked, isSubtask = false) {
     const isAvailable = calcTaskTimes(task, new Date()).isAvailable;
 
-    const listItem = document.createElement('li');
-    listItem.classList.add('task-item');
+    const listItem = document.createElement("li");
+    listItem.classList.add("task-autohide-expander");
+
+    const taskItem = document.createElement("div");
+    taskItem.classList.add("task-item");
     if (checklistData.hiddenTasks[task.id]) {
-        listItem.classList.add('hidden-task');
+        taskItem.classList.add("hidden-task");
     }
 
     // Checkbox
@@ -497,14 +503,14 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     hideButton.addEventListener('click', (e) => {
         e.stopPropagation();
         checklistData.hiddenTasks[task.id] = true;
-        listItem.classList.add('hidden-task');
-        updateSectionControls(listItem.closest('section').id);
+        taskItem.classList.add("hidden-task");
+        updateSectionControls(taskItem.closest("section").id);
         saveData(false);
     });
     controlsContainer.appendChild(hideButton);
 
     if (task.subtasks) {
-        listItem.classList.add('parent-task-container');
+        taskItem.classList.add("parent-task-container");
 
         const parentHeaderDiv = document.createElement('div');
         parentHeaderDiv.classList.add('parent-task-header');
@@ -533,7 +539,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
         parentHeaderDiv.appendChild(controlsContainer);
         parentHeaderDiv.appendChild(collapseIcon);
-        listItem.appendChild(parentHeaderDiv);
+        taskItem.appendChild(parentHeaderDiv);
 
         // Subtasks
         const subtaskCollapsible = document.createElement("div");
@@ -550,7 +556,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             });
         }
         subtaskCollapsible.appendChild(subtaskList)
-        listItem.appendChild(subtaskCollapsible);
+        taskItem.appendChild(subtaskCollapsible);
 
         // On Click -> Collapse/Expand
         parentHeaderDiv.addEventListener('click', (e) => {
@@ -613,10 +619,10 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         // Info Line & Cycle Schedule
         makeInfoLine(task, label);
 
-        listItem.appendChild(checkbox);
-        if (task.icon) { listItem.appendChild(icon); }
-        listItem.appendChild(label);
-        listItem.appendChild(controlsContainer);
+        taskItem.appendChild(checkbox);
+        if (task.icon) { taskItem.appendChild(icon); }
+        taskItem.appendChild(label);
+        taskItem.appendChild(controlsContainer);
 
         // Checkbox Changed
         checkbox.addEventListener("change", (event) => {
@@ -653,6 +659,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             saveData();
         });
     }
+    listItem.appendChild(taskItem);
     return listItem;
 }
 
@@ -1079,11 +1086,12 @@ function loadData() {
                 checklistData.lastTaskResetTimes = parsedData.lastTaskResetTimes || {};
                 checklistData.notificationPreferences = parsedData.notificationPreferences || {};
                 checklistData.notificationsSent = parsedData.notificationsSent || {};
+                checklistData.hideCompletedTasks = parsedData.hideCompletedTasks || false;
             } else { console.warn("Invalid data format found in localStorage. Starting fresh."); }
         } catch (e) {
             console.error("Error parsing saved data:", e);
             displayError("Failed to load saved progress. Data might be corrupted.");
-            checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {}, lastTaskResetTimes: {}, notificationPreferences: {}, notificationsSent: {} };
+            checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {}, lastTaskResetTimes: {}, notificationPreferences: {}, notificationsSent: {}, hideCompletedTasks: false };
         }
     }
 }
@@ -1111,6 +1119,17 @@ export function loadAndInitializeApp() {
 
     if (wfVersionElement) { wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`; }
     else { console.error("Warframe version element not found!"); }
+
+    if (hideCompletedToggle) {
+        hideCompletedToggle.addEventListener("change", (event) => {
+            bodyElement.classList.toggle("hide-completed-tasks", event.target.checked);
+            checklistData.hideCompletedTasks = event.target.checked;
+            saveData();
+        });
+        hideCompletedToggle.checked = checklistData.hideCompletedTasks;
+        bodyElement.classList.toggle("hide-completed-tasks", checklistData.hideCompletedTasks);
+    }
+    else { console.error("Hide Completed Toggle not found!"); }
 
     if (resetDailyButton) { resetDailyButton.addEventListener('click', () => handleResetConfirmation(resetDailyButton, 'daily', 'Reset Daily Checks', resetDailyAction)); }
     else { console.error("Reset Daily button element not found!"); }

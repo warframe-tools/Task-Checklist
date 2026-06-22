@@ -23,6 +23,10 @@
     /* display: none; by default, JS will make one visible */
 }
 
+:where(label) {
+    cursor: pointer;
+}
+
 /* --- Content Box Element Styling (Non-Critical Parts) --- */
 h2:hover {
     background-color: var(--section-header-hover-bg);
@@ -219,12 +223,12 @@ input[type="checkbox"]:indeterminate::after {
     content: "\1F512\FE0E"; /* LOCK + VARIATION SELECTOR-15 (text presentation) */
     color: var(--checkbox-lock-color);
 }
-li.task-item {
+.task-item {
     display: flex;
     align-items: start;
     margin-bottom: 0.5rem;
 }
-li.parent-task-container {
+.parent-task-container {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -296,7 +300,8 @@ li.parent-task-container {
     opacity: 1;
     color: var(--menu-close-btn-hover-color);
 }
-#options-menu .menu-btn {
+#options-menu :is(.menu-btn, .menu-item) {
+    font-weight: 600;
     display: block;
     width: 100%;
     text-align: left;
@@ -304,8 +309,12 @@ li.parent-task-container {
     margin-right: 0;
     margin-bottom: 0.75rem;
 }
-#options-menu .menu-btn:last-child {
+#options-menu :is(.menu-btn, .menu-item):last-child {
     margin-bottom: 0;
+}
+#options-menu .checkbox-option {
+    display: flex;
+    align-items: start;
 }
 
 /* Dialogs */
@@ -316,6 +325,12 @@ dialog {
 dialog::backdrop {
     background-color: var(--backdrop-color);
     backdrop-filter: var(--backdrop-filter);
+}
+
+dialog hr {
+    border: none;
+    border-top: 1px solid var(--menu-panel-border);
+    margin: 1rem 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -377,8 +392,9 @@ body:not(.light-mode) img.icon-filter {
     margin: 0;
 }
 
-/* Collapsible Extra Task Info */
-.task-info-expander {
+/* Collapsible Stuff */
+.task-info-expander,
+.task-autohide-expander {
     display: grid;
     grid-template-rows: 1fr;
     overflow: hidden;
@@ -389,7 +405,8 @@ body:not(.light-mode) img.icon-filter {
 .task-item .checked .task-info-expander {
     grid-template-rows: 0fr;
 }
-.task-info-expander > div {
+.task-info-expander > div,
+.task-autohide-expander > div {
     min-height: 0;
 }
 
@@ -522,4 +539,46 @@ body:not(.light-mode) img.icon-filter {
 .tooltip {
     text-decoration: underline dotted;
     cursor: pointer;
+}
+
+/* Hide completed tasks */
+body.hide-completed-tasks .task-autohide-expander:has(> .task-item > .checked),
+body.hide-completed-tasks .task-autohide-expander:has(> .parent-task-container > .parent-task-header > .checked) {
+    grid-template-rows: 0fr;
+    @media (prefers-reduced-motion: no-preference) {
+        transition: grid-template-rows 200ms 5s;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        transition: grid-template-rows 0s 5s;
+    }
+
+    &::after {
+        background-color: color(from var(--checkbox-checked-bg) srgb r g b / 0.25);
+        width: 0;
+    }
+}
+body.hide-completed-tasks .task-autohide-expander > .task-item:has(> .checked) {
+    margin: 0;
+    @media (prefers-reduced-motion: no-preference) {
+        transition: margin 200ms 5s;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        transition: margin 0s 5s;
+    }
+}
+/* countdown bar */
+.task-autohide-expander {
+    position: relative;
+}
+.task-autohide-expander::after {
+    position: absolute;
+    top: 0.125rem;
+    left: 1.75rem;
+    width: 100%;
+    height: 0.25rem;
+    border-radius: 0.125rem;
+    background-color: transparent;
+    content: "";
+    z-index: -1;
+    transition: width 5s linear;
 }
