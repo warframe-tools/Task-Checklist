@@ -31,10 +31,10 @@ const dailyBackgroundImageIds = [
     'bg-image-4',
     // Add more IDs if you add more background image divs in HTML
 ];
-const APP_VERSION = "5.1";
+const APP_VERSION = "5.2";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
-const WARFRAME_VERSION = "43.0.2";
+const WARFRAME_VERSION = "43.0.3";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 // only update DATA_STORAGE_KEY when the data storage format changes
@@ -66,7 +66,8 @@ _prepTasks();
 let bodyElement, themeToggleButton, hamburgerButton, optionsMenu, resetDailyButton, resetWeeklyButton, resetButton,
     unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement,
     weeklyResetTimeElement, errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton,
-    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, backgroundDivs = [];
+    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, backgroundDivs = [],
+    hideCompletedToggle;
 
 
 // --- State Variables ---
@@ -83,15 +84,20 @@ let checklistData = {
     lastDailyReset: null,
     lastWeeklyReset: null,
     hiddenTasks: {},
+    autoHiddenTasks: {},
     manuallyHiddenSections: {},
     lastTaskResetTimes: {},
     notificationPreferences: {},
-    notificationsSent: {}
+    notificationsSent: {},
+    hideCompletedTasks: false
 };
 
 let currentTheme = 'dark';
 let saveStatusTimeout;
 let countdownInterval;
+
+// taskId -> { timeoutId, listItem } for pending auto-hide timeouts
+const hideCompletedTimeouts = new Map();
 
 // --- Function Definitions ---
 
@@ -118,6 +124,7 @@ function initializeDOMElements() {
     wfVersionElement = document.querySelector('.warframe-version-text');
     scheduleDialog = document.getElementById("cycle-schedule");
     moreInfoDialog = document.getElementById("more-info");
+    hideCompletedToggle = document.getElementById('hide-completed-toggle');
 
     backgroundDivs = [];
     dailyBackgroundImageIds.forEach((id) => {
@@ -423,6 +430,96 @@ function showNotification(title, body) {
     }
 }
 
+// --- Hide Completed Tasks ---
+
+/** walks up the parentId chain to find the root (top-level) task */
+function getSchedulableTask(task) {
+    let t = task;
+    while (t && t.parentId) {
+        const parent = getTaskById(t.parentId);
+        if (!parent) { break; }
+        t = parent;
+    }
+    return t || task;
+}
+
+/** hides a task's list item after 5 seconds, with a fade animation. cancels any existing timer for the task first */
+function scheduleHideTask(taskId, listItem) {
+    cancelHideTask(taskId);
+    listItem.classList.add('task-hiding');
+    const timeoutId = setTimeout(() => {
+        hideCompletedTimeouts.delete(taskId);
+        if (!listItem.isConnected) { return; } // DOM was rebuilt while we waited
+        listItem.classList.remove('task-hiding');
+        checklistData.hiddenTasks[taskId] = true;
+        checklistData.autoHiddenTasks[taskId] = true;
+        listItem.classList.add('hidden-task');
+        const section = listItem.closest('section');
+        if (section) { updateSectionControls(section.id); }
+        saveData(false);
+    }, 5000);
+    hideCompletedTimeouts.set(taskId, { timeoutId, listItem });
+}
+
+/** cancels a pending auto-hide and restores the task's normal appearance */
+function cancelHideTask(taskId) {
+    const entry = hideCompletedTimeouts.get(taskId);
+    if (entry !== undefined) {
+        clearTimeout(entry.timeoutId);
+        if (entry.listItem.isConnected) {
+            entry.listItem.classList.remove('task-hiding');
+        }
+        hideCompletedTimeouts.delete(taskId);
+    }
+}
+
+/** cancels all pending hides for a section's tasks (called before repopulating) */
+function cancelSectionHideTimeouts(section) {
+    function cancelTree(task) {
+        cancelHideTask(task.id);
+        if (task.subtasks) { task.subtasks.forEach(cancelTree); }
+    }
+    tasks[section].forEach(cancelTree);
+}
+
+/** called when the hide-completed toggle changes state */
+function handleHideCompletedToggle() {
+    checklistData.hideCompletedTasks = hideCompletedToggle.checked;
+
+    if (checklistData.hideCompletedTasks) {
+        hideAllCurrentlyCompletedTasks();
+    } else {
+        // only unhide tasks the feature auto-hid, leaving manually hidden ones alone
+        for (const taskId of Object.keys(checklistData.autoHiddenTasks)) {
+            delete checklistData.hiddenTasks[taskId];
+        }
+        checklistData.autoHiddenTasks = {};
+        ['daily', 'weekly', 'other'].forEach(populateSection);
+        saveData(false);
+    }
+}
+
+/** hides every already-completed top-level task, used when the toggle is switched on */
+function hideAllCurrentlyCompletedTasks() {
+    for (const section of ['daily', 'weekly', 'other']) {
+        for (const task of tasks[section]) {
+            if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
+                const checkbox = document.getElementById(task.id);
+                if (!checkbox) { continue; }
+                const listItem = checkbox.closest('li.task-item');
+                if (listItem) {
+                    checklistData.hiddenTasks[task.id] = true;
+                    checklistData.autoHiddenTasks[task.id] = true;
+                    listItem.classList.add('hidden-task');
+                    const sectionEl = listItem.closest('section');
+                    if (sectionEl) { updateSectionControls(sectionEl.id); }
+                }
+            }
+        }
+    }
+    saveData(false);
+}
+
 function createChecklistItem(task, isChecked, isSubtask = false) {
     const isAvailable = calcTaskTimes(task, new Date()).isAvailable;
 
@@ -496,6 +593,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     hideButton.innerHTML = svgIcons.hideIcon;
     hideButton.addEventListener('click', (e) => {
         e.stopPropagation();
+        const schedulable = getSchedulableTask(task); // cancel pending auto-hide since this is now manual
+        cancelHideTask(schedulable.id);
         checklistData.hiddenTasks[task.id] = true;
         listItem.classList.add('hidden-task');
         updateSectionControls(listItem.closest('section').id);
@@ -589,6 +688,28 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
                 // allow for nested subtasks of arbitrary depth)
                 subCheckbox.dispatchEvent(new CustomEvent("change", {detail: currentlyChecked}));
             });
+
+            // Auto-hide on completion
+            if (!isSubtask) {
+                // top-level task: schedule/cancel based on this task's own checked state
+                if (currentlyChecked && checklistData.hideCompletedTasks) {
+                    scheduleHideTask(task.id, listItem);
+                } else if (!currentlyChecked) {
+                    cancelHideTask(task.id);
+                }
+            } else {
+                // nested parent task: target the root ancestor
+                const schedulable = getSchedulableTask(task);
+                if (currentlyChecked && checklistData.hideCompletedTasks && checklistData.progress[schedulable.id]) {
+                    const schedulableEl = document.getElementById(schedulable.id)?.closest('li.task-item');
+                    if (schedulableEl && !schedulableEl.classList.contains('hidden-task')) {
+                        scheduleHideTask(schedulable.id, schedulableEl);
+                    }
+                } else if (!currentlyChecked) {
+                    cancelHideTask(schedulable.id);
+                }
+            }
+
             saveData();
         });
 
@@ -650,6 +771,20 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
                 t = parentTaskDefinition;  // move up a level
             }
+
+            // Auto-hide on completion (targets the root ancestor so nested tasks hide as a group)
+            const schedulable = getSchedulableTask(task);
+            if (currentlyChecked && checklistData.hideCompletedTasks && checklistData.progress[schedulable.id]) {
+                const schedulableEl = schedulable.id === task.id
+                    ? listItem
+                    : document.getElementById(schedulable.id)?.closest('li.task-item');
+                if (schedulableEl && !schedulableEl.classList.contains('hidden-task')) {
+                    scheduleHideTask(schedulable.id, schedulableEl);
+                }
+            } else if (!currentlyChecked) {
+                cancelHideTask(schedulable.id);
+            }
+
             saveData();
         });
     }
@@ -855,6 +990,8 @@ function _getSubtaskById(task, id) {
 }
 
 function populateSection(section) {
+    cancelSectionHideTimeouts(section); // stale listItem refs must not fire after rebuild
+
     const sectionElement = document.querySelector(`#${section}-tasks-content ul`);
     const taskList = tasks[section];
 
@@ -923,7 +1060,21 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
 }
 
 function resetAllAction() {
+    // Cancel pending auto-hide timers before wiping progress
+    for (const { timeoutId, listItem } of hideCompletedTimeouts.values()) {
+        clearTimeout(timeoutId);
+        if (listItem.isConnected) { listItem.classList.remove('task-hiding'); }
+    }
+    hideCompletedTimeouts.clear();
+
     checklistData.progress = {};
+
+    // Unhide tasks the feature auto-hid, leaving manually hidden ones alone
+    for (const taskId of Object.keys(checklistData.autoHiddenTasks)) {
+        delete checklistData.hiddenTasks[taskId];
+    }
+    checklistData.autoHiddenTasks = {};
+
     localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(checklistData));
 
     const allCheckboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
@@ -933,6 +1084,7 @@ function resetAllAction() {
         const taskDescription = listItem.querySelector(".task-description");
         if (taskDescription) {taskDescription.classList.remove("checked")};
     });
+    ["daily", "weekly", "other"].forEach(populateSection);
     updateLastSavedDisplay(checklistData.lastSaved);
     console.log("Checklist reset complete.");
 }
@@ -947,10 +1099,16 @@ function resetSection(section, resetAltRefTasks=false) {
     let didReset = 0;
 
     function resetTask(task) {
+        const wasAutoHidden = !!checklistData.autoHiddenTasks[task.id];
         if (task.ref && !resetAltRefTasks) {
             didReset += otherTaskReset(task);
-        } else if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
+        } else if (checklistData.progress[task.id] && (!checklistData.hiddenTasks[task.id] || wasAutoHidden)) {
             checklistData.progress[task.id] = false;
+            didReset++;
+        }
+        if (wasAutoHidden) {
+            delete checklistData.hiddenTasks[task.id];
+            delete checklistData.autoHiddenTasks[task.id];
             didReset++;
         }
         if (task.subtasks) {task.subtasks.forEach(resetTask);}
@@ -990,8 +1148,21 @@ function handleSectionToggle(event) {
 }
 
 function unhideAllAction() {
+    // Cancel pending auto-hide timers
+    for (const { timeoutId, listItem } of hideCompletedTimeouts.values()) {
+        clearTimeout(timeoutId);
+        if (listItem.isConnected) { listItem.classList.remove('task-hiding'); }
+    }
+    hideCompletedTimeouts.clear();
+
     checklistData.hiddenTasks = {};
+    checklistData.autoHiddenTasks = {};
     checklistData.manuallyHiddenSections = {};
+
+    // Also turn off the hide-completed toggle
+    checklistData.hideCompletedTasks = false;
+    if (hideCompletedToggle) { hideCompletedToggle.checked = false; }
+
     saveData(false);
 
     document.querySelectorAll(".task-item.hidden-task").forEach((item) => item.classList.remove("hidden-task"));
@@ -1075,15 +1246,17 @@ function loadData() {
                 checklistData.lastDailyReset = parsedData.lastDailyReset || null;
                 checklistData.lastWeeklyReset = parsedData.lastWeeklyReset || null;
                 checklistData.hiddenTasks = parsedData.hiddenTasks || {};
+                checklistData.autoHiddenTasks = parsedData.autoHiddenTasks || {};
                 checklistData.manuallyHiddenSections = parsedData.manuallyHiddenSections || {};
                 checklistData.lastTaskResetTimes = parsedData.lastTaskResetTimes || {};
                 checklistData.notificationPreferences = parsedData.notificationPreferences || {};
                 checklistData.notificationsSent = parsedData.notificationsSent || {};
+                checklistData.hideCompletedTasks = parsedData.hideCompletedTasks || false;
             } else { console.warn("Invalid data format found in localStorage. Starting fresh."); }
         } catch (e) {
             console.error("Error parsing saved data:", e);
             displayError("Failed to load saved progress. Data might be corrupted.");
-            checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {}, lastTaskResetTimes: {}, notificationPreferences: {}, notificationsSent: {} };
+            checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, autoHiddenTasks: {}, manuallyHiddenSections: {}, lastTaskResetTimes: {}, notificationPreferences: {}, notificationsSent: {}, hideCompletedTasks: false };
         }
     }
 }
@@ -1124,6 +1297,10 @@ export function loadAndInitializeApp() {
     if (unhideTasksButton) { unhideTasksButton.addEventListener('click', () => handleResetConfirmation(unhideTasksButton, 'unhide', 'Unhide All Tasks', unhideAllAction)); }
     else { console.error("Unhide Tasks button not found!");}
 
+    if (hideCompletedToggle) {
+        hideCompletedToggle.checked = checklistData.hideCompletedTasks;
+        hideCompletedToggle.addEventListener('change', handleHideCompletedToggle);
+    } else { console.error("Hide completed toggle not found!"); }
 
     if (themeToggleButton) { themeToggleButton.addEventListener('click', handleThemeToggle); }
     else { console.error("Theme toggle button not found!"); }

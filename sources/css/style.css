@@ -523,3 +523,93 @@ body:not(.light-mode) img.icon-filter {
     text-decoration: underline dotted;
     cursor: pointer;
 }
+
+/* --- Menu Option Row (toggle switches etc.) --- */
+.menu-option-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    color: var(--text-label);
+    font-size: 0.9375rem;
+}
+
+.menu-option-label {
+    cursor: default;
+}
+
+.menu-divider {
+    border: none;
+    border-top: 1px solid var(--menu-panel-border);
+    margin: 0 0 0.75rem;
+}
+
+/* --- Toggle Switch --- */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 2.75rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+/* Override the global checkbox styles so the hidden input doesn't affect layout */
+.toggle-switch input[type="checkbox"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    padding: 0 !important;
+    pointer-events: none;
+}
+
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    background-color: var(--checkbox-bg);
+    border: 1.5px solid var(--checkbox-border);
+    border-radius: 1.5rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 1.0625rem;
+    width: 1.0625rem;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--text-muted);
+    border-radius: 50%;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-slider {
+    background-color: var(--checkbox-checked-bg);
+    border-color: var(--checkbox-checked-border);
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-slider::before {
+    transform: translate(1.25rem, -50%);
+    background-color: var(--checkbox-check-color);
+}
+
+/* --- Task auto-hide fade --- */
+.task-item.task-hiding {
+    opacity: 0.35; /* reduced-motion fallback: instant dim */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    @keyframes task-fading {
+        from { opacity: 1; }
+        to   { opacity: 0; }
+    }
+
+    .task-item.task-hiding {
+        animation: task-fading 5s linear forwards;
+    }
+}
