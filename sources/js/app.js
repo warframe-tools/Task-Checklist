@@ -31,7 +31,7 @@ const dailyBackgroundImageIds = [
     'bg-image-4',
     // Add more IDs if you add more background image divs in HTML
 ];
-const APP_VERSION = "5.1";
+const APP_VERSION = "5.1.1";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
 const WARFRAME_VERSION = "43.0.2";
@@ -768,7 +768,7 @@ function makeInfoLine(task, appendTo) {
             }
 
             cycleIndex = modulo(Math.floor((now.getTime() - ref.getTime()) / period), cycleCount);
-            if (!isAvailable) {cycleIndex++;}
+            if (!isAvailable) { cycleIndex = modulo(cycleIndex + 1, cycleCount); }
             console.log(`${task.id} cycleIndex ${cycleIndex}`);
             const cycleData = cycles[task.id].columns[0].order[cycleIndex];
 
