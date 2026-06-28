@@ -775,7 +775,7 @@ function makeInfoLine(task, appendTo) {
             }
 
             cycleIndex = modulo(Math.floor((now.getTime() - ref.getTime()) / period), cycleCount);
-            if (!isAvailable) {cycleIndex++;}
+            if (!isAvailable) { cycleIndex = modulo(cycleIndex + 1, cycleCount); }
             console.log(`${task.id} cycleIndex ${cycleIndex}`);
             const cycleData = cycles[task.id].columns[0].order[cycleIndex];
 
