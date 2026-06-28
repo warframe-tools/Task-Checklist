@@ -36,9 +36,12 @@ You must disclose any use of AI that went in to preparing your pull request by *
 
 1.  Marking the appropriate box in the pull request template, *and*
 2.  Stating that AI was used in the commit message of *every* commit where AI was used.
-    * Something as simple as "(AI assisted)" at the end of the commit message is sufficient
+    * Something as simple as "(AI assisted)" at the end of the commit message is sufficient.
+    * Commits from before July 1, 2026 are exempt from this requirement.
 
 **In all cases** you are responsible for the functionality and correctness of any code you submit.
 Whether or not you use AI, you must understand and be prepared to explain any line of code that you change. "Vibe coding" is not welcome here.
 
 **Do not** use AI for image generation.
+
+Code reviews should be based on the quality of the code, not its origin.
