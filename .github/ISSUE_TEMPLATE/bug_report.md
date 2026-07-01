@@ -1,9 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve the app
-title: ''
-labels: ''
-assignees: warframe-tools
+title: '[Bug]'
+labels: 'bug'
+assignees: HelpfulSoft1207
 
 ---
 
@@ -26,13 +26,16 @@ If applicable, add screenshots to help explain your problem.
 **Desktop (please complete the following information):**
  - OS: [e.g. Windows/macOS]
  - Browser [e.g. Chrome, Safari]
- - Version [e.g. 22]
+ - Browser Version [e.g. 22]
 
 **Smartphone (please complete the following information):**
  - Device: [e.g. iPhone 15]
- - OS: [e.g. iOS 18.1]
+ - OS: [e.g. iOS 26.5]
  - Browser [e.g. Chrome, Safari]
- - Version [e.g. 22]
 
 **Additional context**
 Add any other context about the problem here.
+
+**Note** The fastest way to find your browser version on desktop is go to `name-of-browser://version` for Chromium based browsers like Edge, Brave or Chrome, and `about:support` on Firefox based browsers like Waterfox, Zen, or Firefox.
+
+Example: `brave://version` for Brave
