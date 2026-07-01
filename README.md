@@ -93,40 +93,9 @@ There are a few ways to use the Warframe Task Checklist:
         * `npm run build`
         * `npm run preview` (this will serve the `dist/pages` folder, usually at `http://localhost:4173/Task-Checklist/`)
 
-## Feedback, Issues & Feature Requests
+## Contributing
 
-Have feedback or have an idea for a new feature? Please use **GitHub Discussions**!
-
-1.  **Go to Discussions:** Navigate to the [Discussions](https://github.com/warframe-tools/Task-Checklist/discussions) tab of this repository.
-2.  **Choose a Category:** Select the most appropriate category (e.g., "Ideas" for feature requests, "Q&A" for questions, "General" for feedback, or create a new discussion if unsure).
-3.  **Start Discussion:** Click "New discussion".
-4.  **Describe:**
-    * Provide a clear and concise title.
-    * **For Bugs:** Describe the steps to reproduce the issue, what you expected, what happened, and paste any error messages (use the "Copy" button in the app's error bar if available). Include browser/OS info if possible.
-    * **For Features:** Explain the feature clearly and why it would be useful.
-    * **For Feedback:** Share your thoughts!
-5.  **Submit:** Click "Start discussion".
-
-## Reporting Issues (Bugs)
-
-If you encounter a bug, graphical glitch, or something isn't working as expected, please report it using the **GitHub Issue Tracker**:
-
-1.  **Check for Existing Issues:** First, please check the [Issues](https://github.com/warframe-tools/Task-Checklist/issues) tab to see if someone has already reported the same problem.
-2.  **New Issue:** If not, click "New issue".
-3.  **Describe the Bug:**
-    * Provide a clear and concise title (e.g., "Weekly Reset Button Doesn't Reset All Weekly Tasks").
-    * Describe the exact steps you took to encounter the bug.
-    * What did you expect to happen?
-    * What actually happened?
-    * **Paste any error messages** shown in the app's error bar (use the "Copy" button) or from your browser's developer console.
-    * Include your browser name and version, and operating system if possible.
-4.  **Submit:** Click "Submit new issue".
-
-## Support the Project
-
-If you find this tool useful, consider supporting its development!
-
-* **Create a Pull Request:** Do you have a feature you would like added, or a task that you would like added that could benefit other Tenno? Fork the repository, and create a pull request!
+See [our contributing guildlines](CONTRIBUTING.md) for details on how to submit feedback, feature requests, bug reports, and pull requests.
 
 ## Credits
 
