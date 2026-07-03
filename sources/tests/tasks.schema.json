@@ -62,6 +62,10 @@
                     "description": "unique identifier for the task",
                     "type": "string"
                 },
+                "title": {
+                    "description": "displayed title of the task",
+                    "type": "string"
+                },
                 "text": {
                     "description": "displayed text of the task",
                     "type": "string"
@@ -123,7 +127,7 @@
                 }
             },
             "additionalProperties": false,
-            "required": ["id", "text"],
+            "required": ["id", "title"],
             "dependentSchemas": {
                 "npc": {
                     "not": {

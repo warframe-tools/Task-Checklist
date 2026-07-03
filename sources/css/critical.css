@@ -218,6 +218,7 @@ h1 {
     font-weight: 400;
     color: var(--text-secondary);
     margin-left: 0.5rem;
+    font-variant-numeric: tabular-nums;
 }
 .app-description {
     color: var(--text-secondary);

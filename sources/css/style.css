@@ -132,6 +132,9 @@ a.git-hash-text {
 .task-description.unavailable .task-text {
     font-style: italic;
 }
+.task-title {
+    font-weight: 600;
+}
 .task-item.hidden-task {
     display: none !important;
 }
@@ -183,6 +186,7 @@ a.git-hash-text {
     color: var(--baro-timer-color);
     margin-left: 0.4rem;
     display: inline-block;
+    font-variant-numeric: tabular-nums;
 }
 
 

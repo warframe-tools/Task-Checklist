@@ -34,7 +34,7 @@ const dailyBackgroundImageIds = [
 const APP_VERSION = "5.2";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
-const WARFRAME_VERSION = "43.0.3";
+const WARFRAME_VERSION = "43.0.6";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 // only update DATA_STORAGE_KEY when the data storage format changes
@@ -307,7 +307,7 @@ export function displayOtherTaskCountdown(task) {
 
             // Leaving soon notification (Arrival notification is handled in runAutoResets, the same as always available tasks)
             if (diff < C.MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifId] !== cycleNumber) {
-                showNotification(`${task.text.split(":")[0]} Leaving Soon!`, `Approximately ${Math.round(diff / C.MILLISECONDS_PER_MINUTE)} minutes remaining.`);
+                showNotification(`${task.title} Leaving Soon!`, `Approximately ${Math.round(diff / C.MILLISECONDS_PER_MINUTE)} minutes remaining.`);
                 checklistData.notificationsSent[leaveNotifId] = cycleNumber;
                 saveData(false);
             }
@@ -388,7 +388,7 @@ function otherTaskReset(task) {
 
         // Send and record new notification
         if (checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[task.id] !== cycleNumber) {
-            showNotification(`${task.text.split(":")[0]} has reset!`, "Vendor stock may have updated.");
+            showNotification(`${task.title} has reset!`, "Vendor stock may have updated.");
             checklistData.notificationsSent[task.id] = cycleNumber;
             saveData(false);
         }
@@ -475,8 +475,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     if (task.id.startsWith('other_')) {
         const notificationButton = document.createElement('button');
         notificationButton.classList.add('notification-toggle-btn');
-        notificationButton.setAttribute('aria-label', `Toggle notifications for ${task.text.split(':')[0]}`);
-        notificationButton.title = `Toggle notifications for ${task.text.split(':')[0]}`;
+        notificationButton.setAttribute('aria-label', `Toggle notifications for ${task.title}`);
+        notificationButton.title = `Toggle notifications for ${task.title}`;
 
         notificationButton.innerHTML = svgIcons.bellIcon;
         if (checklistData.notificationPreferences[task.id]) { notificationButton.classList.add("active"); }
@@ -497,8 +497,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     // Hide Button
     const hideButton = document.createElement('button');
     hideButton.classList.add('hide-task-btn');
-    hideButton.setAttribute('aria-label', `Hide task: ${task.text.split(':')[0]}`);
-    hideButton.title = `Hide task: ${task.text.split(':')[0]}`;
+    hideButton.setAttribute('aria-label', `Hide task: ${task.title}`);
+    hideButton.title = `Hide task: ${task.title}`;
     hideButton.innerHTML = svgIcons.hideIcon;
     hideButton.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -523,12 +523,19 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         // Task Text & Info Line
         const taskDescription = document.createElement("div");
         taskDescription.classList.add("task-description");
-        const taskText = document.createElement('span');
-        taskText.textContent = task.text;
-        taskText.classList.add("task-text");
+        const taskTitle = document.createElement("span");
+        taskTitle.classList.add("task-title");
+        taskTitle.textContent = task.title;
+        taskDescription.appendChild(taskTitle);
+        if (task.text) {
+            taskTitle.textContent += ": ";
+            const taskText = document.createElement("span");
+            taskText.textContent = task.text;
+            taskText.classList.add("task-text");
+            taskDescription.appendChild(taskText);
+        }
         if (isChecked) {taskDescription.classList.add("checked");}
         if (!isAvailable) {taskDescription.classList.add("unavailable");}
-        taskDescription.appendChild(taskText);
         makeInfoLine(task, taskDescription);
         parentHeaderDiv.appendChild(taskDescription);
 
@@ -584,7 +591,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
             event.target.checked = currentlyChecked;
             checklistData.progress[task.id] = currentlyChecked;
-            taskText.classList.toggle('checked', currentlyChecked);
+            taskDescription.classList.toggle('checked', currentlyChecked);
 
             task.subtasks.forEach((subtask) => {
                 const subCheckbox = document.getElementById(subtask.id);
@@ -606,7 +613,17 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         if (!isAvailable) { label.classList.add("unavailable"); }
 
         // Task Text
-        label.innerHTML = `<span class="task-text">${task.text}</span>`;
+        const taskTitle = document.createElement("span");
+        taskTitle.classList.add("task-title");
+        taskTitle.textContent = task.title;
+        label.appendChild(taskTitle);
+        if (task.text) {
+            taskTitle.textContent += ": ";
+            const taskText = document.createElement("span");
+            taskText.textContent = task.text;
+            taskText.classList.add("task-text");
+            label.appendChild(taskText);
+        }
 
         // Reset Timer
         if (task.period) {
@@ -664,7 +681,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 }
 
 function taskDialogHeaderSetup(task, dialog) {
-    dialog.querySelector(":scope header .title").innerText = task.text.split(":")[0]; // take the task text up to the first ":" as the dialog title
+    dialog.querySelector(":scope header .title").innerText = task.title;
 
     let taskIcon = dialog.querySelector(":scope .menu-title img.task-icon");
     taskIcon.className = "task-icon"; // remove possible `icon-filter` from previous opening
