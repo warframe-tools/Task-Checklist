@@ -135,9 +135,6 @@ a.git-hash-text {
 .task-title {
     font-weight: 600;
 }
-.task-item.hidden-task {
-    display: none !important;
-}
 .hide-task-btn, .notification-toggle-btn {
     background: none;
     border: none;
@@ -398,7 +395,7 @@ body:not(.light-mode) img.icon-filter {
 
 /* Collapsible Stuff */
 .task-info-expander,
-.task-autohide-expander {
+.task-expander {
     display: grid;
     grid-template-rows: 1fr;
     overflow: hidden;
@@ -410,7 +407,7 @@ body:not(.light-mode) img.icon-filter {
     grid-template-rows: 0fr;
 }
 .task-info-expander > div,
-.task-autohide-expander > div {
+.task-expander > div {
     min-height: 0;
 }
 
@@ -545,9 +542,23 @@ body:not(.light-mode) img.icon-filter {
     cursor: pointer;
 }
 
+/* Hidden task animation */
+.task-expander:has(> .task-item.hidden-task) {
+    grid-template-rows: 0fr;
+    @media (prefers-reduced-motion: no-preference) {
+        transition: grid-template-rows 200ms;
+    }
+}
+.task-expander > .task-item.hidden-task {
+    margin: 0;
+    @media (prefers-reduced-motion: no-preference) {
+        transition: margin 200ms;
+    }
+}
+
 /* Hide completed tasks */
-body.hide-completed-tasks .task-autohide-expander:has(> .task-item > .checked),
-body.hide-completed-tasks .task-autohide-expander:has(> .parent-task-container > .parent-task-header > .checked) {
+body.hide-completed-tasks .task-expander:has(> .task-item > .checked),
+body.hide-completed-tasks .task-expander:has(> .parent-task-container > .parent-task-header > .checked) {
     grid-template-rows: 0fr;
     @media (prefers-reduced-motion: no-preference) {
         transition: grid-template-rows 200ms 5s;
@@ -561,7 +572,7 @@ body.hide-completed-tasks .task-autohide-expander:has(> .parent-task-container >
         width: 0;
     }
 }
-body.hide-completed-tasks .task-autohide-expander > .task-item:has(> .checked) {
+body.hide-completed-tasks .task-expander > .task-item:has(> .checked) {
     margin: 0;
     @media (prefers-reduced-motion: no-preference) {
         transition: margin 200ms 5s;
@@ -571,10 +582,10 @@ body.hide-completed-tasks .task-autohide-expander > .task-item:has(> .checked) {
     }
 }
 /* countdown bar */
-.task-autohide-expander {
+.task-expander {
     position: relative;
 }
-.task-autohide-expander::after {
+.task-expander::after {
     position: absolute;
     top: 0.125rem;
     left: 1.75rem;
@@ -585,4 +596,32 @@ body.hide-completed-tasks .task-autohide-expander > .task-item:has(> .checked) {
     content: "";
     z-index: -1;
     transition: width 5s linear;
+}
+
+/* List stats */
+.list-stats {
+    color: var(--text-secondary);
+    font-size: 85%;
+    display: grid;
+    grid-template-rows: 0fr;
+}
+.list-stats > div {
+    overflow: hidden;
+}
+body.hide-completed-tasks .list-stats:has(> div > span[data-count]:not([data-count="0"])), /* with autohide, show when any stat is nonzero */
+body:not(.hide-completed-tasks) .list-stats:has(> div > span:not(.stats-completed)[data-count]:not([data-count="0"])) /* without autohide, show when any stat except completed is nonzero */ {
+    grid-template-rows: 1fr;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .list-stats { transition: grid-template-rows 200ms; }
+}
+.list-stats > div {
+    margin-bottom: 0.5em;
+}
+.list-stats > div > span[data-count="0"], /* hide stat when equal to 0 */
+body:not(.hide-completed-tasks) .list-stats .stats-completed /* hide completed when autohide is off */ {
+    display: none;
+}
+.list-stats > div > span:has(~ span[data-count]:not([data-count="0"]))::after { /* spacer after stat if it has another nonzero stat after it */
+    content: " | ";
 }

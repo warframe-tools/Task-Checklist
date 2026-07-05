@@ -183,3 +183,19 @@ export function factionIcon(name) {
     const src = iconURL(`tasks/syndicates/${name}`);
     return `<img class="icon-filter inline-icon" src="${src}">`;
 }
+
+/**
+ * Generate a "section stats" element, which shows things like number of hidden tasks in a section or subtask list
+ *
+ * @param parent - what task list to count stats on. This can be the name of a section, or the id of a task with subtasks.
+ * @returns a new DOM Element. Does not insert it into the document.
+ */
+export function makeSectionStats(parent) {
+    const statsContainer = document.createElement("li");
+    statsContainer.classList.add("list-stats");
+    statsContainer.id = `stats_${parent}`;
+    const statsBox = document.createElement("div");
+    statsBox.innerHTML = "...";
+    statsContainer.appendChild(statsBox);
+    return statsContainer;
+}

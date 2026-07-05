@@ -15,6 +15,7 @@ import {
     calcCycleNumber,
     makeInfoLineItem,
     calcTaskTimes,
+    makeSectionStats,
 } from "./functions.js";
 
 import * as C from "./constants.js";
@@ -430,7 +431,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     const isAvailable = calcTaskTimes(task, new Date()).isAvailable;
 
     const listItem = document.createElement("li");
-    listItem.classList.add("task-autohide-expander");
+    listItem.classList.add("task-expander");
 
     const taskItem = document.createElement("div");
     taskItem.classList.add("task-item");
@@ -505,6 +506,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         checklistData.hiddenTasks[task.id] = true;
         taskItem.classList.add("hidden-task");
         updateSectionControls(taskItem.closest("section").id);
+        if (task.parentId) { calcSectionStats(task.parentId); }
+        calcSectionStats(task.id.split("_")[0]);
         saveData(false);
     });
     controlsContainer.appendChild(hideButton);
@@ -561,6 +564,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
                 const subtaskItem = createChecklistItem(subtask, subtaskIsChecked, true);
                 subtaskList.appendChild(subtaskItem);
             });
+            subtaskList.appendChild(makeSectionStats(task.id));
+            calcSectionStats(task.id, subtaskList);
         }
         subtaskCollapsible.appendChild(subtaskList)
         taskItem.appendChild(subtaskCollapsible);
@@ -602,10 +607,12 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
                 // allow for nested subtasks of arbitrary depth)
                 subCheckbox.dispatchEvent(new CustomEvent("change", {detail: currentlyChecked}));
             });
+
+            calcSectionStats(task.id.split("_")[0]);
             saveData();
         });
 
-    } else {
+    } else { //no subtasks
         const label = document.createElement('label');
         label.htmlFor = task.id;
         label.classList.add("task-description");
@@ -654,25 +661,28 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             checklistData.progress[task.id] = currentlyChecked;
             label.classList.toggle("checked", currentlyChecked);
 
-            // Update parent task checkboxes
+            // Update parent task checkboxes and stats
             let t = task;
             while (t.parentId) {  // walk up the task tree
-                let parentTaskDefinition = getTaskById(t.parentId)
+                calcSectionStats(t.parentId);
+
+                let parentTaskDefinition = getTaskById(t.parentId);
 
                 if (parentTaskDefinition && parentTaskDefinition.subtasks) {
-                    const allSubtasksChecked = parentTaskDefinition.subtasks.every((st) => checklistData.progress[st.id]);
-                    checklistData.progress[parentTaskDefinition.id] = allSubtasksChecked;
+                    const allSubtasksDone = parentTaskDefinition.subtasks.every((st) => (checklistData.progress[st.id] || checklistData.hiddenTasks[st.id]));
+                    checklistData.progress[parentTaskDefinition.id] = allSubtasksDone;
 
                     const parentCheckbox = document.getElementById(parentTaskDefinition.id);
                     const parentContainer = parentCheckbox ? parentCheckbox.closest(".parent-task-container") : null;
                     const parentTextSpan = parentContainer ? parentContainer.querySelector(".parent-task-header .task-description") : null;
 
-                    if (parentCheckbox) {parentCheckbox.checked = allSubtasksChecked;}
-                    if (parentTextSpan) {parentTextSpan.classList.toggle("checked", allSubtasksChecked);}
+                    if (parentCheckbox) { parentCheckbox.checked = allSubtasksDone; }
+                    if (parentTextSpan) { parentTextSpan.classList.toggle("checked", allSubtasksDone); }
                 }
 
                 t = parentTaskDefinition;  // move up a level
             }
+            calcSectionStats(task.id.split("_")[0]);
             saveData();
         });
     }
@@ -892,9 +902,49 @@ function populateSection(section) {
         const listItem = createChecklistItem(task, isChecked);
         sectionElement.appendChild(listItem);
     });
+    sectionElement.appendChild(makeSectionStats(section));
+    calcSectionStats(section);
     if (sectionElement.parentElement && sectionElement.parentElement.id) {
         updateSectionControls(sectionElement.parentElement.id);
     }
+}
+
+/**
+ * Update the values of the section stats.
+ *
+ * @param parent - what task list to count stats on. This can be the name of a section, or the id of a task with subtasks.
+ * @param queryFrom - DOM element to find the stats box in. Defaults to `document`. Override this if the element is not inserted into the document yet.
+ */
+function calcSectionStats(parent, queryFrom=document) {
+    console.log(`calcSectionStats(${parent})`);
+    let taskList;
+    if (parent.includes("_")) {
+        taskList = getTaskById(parent).subtasks;
+    } else {
+        taskList = tasks[parent];
+    }
+    const statsBox = queryFrom.querySelector(`#stats_${parent} > div`);
+
+    let completed = 0;
+    let hidden = 0;
+    for (const task of taskList) {
+        if (checklistData.progress[task.id]) { completed++; }
+        if (checklistData.hiddenTasks[task.id]) { hidden++; }
+    }
+
+    statsBox.innerHTML = "";
+
+    const completedBox = document.createElement("span");
+    completedBox.classList.add("stats-completed");
+    completedBox.dataset.count = completed;
+    completedBox.innerText = `+${completed} completed`;
+    statsBox.appendChild(completedBox);
+
+    const hiddenBox = document.createElement("span");
+    hiddenBox.classList.add("stats-hidden");
+    hiddenBox.dataset.count = hidden;
+    hiddenBox.innerText = `+${hidden} hidden`;
+    statsBox.appendChild(hiddenBox);
 }
 
 function resetSpecificButtonState(buttonElement, defaultText, stateKey) {
@@ -948,16 +998,8 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
 
 function resetAllAction() {
     checklistData.progress = {};
-    localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(checklistData));
-
-    const allCheckboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
-    allCheckboxes.forEach((checkbox) => {
-        checkbox.checked = false;
-        const listItem = checkbox.closest('li');
-        const taskDescription = listItem.querySelector(".task-description");
-        if (taskDescription) {taskDescription.classList.remove("checked")};
-    });
-    updateLastSavedDisplay(checklistData.lastSaved);
+    saveData();
+    ["daily", "weekly", "other"].forEach(populateSection);
     console.log("Checklist reset complete.");
 }
 
