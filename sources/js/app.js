@@ -3,6 +3,7 @@ console.log(`vite mode: ${import.meta.env.MODE}`);
 
 import {
     modulo,
+    newChecklistData,
     iconURL,
     makeCycleIcon,
     formatTimestamp,
@@ -79,20 +80,9 @@ const confirmState = {
     unhide: { timeout: null, isConfirming: false }
 };
 
-let checklistData = {
-    progress: {},
-    lastSaved: null,
-    lastDailyReset: null,
-    lastWeeklyReset: null,
-    hiddenTasks: {},
-    manuallyHiddenSections: {},
-    lastTaskResetTimes: {},
-    notificationPreferences: {},
-    notificationsSent: {},
-    hideCompletedTasks: false
-};
+let checklistData = newChecklistData();
 
-let currentTheme = 'dark';
+let currentTheme = "dark";
 let saveStatusTimeout;
 let countdownInterval;
 
@@ -374,8 +364,9 @@ function otherTaskReset(task) {
     const lastResetCycleNumber = calcCycleNumber(task, lastResetTime);
     if (cycleNumber > lastResetCycleNumber || !calcTaskTimes(task, now).isAvailable) {
         // Reset task
-        if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
+        if (checklistData.progress[task.id] || checklistData.skippedTasks[task.id]) {
             checklistData.progress[task.id] = false;
+            checklistData.skippedTasks[task.id] = false;
             console.log(`Resetting task: ${task.id}`);
             didReset = true;
         }
@@ -435,7 +426,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
     const taskItem = document.createElement("div");
     taskItem.classList.add("task-item");
-    if (checklistData.hiddenTasks[task.id]) {
+    if (checklistData.hiddenTasks[task.id] || checklistData.skippedTasks[task.id]) {
         taskItem.classList.add("hidden-task");
     }
 
@@ -473,35 +464,55 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     const controlsContainer = document.createElement('div');
 
     // Notif Button
-    if (task.id.startsWith('other_')) {
-        const notificationButton = document.createElement('button');
-        notificationButton.classList.add('notification-toggle-btn');
-        notificationButton.setAttribute('aria-label', `Toggle notifications for ${task.title}`);
+    if (task.id.startsWith("other_")) {
+        const notificationButton = document.createElement("button");
+        notificationButton.classList.add("notification-toggle-btn", "task-ctrl-btn");
+        notificationButton.setAttribute("aria-label", `Toggle notifications for ${task.title}`);
         notificationButton.title = `Toggle notifications for ${task.title}`;
 
         notificationButton.innerHTML = svgIcons.bellIcon;
         if (checklistData.notificationPreferences[task.id]) { notificationButton.classList.add("active"); }
 
-        notificationButton.addEventListener('click', async (e) => {
+        notificationButton.addEventListener("click", async (e) => {
             e.stopPropagation();
             const permissionGranted = await requestNotificationPermission();
             if (permissionGranted) {
                 checklistData.notificationPreferences[task.id] = !checklistData.notificationPreferences[task.id];
-                notificationButton.classList.toggle('active', checklistData.notificationPreferences[task.id]);
+                notificationButton.classList.toggle("active", checklistData.notificationPreferences[task.id]);
                 saveData(false);
-                console.log(`Notifications for ${task.id} ${checklistData.notificationPreferences[task.id] ? 'enabled' : 'disabled'}`);
+                console.log(`Notifications for ${task.id} ${checklistData.notificationPreferences[task.id] ? "enabled" : "disabled"}`);
             }
         });
         controlsContainer.appendChild(notificationButton);
     }
 
+    // Skip Button
+    const skipButton = document.createElement("button");
+    let when = "this cycle";
+    if (task.id.startsWith("daily_")) { when = "today"; }
+    else if (task.id.startsWith("weekly_")) { when = "this week"; }
+    skipButton.classList.add("task-ctrl-btn");
+    skipButton.setAttribute("aria-label", `Skip task ${when}: ${task.title}`);
+    skipButton.title = `Skip task ${when}: ${task.title}`;
+    skipButton.innerHTML = svgIcons.skipIcon;
+    skipButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        checklistData.skippedTasks[task.id] = true;
+        taskItem.classList.add("hidden-task");
+        updateSectionControls(taskItem.closest("section").id);
+        if (task.parentId) { calcSectionStats(task.parentId); }
+        calcSectionStats(task.id.split("_")[0]);
+        saveData(false);
+    });
+    controlsContainer.appendChild(skipButton);
+
     // Hide Button
-    const hideButton = document.createElement('button');
-    hideButton.classList.add('hide-task-btn');
-    hideButton.setAttribute('aria-label', `Hide task: ${task.title}`);
+    const hideButton = document.createElement("button");
+    hideButton.classList.add("task-ctrl-btn");
+    hideButton.setAttribute("aria-label", `Hide task: ${task.title}`);
     hideButton.title = `Hide task: ${task.title}`;
     hideButton.innerHTML = svgIcons.hideIcon;
-    hideButton.addEventListener('click', (e) => {
+    hideButton.addEventListener("click", (e) => {
         e.stopPropagation();
         checklistData.hiddenTasks[task.id] = true;
         taskItem.classList.add("hidden-task");
@@ -528,12 +539,12 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         taskDescription.classList.add("task-description");
         const taskTitle = document.createElement("span");
         taskTitle.classList.add("task-title");
-        taskTitle.textContent = task.title;
+        taskTitle.innerHTML = task.title;
         taskDescription.appendChild(taskTitle);
         if (task.text) {
-            taskTitle.textContent += ": ";
+            taskTitle.innerHTML += ": ";
             const taskText = document.createElement("span");
-            taskText.textContent = task.text;
+            taskText.innerHTML = task.text;
             taskText.classList.add("task-text");
             taskDescription.appendChild(taskText);
         }
@@ -622,12 +633,12 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         // Task Text
         const taskTitle = document.createElement("span");
         taskTitle.classList.add("task-title");
-        taskTitle.textContent = task.title;
+        taskTitle.innerHTML = task.title;
         label.appendChild(taskTitle);
         if (task.text) {
-            taskTitle.textContent += ": ";
+            taskTitle.innerHTML += ": ";
             const taskText = document.createElement("span");
-            taskText.textContent = task.text;
+            taskText.innerHTML = task.text;
             taskText.classList.add("task-text");
             label.appendChild(taskText);
         }
@@ -669,7 +680,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
                 let parentTaskDefinition = getTaskById(t.parentId);
 
                 if (parentTaskDefinition && parentTaskDefinition.subtasks) {
-                    const allSubtasksDone = parentTaskDefinition.subtasks.every((st) => (checklistData.progress[st.id] || checklistData.hiddenTasks[st.id]));
+                    const allSubtasksDone = parentTaskDefinition.subtasks.every((st) => (checklistData.progress[st.id] || checklistData.hiddenTasks[st.id] || checklistData.skippedTasks[st.id]));
                     checklistData.progress[parentTaskDefinition.id] = allSubtasksDone;
 
                     const parentCheckbox = document.getElementById(parentTaskDefinition.id);
@@ -926,9 +937,11 @@ function calcSectionStats(parent, queryFrom=document) {
     const statsBox = queryFrom.querySelector(`#stats_${parent} > div`);
 
     let completed = 0;
+    let skipped = 0;
     let hidden = 0;
     for (const task of taskList) {
         if (checklistData.progress[task.id]) { completed++; }
+        if (checklistData.skippedTasks[task.id]) { skipped++; }
         if (checklistData.hiddenTasks[task.id]) { hidden++; }
     }
 
@@ -939,6 +952,12 @@ function calcSectionStats(parent, queryFrom=document) {
     completedBox.dataset.count = completed;
     completedBox.innerText = `+${completed} completed`;
     statsBox.appendChild(completedBox);
+
+    const skippedBox = document.createElement("span");
+    skippedBox.classList.add("stats-skipped");
+    skippedBox.dataset.count = skipped;
+    skippedBox.innerText = `+${skipped} skipped`;
+    statsBox.appendChild(skippedBox);
 
     const hiddenBox = document.createElement("span");
     hiddenBox.classList.add("stats-hidden");
@@ -998,6 +1017,7 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
 
 function resetAllAction() {
     checklistData.progress = {};
+    checklistData.skippedTasks = {};
     saveData();
     ["daily", "weekly", "other"].forEach(populateSection);
     console.log("Checklist reset complete.");
@@ -1015,17 +1035,18 @@ function resetSection(section, resetAltRefTasks=false) {
     function resetTask(task) {
         if (task.ref && !resetAltRefTasks) {
             didReset += otherTaskReset(task);
-        } else if (checklistData.progress[task.id] && !checklistData.hiddenTasks[task.id]) {
+        } else if (checklistData.progress[task.id] || checklistData.skippedTasks[task.id]) {
             checklistData.progress[task.id] = false;
+            checklistData.skippedTasks[task.id] = false;
             didReset++;
         }
-        if (task.subtasks) {task.subtasks.forEach(resetTask);}
+        if (task.subtasks) { task.subtasks.forEach(resetTask); }
     }
     tasks[section].forEach(resetTask);
 
     const now = new Date().toISOString();
-    if (section === "daily") {checklistData.lastDailyReset = now;}
-    else if (section === "weekly") {checklistData.lastWeeklyReset = now;}
+    if (section === "daily") { checklistData.lastDailyReset = now; }
+    else if (section === "weekly") { checklistData.lastWeeklyReset = now; }
     saveData();
     if (didReset) {
         populateSection(section);
@@ -1057,13 +1078,13 @@ function handleSectionToggle(event) {
 
 function unhideAllAction() {
     checklistData.hiddenTasks = {};
+    checklistData.skippedTasks = {};
     checklistData.manuallyHiddenSections = {};
     saveData(false);
 
-    document.querySelectorAll(".task-item.hidden-task").forEach((item) => item.classList.remove("hidden-task"));
     document.querySelectorAll("section.section-is-hidden-by-user").forEach((section) => section.classList.remove("section-is-hidden-by-user"));
-
     ["daily", "weekly", "other"].forEach(populateSection);
+
     console.log("All tasks and sections unhidden.");
     optionsMenu.close();
 }
@@ -1141,6 +1162,7 @@ function loadData() {
                 checklistData.lastDailyReset = parsedData.lastDailyReset || null;
                 checklistData.lastWeeklyReset = parsedData.lastWeeklyReset || null;
                 checklistData.hiddenTasks = parsedData.hiddenTasks || {};
+                checklistData.skippedTasks = parsedData.skippedTasks || {};
                 checklistData.manuallyHiddenSections = parsedData.manuallyHiddenSections || {};
                 checklistData.lastTaskResetTimes = parsedData.lastTaskResetTimes || {};
                 checklistData.notificationPreferences = parsedData.notificationPreferences || {};
@@ -1150,7 +1172,7 @@ function loadData() {
         } catch (e) {
             console.error("Error parsing saved data:", e);
             displayError("Failed to load saved progress. Data might be corrupted.");
-            checklistData = { progress: {}, lastSaved: null, lastDailyReset: null, lastWeeklyReset: null, hiddenTasks: {}, manuallyHiddenSections: {}, lastTaskResetTimes: {}, notificationPreferences: {}, notificationsSent: {}, hideCompletedTasks: false };
+            checklistData = newChecklistData();
         }
     }
 }

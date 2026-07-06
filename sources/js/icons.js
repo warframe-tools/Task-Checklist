@@ -1,4 +1,6 @@
-// Icons from https://heroicons.com/
+/* Heroicons https://heroicons.com/
+ * MIT license https://github.com/tailwindlabs/heroicons/blob/master/LICENSE
+ */
 
 const chevronDownOutline =
 `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -90,6 +92,17 @@ const calendarDays16 =
     />
 </svg>`
 
+
+/* Lucide icons https://github.com/lucide-icons/lucide
+ * ISC license https://github.com/lucide-icons/lucide/blob/main/LICENSE
+ */
+
+// https://icon-sets.iconify.design/lucide/skip-forward/
+const skipForward =
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 4v16M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z" />
+</svg>`
+
 export {
     chevronDownOutline as collapseIcon,
     eyeSlashOutline as hideIcon,
@@ -100,4 +113,5 @@ export {
     clipboardDocumentCheck16 as prereqIcon,
     informationCircle16 as infoIcon,
     calendarDays16 as cycleIcon,
+    skipForward as skipIcon,
 };

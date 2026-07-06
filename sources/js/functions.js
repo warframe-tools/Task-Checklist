@@ -11,6 +11,22 @@ export function modulo(n, d) {
     return ((n % d) + d) % d;
 }
 
+export function newChecklistData() {
+    return {
+        progress: {},
+        lastSaved: null,
+        lastDailyReset: null,
+        lastWeeklyReset: null,
+        hiddenTasks: {},
+        skippedTasks: {},
+        manuallyHiddenSections: {},
+        lastTaskResetTimes: {},
+        notificationPreferences: {},
+        notificationsSent: {},
+        hideCompletedTasks: false
+    };
+}
+
 const taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
 export function iconURL(iconName) {
     return taskIcons["../img/icons/" + iconName];
