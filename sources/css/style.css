@@ -28,7 +28,7 @@
 }
 
 /* --- Content Box Element Styling (Non-Critical Parts) --- */
-h2:hover {
+#checklist-container h2:hover {
     background-color: var(--section-header-hover-bg);
 }
 .task-description { color: var(--text-label); }
@@ -192,12 +192,12 @@ a.git-hash-text {
 /* --- Interactive Elements (Using Variables) --- */
 input[type="checkbox"] {
     appearance: none; -webkit-appearance: none; -moz-appearance: none;
-    width: 1.25rem; height: 1.25rem;
-    margin: 0.125rem 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0.125rem 0.5rem 0.125rem 0;
     border: 2px solid var(--checkbox-border);
     border-radius: 0.25rem; cursor: pointer;
     position: relative;
-    margin-right: 0.5rem;
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
     background-color: var(--checkbox-bg);
     flex-shrink: 0;
@@ -547,13 +547,15 @@ body:not(.light-mode) img.icon-filter {
 /* Hidden task animation */
 .task-expander:has(> .task-item.hidden-task) {
     grid-template-rows: 0fr;
-    @media (prefers-reduced-motion: no-preference) {
-        transition: grid-template-rows 200ms;
-    }
 }
 .task-expander > .task-item.hidden-task {
     margin: 0;
-    @media (prefers-reduced-motion: no-preference) {
+}
+@media (prefers-reduced-motion: no-preference) {
+    .task-expander {
+        transition: grid-template-rows 200ms;
+    }
+    .task-expander > .task-item {
         transition: margin 200ms;
     }
 }
@@ -609,9 +611,10 @@ body.hide-completed-tasks .task-expander > .task-item:has(> .checked) {
 }
 .list-stats > div {
     overflow: hidden;
+    display: flex;
 }
-body.hide-completed-tasks .list-stats:has(> div > span[data-count]:not([data-count="0"])), /* with autohide, show when any stat is nonzero */
-body:not(.hide-completed-tasks) .list-stats:has(> div > span:not(.stats-completed)[data-count]:not([data-count="0"])) /* without autohide, show when any stat except completed is nonzero */ {
+body.hide-completed-tasks .list-stats:has(> div > button[data-count]:not([data-count="0"])), /* with autohide, show when any stat is nonzero */
+body:not(.hide-completed-tasks) .list-stats:has(> div > button:not(.stats-completed)[data-count]:not([data-count="0"])) /* without autohide, show when any stat except completed is nonzero */ {
     grid-template-rows: 1fr;
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -620,10 +623,51 @@ body:not(.hide-completed-tasks) .list-stats:has(> div > span:not(.stats-complete
 .list-stats > div {
     margin-bottom: 0.5em;
 }
-.list-stats > div > span[data-count="0"], /* hide stat when equal to 0 */
+.list-stats > div > button[data-count="0"], /* hide stat when equal to 0 */
 body:not(.hide-completed-tasks) .list-stats .stats-completed /* hide completed when autohide is off */ {
     display: none;
 }
-.list-stats > div > span:has(~ span[data-count]:not([data-count="0"]))::after { /* spacer after stat if it has another nonzero stat after it */
-    content: " | ";
+.list-stats button {
+    border: 1px solid var(--theme-toggle-border);
+    border-radius: 0.375rem;
+    padding: 0 0.375em;
+    margin-right: 1em;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    &:hover {
+        background-color: var(--theme-toggle-hover-bg);
+        border-color: var(--theme-toggle-hover-border);
+        color: var(--text-label);
+    }
+    svg {
+        margin-bottom: 0.1em;
+        margin-right: 0.25em;
+        width: 1em;
+        height: 1em;
+    }
+}
+
+#hidden-tasklist {
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+    ul button {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin: 0.125rem 0.5rem 0.125rem 0;
+        border: 0;
+        color: var(--text-muted);
+        transition: color 0.2s ease;
+        &:hover {
+            color: var(--text-secondary);
+        }
+    }
+    .task-title {
+        cursor: default;
+    }
+    ul.skipped button svg {
+        transform: scale(-1, 1);
+    }
 }

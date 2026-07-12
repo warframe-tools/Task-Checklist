@@ -17,6 +17,16 @@ const eyeSlashOutline =
     />
 </svg>`;
 
+const eyeOutline =
+`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round"
+        d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5
+            c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5
+            c-4.638 0-8.573-3.007-9.963-7.178Z"
+    />
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+</svg>`
+
 const bellOutline =
 `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round"
@@ -100,12 +110,15 @@ const calendarDays16 =
 // https://icon-sets.iconify.design/lucide/skip-forward/
 const skipForward =
 `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-	<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 4v16M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z" />
+	<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+        d="M21 4v16M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z"
+    />
 </svg>`
 
 export {
     chevronDownOutline as collapseIcon,
     eyeSlashOutline as hideIcon,
+    eyeOutline as unhideIcon,
     bellOutline as bellIcon,
     mapPin16 as locationIcon,
     user24 as npcIcon,

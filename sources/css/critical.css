@@ -132,6 +132,10 @@ body.light-mode {
     padding: 0;
 }
 
+:where(button) {
+    cursor: pointer;
+}
+
 /* --- Base Body Styles --- */
 body {
     font-family: 'Inter', sans-serif;

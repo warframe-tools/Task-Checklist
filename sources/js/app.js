@@ -5,6 +5,7 @@ import {
     modulo,
     newChecklistData,
     iconURL,
+    makeTaskIcon,
     makeCycleIcon,
     formatTimestamp,
     getMostRecentMondayMidnightUTC,
@@ -33,10 +34,10 @@ const dailyBackgroundImageIds = [
     'bg-image-4',
     // Add more IDs if you add more background image divs in HTML
 ];
-const APP_VERSION = "5.2";
+const APP_VERSION = "5.3";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
-const WARFRAME_VERSION = "43.0.6";
+const WARFRAME_VERSION = "43.0.7";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 // only update DATA_STORAGE_KEY when the data storage format changes
@@ -68,8 +69,8 @@ _prepTasks();
 let bodyElement, themeToggleButton, hamburgerButton, optionsMenu, resetDailyButton, resetWeeklyButton, resetButton,
     unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement,
     weeklyResetTimeElement, errorDisplayElement, errorMessageElement, errorCloseButton, errorCopyButton,
-    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, backgroundDivs,
-    hideCompletedToggle = [];
+    appVersionElement, gitHashElement, wfVersionElement, scheduleDialog, moreInfoDialog, hiddenTasksDialog,
+    backgroundDivs, hideCompletedToggle = [];
 
 
 // --- State Variables ---
@@ -90,27 +91,28 @@ let countdownInterval;
 
 function initializeDOMElements() {
     bodyElement = document.body;
-    themeToggleButton = document.getElementById('theme-toggle-button');
-    hamburgerButton = document.getElementById('hamburger-button');
+    themeToggleButton = document.getElementById("theme-toggle-button");
+    hamburgerButton = document.getElementById("hamburger-button");
     optionsMenu = document.getElementById("options-menu");
-    resetDailyButton = document.getElementById('reset-daily-button');
-    resetWeeklyButton = document.getElementById('reset-weekly-button');
-    resetButton = document.getElementById('reset-button');
-    unhideTasksButton = document.getElementById('unhide-tasks-button');
-    lastSavedTimestampElement = document.getElementById('last-saved-timestamp');
-    saveStatusElement = document.getElementById('save-status');
-    sectionToggles = document.querySelectorAll('.section-toggle');
-    dailyResetTimeElement = document.getElementById('daily-reset-local-time');
-    weeklyResetTimeElement = document.getElementById('weekly-reset-local-time');
-    errorDisplayElement = document.getElementById('error-display');
-    errorMessageElement = document.getElementById('error-message');
-    errorCloseButton = document.getElementById('error-close-button');
-    errorCopyButton = document.getElementById('error-copy-button');
-    appVersionElement = document.querySelector('.version-text');
-    gitHashElement = document.querySelector('.git-hash-text');
-    wfVersionElement = document.querySelector('.warframe-version-text');
+    resetDailyButton = document.getElementById("reset-daily-button");
+    resetWeeklyButton = document.getElementById("reset-weekly-button");
+    resetButton = document.getElementById("reset-button");
+    unhideTasksButton = document.getElementById("unhide-tasks-button");
+    lastSavedTimestampElement = document.getElementById("last-saved-timestamp");
+    saveStatusElement = document.getElementById("save-status");
+    sectionToggles = document.querySelectorAll(".section-toggle");
+    dailyResetTimeElement = document.getElementById("daily-reset-local-time");
+    weeklyResetTimeElement = document.getElementById("weekly-reset-local-time");
+    errorDisplayElement = document.getElementById("error-display");
+    errorMessageElement = document.getElementById("error-message");
+    errorCloseButton = document.getElementById("error-close-button");
+    errorCopyButton = document.getElementById("error-copy-button");
+    appVersionElement = document.querySelector(".version-text");
+    gitHashElement = document.querySelector(".git-hash-text");
+    wfVersionElement = document.querySelector(".warframe-version-text");
     scheduleDialog = document.getElementById("cycle-schedule");
     moreInfoDialog = document.getElementById("more-info");
+    hiddenTasksDialog = document.getElementById("hidden-tasklist");
     hideCompletedToggle = document.getElementById("hide-completed");
 
     backgroundDivs = [];
@@ -451,14 +453,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     });
 
     // Task Icon
-    const icon = document.createElement('img');
-    if (task.icon) {
-        icon.src = iconURL(`tasks/${task.icon}`);
-        icon.classList.add("task-icon");
-        if (!task.noIconFilter) {
-            icon.classList.add('icon-filter')
-        }
-    }
+    const icon = makeTaskIcon(task);
 
     // Hide/Notif Controls
     const controlsContainer = document.createElement('div');
@@ -610,6 +605,8 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
             taskDescription.classList.toggle('checked', currentlyChecked);
 
             task.subtasks.forEach((subtask) => {
+                if (checklistData.skippedTasks[subtask.id] || checklistData.hiddenTasks[subtask.id]) { return; }
+
                 const subCheckbox = document.getElementById(subtask.id);
 
                 // this is kind of a stupid hack: We can recursively fire events with dispatchEvent, but those events
@@ -702,12 +699,12 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 }
 
 function taskDialogHeaderSetup(task, dialog) {
-    dialog.querySelector(":scope header .title").innerText = task.title;
+    dialog.querySelector(":scope header .task-title").innerHTML = task?.title || "";
 
     let taskIcon = dialog.querySelector(":scope .menu-title img.task-icon");
     taskIcon.className = "task-icon"; // remove possible `icon-filter` from previous opening
     taskIcon.src = "";
-    if (task.icon) {
+    if (task?.icon) {
         taskIcon.src = iconURL(`tasks/${task.icon}`);
         if (!task.noIconFilter) {
             taskIcon.classList.add("icon-filter");
@@ -927,7 +924,6 @@ function populateSection(section) {
  * @param queryFrom - DOM element to find the stats box in. Defaults to `document`. Override this if the element is not inserted into the document yet.
  */
 function calcSectionStats(parent, queryFrom=document) {
-    console.log(`calcSectionStats(${parent})`);
     let taskList;
     if (parent.includes("_")) {
         taskList = getTaskById(parent).subtasks;
@@ -936,38 +932,130 @@ function calcSectionStats(parent, queryFrom=document) {
     }
     const statsBox = queryFrom.querySelector(`#stats_${parent} > div`);
 
-    let completed = 0;
-    let skipped = 0;
-    let hidden = 0;
+    let stats = {
+        completed: 0,
+        skipped: 0,
+        hidden: 0
+    }
     for (const task of taskList) {
-        if (checklistData.progress[task.id]) { completed++; }
-        if (checklistData.skippedTasks[task.id]) { skipped++; }
-        if (checklistData.hiddenTasks[task.id]) { hidden++; }
+        if (checklistData.progress[task.id])     { stats.completed++; }
+        if (checklistData.skippedTasks[task.id]) { stats.skipped++; }
+        if (checklistData.hiddenTasks[task.id])  { stats.hidden++; }
     }
 
     statsBox.innerHTML = "";
 
-    const completedBox = document.createElement("span");
-    completedBox.classList.add("stats-completed");
-    completedBox.dataset.count = completed;
-    completedBox.innerText = `+${completed} completed`;
-    statsBox.appendChild(completedBox);
+    const statIcons = {
+        completed: "✔",
+        skipped: svgIcons.skipIcon,
+        hidden: svgIcons.hideIcon
+    }
 
-    const skippedBox = document.createElement("span");
-    skippedBox.classList.add("stats-skipped");
-    skippedBox.dataset.count = skipped;
-    skippedBox.innerText = `+${skipped} skipped`;
-    statsBox.appendChild(skippedBox);
+    for (const stat in stats) {
+        const statButton = document.createElement("button");
+        statButton.type = "button";
+        statButton.classList.add(`stats-${stat}`);
+        statButton.dataset.count = stats[stat];
+        statButton.innerHTML = `${statIcons[stat]} +${stats[stat]} ${C.TASKLIST_STAT_NAMES[stat]}`;
+        statButton.addEventListener("click", showHiddenTasksAction(parent, taskList, stat));
+        statsBox.appendChild(statButton);
+    }
+}
 
-    const hiddenBox = document.createElement("span");
-    hiddenBox.classList.add("stats-hidden");
-    hiddenBox.dataset.count = hidden;
-    hiddenBox.innerText = `+${hidden} hidden`;
-    statsBox.appendChild(hiddenBox);
+function showHiddenTasksAction(parent, taskList, stat) {
+    return () => {
+        // Dialog Title
+        const prefix = hiddenTasksDialog.querySelector(".menu-title > span:first-of-type");
+        const suffix = hiddenTasksDialog.querySelector(".menu-title > span:last-of-type");
+        if (parent.includes("_")) { // subtask list
+            const parentTask = getTaskById(parent);
+            taskDialogHeaderSetup(parentTask, hiddenTasksDialog);
+            prefix.innerText = `${C.TASKLIST_STAT_NAMES[stat]} subtasks of `;
+            suffix.innerText = "";
+        } else { // section list
+            taskDialogHeaderSetup({ title: C.SECTION_NAMES[parent] }, hiddenTasksDialog); // use a fake task to set the task title to the section name
+            prefix.innerText = `${C.TASKLIST_STAT_NAMES[stat]} `;
+            suffix.innerText = " Tasks";
+        }
+
+        // Task List
+        const ul = hiddenTasksDialog.querySelector("ul");
+        ul.classList = stat;
+        ul.innerHTML = "";
+        for (const task of taskList) {
+            if (checklistData[C.TASKLIST_STAT_PROPERTIES[stat]][task.id]) {
+                const li = document.createElement("li");
+                li.classList.add("task-expander");
+
+                const taskItem = document.createElement("div");
+                taskItem.classList.add("task-item");
+
+                let controlButton;
+                if (stat === "completed") {
+                    controlButton = document.createElement("input");
+                    controlButton.type = "checkbox";
+                    controlButton.checked = true;
+                } else {
+                    controlButton = document.createElement("button");
+                    controlButton.type = "button";
+                }
+
+                if (stat === "completed") {
+                    controlButton.title = controlButton.ariaLabel = `Uncheck task: ${task.title}`;
+                } else if (stat === "skipped") {
+                    controlButton.innerHTML = svgIcons.skipIcon;
+                    controlButton.title = controlButton.ariaLabel = `Unskip task: ${task.title}`;
+                } else if (stat === "hidden") {
+                    controlButton.innerHTML = svgIcons.unhideIcon;
+                    controlButton.title = controlButton.ariaLabel = `Unhide task: ${task.title}`;
+                }
+
+                controlButton.addEventListener("click", hiddenTasksButtonAction(taskItem, task, stat));
+                taskItem.appendChild(controlButton);
+
+                const icon = makeTaskIcon(task);
+                if (icon) { taskItem.appendChild(icon); }
+
+                const title = document.createElement("div");
+                title.classList.add("task-title", "task-description");
+                title.innerHTML = task.title;
+                taskItem.appendChild(title);
+
+                li.appendChild(taskItem);
+                ul.appendChild(li);
+            }
+        }
+
+        hiddenTasksDialog.showModal();
+    }
+}
+
+function hiddenTasksButtonAction(taskElement, task, stat) {
+    return () => {
+        const section = task.id.split("_")[0];
+        taskElement.classList.add("hidden-task"); // unhiding the task hides it from the hidden task list
+
+        if (stat === "completed") {
+            document.getElementById(task.id).dispatchEvent(new CustomEvent("change", { detail: false }));
+            populateSection(section);
+        } else {
+            checklistData[C.TASKLIST_STAT_PROPERTIES[stat]][task.id] = false;
+            document.getElementById(task.id).closest(".task-item").classList.remove("hidden-task");
+            if (task.parentId) { calcSectionStats(task.parentId); }
+            calcSectionStats(section);
+        }
+
+        saveData();
+
+        // close dialog if tasklist is empty
+        if (!hiddenTasksDialog.querySelector("li > :not(.hidden-task)")) {
+            hiddenTasksDialog.close();
+        }
+    }
 }
 
 function resetSpecificButtonState(buttonElement, defaultText, stateKey) {
-    if (!buttonElement || !confirmState[stateKey]) { return };
+    if (!buttonElement || !confirmState[stateKey]) { return; }
     clearTimeout(confirmState[stateKey].timeout);
     confirmState[stateKey].timeout = null;
     confirmState[stateKey].isConfirming = false;

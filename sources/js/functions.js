@@ -32,6 +32,22 @@ export function iconURL(iconName) {
     return taskIcons["../img/icons/" + iconName];
 }
 
+/** returns a new element of the icon of the given task, or null if it doesn't have one
+ */
+export function makeTaskIcon(task) {
+    if (task.icon) {
+        const icon = document.createElement("img");
+        icon.src = iconURL(`tasks/${task.icon}`);
+        icon.classList.add("task-icon");
+        if (!task.noIconFilter) {
+            icon.classList.add("icon-filter");
+        }
+        return icon;
+    } else {
+        return null;
+    }
+}
+
 export function makeCycleIcon(cycleData) {
     if (cycleData.icon) {
         const src = iconURL(`cycles/${cycleData.icon}`)
