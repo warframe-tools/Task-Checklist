@@ -462,6 +462,37 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     // Task Icon
     const icon = makeTaskIcon(task);
 
+    // Task Description
+    const taskDescription = document.createElement(task.subtasks ? "div" : "label");
+    taskDescription.classList.add("task-description");
+    if (!tasks.subtasks) { taskDescription.htmlFor = task.id; }
+    if (isChecked) { taskDescription.classList.add("checked"); }
+    if (!isAvailable) { taskDescription.classList.add("unavailable"); }
+
+    // Task Text
+    const taskTitle = document.createElement("span");
+    taskTitle.classList.add("task-title");
+    taskTitle.innerHTML = task.title;
+    taskDescription.appendChild(taskTitle);
+    if (task.text) {
+        taskTitle.innerHTML += ": ";
+        const taskText = document.createElement("span");
+        taskText.innerHTML = task.text;
+        taskText.classList.add("task-text");
+        taskDescription.appendChild(taskText);
+    }
+
+    // Reset Timer
+    if (task.period) {
+        const resetTimer = document.createElement("span");
+        resetTimer.classList.add("other-countdown");
+        resetTimer.textContent = "(Loading...)";
+        taskDescription.appendChild(resetTimer);
+    }
+
+    // Info Line & Cycle Schedule
+    makeInfoLine(task, taskDescription);
+
     // Hide/Notif Controls
     const controlsContainer = document.createElement('div');
 
@@ -540,24 +571,6 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
         parentHeaderDiv.appendChild(checkbox);
         if (task.icon) { parentHeaderDiv.appendChild(icon); }
-
-        // Task Text & Info Line
-        const taskDescription = document.createElement("div");
-        taskDescription.classList.add("task-description");
-        const taskTitle = document.createElement("span");
-        taskTitle.classList.add("task-title");
-        taskTitle.innerHTML = task.title;
-        taskDescription.appendChild(taskTitle);
-        if (task.text) {
-            taskTitle.innerHTML += ": ";
-            const taskText = document.createElement("span");
-            taskText.innerHTML = task.text;
-            taskText.classList.add("task-text");
-            taskDescription.appendChild(taskText);
-        }
-        if (isChecked) {taskDescription.classList.add("checked");}
-        if (!isAvailable) {taskDescription.classList.add("unavailable");}
-        makeInfoLine(task, taskDescription);
         parentHeaderDiv.appendChild(taskDescription);
 
         // Collapse Button
@@ -604,18 +617,35 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         });
 
         // Checkbox Changed -> Change Subtasks Checkboxes
-        checkbox.addEventListener('change', (event) => {
-            let currentlyChecked;
-            if ("detail" in event) {
-                currentlyChecked = event.detail;
-            } else {
-                currentlyChecked = event.target.checked;
-            }
+        checkbox.addEventListener("change", checkboxChangeAction(task));
 
-            event.target.checked = currentlyChecked;
-            checklistData.progress[task.id] = currentlyChecked;
-            taskDescription.classList.toggle('checked', currentlyChecked);
+    } else { //no subtasks
+        taskItem.appendChild(checkbox);
+        if (task.icon) { taskItem.appendChild(icon); }
+        taskItem.appendChild(taskDescription);
+        taskItem.appendChild(controlsContainer);
 
+        // Checkbox Changed
+        checkbox.addEventListener("change", checkboxChangeAction(task));
+    }
+    listItem.appendChild(taskItem);
+    return listItem;
+}
+
+function checkboxChangeAction(task) {
+    return (event) => {
+        let currentlyChecked;
+        if ("detail" in event) {
+            currentlyChecked = event.detail;
+        } else {
+            currentlyChecked = event.target.checked;
+        }
+
+        event.target.checked = currentlyChecked;
+        checklistData.progress[task.id] = currentlyChecked;
+        event.target.parentNode.querySelector(".task-description").classList.toggle("checked", currentlyChecked);
+
+        if (task.subtasks) {
             task.subtasks.forEach((subtask) => {
                 if (checklistData.skippedTasks[subtask.id] || checklistData.hiddenTasks[subtask.id]) { return; }
 
@@ -627,60 +657,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
                 // allow for nested subtasks of arbitrary depth)
                 subCheckbox.dispatchEvent(new CustomEvent("change", {detail: currentlyChecked}));
             });
-
-            calcSectionStats(task.id.split("_")[0]);
-            saveData();
-        });
-
-    } else { //no subtasks
-        const label = document.createElement('label');
-        label.htmlFor = task.id;
-        label.classList.add("task-description");
-        if (isChecked) { label.classList.add("checked"); }
-        if (!isAvailable) { label.classList.add("unavailable"); }
-
-        // Task Text
-        const taskTitle = document.createElement("span");
-        taskTitle.classList.add("task-title");
-        taskTitle.innerHTML = task.title;
-        label.appendChild(taskTitle);
-        if (task.text) {
-            taskTitle.innerHTML += ": ";
-            const taskText = document.createElement("span");
-            taskText.innerHTML = task.text;
-            taskText.classList.add("task-text");
-            label.appendChild(taskText);
-        }
-
-        // Reset Timer
-        if (task.period) {
-            const resetTimer = document.createElement("span");
-            resetTimer.classList.add("other-countdown");
-            resetTimer.textContent = "(Loading...)";
-            label.appendChild(resetTimer);
-        }
-
-        // Info Line & Cycle Schedule
-        makeInfoLine(task, label);
-
-        taskItem.appendChild(checkbox);
-        if (task.icon) { taskItem.appendChild(icon); }
-        taskItem.appendChild(label);
-        taskItem.appendChild(controlsContainer);
-
-        // Checkbox Changed
-        checkbox.addEventListener("change", (event) => {
-            let currentlyChecked;
-            if ("detail" in event) {
-                currentlyChecked = event.detail;
-            } else {
-                currentlyChecked = event.target.checked;
-            }
-
-            event.target.checked = currentlyChecked;
-            checklistData.progress[task.id] = currentlyChecked;
-            label.classList.toggle("checked", currentlyChecked);
-
+        } else {
             // Update parent task checkboxes and stats
             let t = task;
             while (t.parentId) {  // walk up the task tree
@@ -702,12 +679,11 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
                 t = parentTaskDefinition;  // move up a level
             }
-            calcSectionStats(task.id.split("_")[0]);
-            saveData();
-        });
+        }
+
+        calcSectionStats(task.id.split("_")[0]);
+        saveData();
     }
-    listItem.appendChild(taskItem);
-    return listItem;
 }
 
 function taskDialogHeaderSetup(task, dialog) {
