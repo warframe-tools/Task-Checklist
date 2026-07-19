@@ -364,7 +364,14 @@ function otherTaskReset(task) {
     const cycleNumber = calcCycleNumber(task, now);
     const lastResetTime = checklistData.lastTaskResetTimes[task.id] || 0;
     const lastResetCycleNumber = calcCycleNumber(task, lastResetTime);
-    if (cycleNumber > lastResetCycleNumber || !calcTaskTimes(task, now).isAvailable) {
+
+    if (checklistData.progress[task.id] && !calcTaskTimes(task, now).isAvailable) {
+        // Uncheck unavailable task
+        checklistData.progress[task.id] = false;
+        didReset = true;
+    }
+
+    if (cycleNumber > lastResetCycleNumber) {
         // Reset task
         if (checklistData.progress[task.id] || checklistData.skippedTasks[task.id]) {
             checklistData.progress[task.id] = false;
@@ -483,12 +490,17 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
 
     // Skip Button
     const skipButton = document.createElement("button");
-    let when = "this cycle";
-    if (task.id.startsWith("daily_")) { when = "today"; }
-    else if (task.id.startsWith("weekly_")) { when = "this week"; }
     skipButton.classList.add("task-ctrl-btn");
-    skipButton.setAttribute("aria-label", `Skip task ${when}: ${task.title}`);
-    skipButton.title = `Skip task ${when}: ${task.title}`;
+    let skipTooltip;
+    if (isAvailable) {
+        let when = "this cycle";
+        if (task.id.startsWith("daily_")) { when = "today"; }
+        else if (task.id.startsWith("weekly_")) { when = "this week"; }
+        skipTooltip = `Skip task ${when}: ${task.title}`;
+    } else {
+        skipTooltip = `Hide task until it becomes available: ${task.title}`;
+    }
+    skipButton.title = skipButton.ariaLabel = skipTooltip;
     skipButton.innerHTML = svgIcons.skipIcon;
     skipButton.addEventListener("click", (e) => {
         e.stopPropagation();
