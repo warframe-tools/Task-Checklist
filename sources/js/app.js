@@ -37,7 +37,7 @@ const dailyBackgroundImageIds = [
 const APP_VERSION = "5.3";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
-const WARFRAME_VERSION = "43.0.7";
+const WARFRAME_VERSION = "43.0.8";
 const THEME_STORAGE_KEY = 'warframeChecklistTheme';
 
 // only update DATA_STORAGE_KEY when the data storage format changes
@@ -533,15 +533,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     }
     skipButton.title = skipButton.ariaLabel = skipTooltip;
     skipButton.innerHTML = svgIcons.skipIcon;
-    skipButton.addEventListener("click", (e) => {
-        e.stopPropagation();
-        checklistData.skippedTasks[task.id] = true;
-        taskItem.classList.add("hidden-task");
-        updateSectionControls(taskItem.closest("section").id);
-        if (task.parentId) { calcSectionStats(task.parentId); }
-        calcSectionStats(task.id.split("_")[0]);
-        saveData(false);
-    });
+    skipButton.addEventListener("click", hideOrSkipTaskAction(task, true));
     controlsContainer.appendChild(skipButton);
 
     // Hide Button
@@ -550,15 +542,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     hideButton.setAttribute("aria-label", `Hide task: ${task.title}`);
     hideButton.title = `Hide task: ${task.title}`;
     hideButton.innerHTML = svgIcons.hideIcon;
-    hideButton.addEventListener("click", (e) => {
-        e.stopPropagation();
-        checklistData.hiddenTasks[task.id] = true;
-        taskItem.classList.add("hidden-task");
-        updateSectionControls(taskItem.closest("section").id);
-        if (task.parentId) { calcSectionStats(task.parentId); }
-        calcSectionStats(task.id.split("_")[0]);
-        saveData(false);
-    });
+    hideButton.addEventListener("click", hideOrSkipTaskAction(task, false));
     controlsContainer.appendChild(hideButton);
 
     if (task.subtasks) {
@@ -659,31 +643,50 @@ function checkboxChangeAction(task) {
             });
         } else {
             // Update parent task checkboxes and stats
-            let t = task;
-            while (t.parentId) {  // walk up the task tree
-                calcSectionStats(t.parentId);
-
-                let parentTaskDefinition = getTaskById(t.parentId);
-
-                if (parentTaskDefinition && parentTaskDefinition.subtasks) {
-                    const allSubtasksDone = parentTaskDefinition.subtasks.every((st) => (checklistData.progress[st.id] || checklistData.hiddenTasks[st.id] || checklistData.skippedTasks[st.id]));
-                    checklistData.progress[parentTaskDefinition.id] = allSubtasksDone;
-
-                    const parentCheckbox = document.getElementById(parentTaskDefinition.id);
-                    const parentContainer = parentCheckbox ? parentCheckbox.closest(".parent-task-container") : null;
-                    const parentTextSpan = parentContainer ? parentContainer.querySelector(".parent-task-header .task-description") : null;
-
-                    if (parentCheckbox) { parentCheckbox.checked = allSubtasksDone; }
-                    if (parentTextSpan) { parentTextSpan.classList.toggle("checked", allSubtasksDone); }
-                }
-
-                t = parentTaskDefinition;  // move up a level
-            }
+            updateParentCheckboxes(task);
         }
 
         calcSectionStats(task.id.split("_")[0]);
         saveData();
     }
+}
+
+function hideOrSkipTaskAction(task, skip) {
+    return (event) => {
+        event.stopPropagation();
+        if (skip) { checklistData.skippedTasks[task.id] = true; }
+        else { checklistData.hiddenTasks[task.id] = true; }
+        const taskItem = event.target.closest(".task-item");
+        taskItem.classList.add("hidden-task");
+        updateParentCheckboxes(task);
+        updateSectionControls(taskItem.closest("section").id);
+        saveData(false);
+    }
+}
+
+function updateParentCheckboxes(task) {
+    let t = task;
+    while (t.parentId) {  // walk up the task tree
+        calcSectionStats(t.parentId);
+
+        let parentTaskDefinition = getTaskById(t.parentId);
+
+        if (parentTaskDefinition && parentTaskDefinition.subtasks) {
+            const allSubtasksDone = parentTaskDefinition.subtasks.every((st) => (checklistData.progress[st.id] || checklistData.hiddenTasks[st.id] || checklistData.skippedTasks[st.id]));
+            checklistData.progress[parentTaskDefinition.id] = allSubtasksDone;
+
+            const parentCheckbox = document.getElementById(parentTaskDefinition.id);
+            const parentContainer = parentCheckbox ? parentCheckbox.closest(".parent-task-container") : null;
+            const parentTextSpan = parentContainer ? parentContainer.querySelector(".parent-task-header .task-description") : null;
+
+            if (parentCheckbox) { parentCheckbox.checked = allSubtasksDone; }
+            if (parentTextSpan) { parentTextSpan.classList.toggle("checked", allSubtasksDone); }
+        }
+
+        t = parentTaskDefinition;  // move up a level
+    }
+    calcSectionStats(task.id.split("_")[0]);
+    saveData();
 }
 
 function taskDialogHeaderSetup(task, dialog) {
@@ -1029,6 +1032,7 @@ function hiddenTasksButtonAction(taskElement, task, stat) {
         } else {
             checklistData[C.TASKLIST_STAT_PROPERTIES[stat]][task.id] = false;
             document.getElementById(task.id).closest(".task-item").classList.remove("hidden-task");
+            updateParentCheckboxes(task);
             if (task.parentId) { calcSectionStats(task.parentId); }
             calcSectionStats(section);
         }
