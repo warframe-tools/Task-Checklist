@@ -23,7 +23,8 @@ export function newChecklistData() {
         lastTaskResetTimes: {},
         notificationPreferences: {},
         notificationsSent: {},
-        hideCompletedTasks: false
+        hideCompletedTasks: false,
+        collapsedParentTasks: {},
     };
 }
 

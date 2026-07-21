@@ -548,10 +548,10 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     if (task.subtasks) {
         taskItem.classList.add("parent-task-container");
 
-        const parentHeaderDiv = document.createElement('div');
-        parentHeaderDiv.classList.add('parent-task-header');
-        parentHeaderDiv.setAttribute('aria-expanded', 'true');
-        parentHeaderDiv.setAttribute('aria-controls', `${task.id}-subtasks`);
+        const parentHeaderDiv = document.createElement("div");
+        parentHeaderDiv.classList.add("parent-task-header");
+        parentHeaderDiv.ariaExpanded = !(checklistData.collapsedParentTasks[task.id] || false);
+        parentHeaderDiv.setAttribute("aria-controls", `${task.id}-subtasks`);
 
         parentHeaderDiv.appendChild(checkbox);
         if (task.icon) { parentHeaderDiv.appendChild(icon); }
@@ -569,9 +569,10 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         // Subtasks
         const subtaskCollapsible = document.createElement("div");
         subtaskCollapsible.classList.add("subtask-collapsible");
-        const subtaskList = document.createElement('ul');
+        if (checklistData.collapsedParentTasks[task.id]) { subtaskCollapsible.classList.add("collapsed"); }
+        const subtaskList = document.createElement("ul");
         subtaskList.id = `${task.id}-subtasks`;
-        subtaskList.classList.add('subtask-list');
+        subtaskList.classList.add("subtask-list");
         if (task.subtasks && Array.isArray(task.subtasks)) {
             task.subtasks.forEach((subtask) => {
                 subtask.parentId = task.id;
@@ -586,18 +587,14 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         taskItem.appendChild(subtaskCollapsible);
 
         // On Click -> Collapse/Expand
-        parentHeaderDiv.addEventListener('click', (e) => {
+        parentHeaderDiv.addEventListener("click", (e) => {
             if (e.target !== checkbox && !checkbox.contains(e.target) && !controlsContainer.contains(e.target) && !collapseIcon.contains(e.target) ) {
-                const isExpanded = parentHeaderDiv.getAttribute('aria-expanded') === 'true';
-                parentHeaderDiv.setAttribute('aria-expanded', !isExpanded);
-                subtaskCollapsible.classList.toggle('collapsed', isExpanded);
+                toggleCollapseSubtasks(task);
             }
         });
-        collapseIcon.addEventListener('click', (e) => {
+        collapseIcon.addEventListener("click", (e) => {
             e.stopPropagation();
-            const isExpanded = parentHeaderDiv.getAttribute('aria-expanded') === 'true';
-            parentHeaderDiv.setAttribute('aria-expanded', !isExpanded);
-            subtaskCollapsible.classList.toggle('collapsed', isExpanded);
+            toggleCollapseSubtasks(task);
         });
 
         // Checkbox Changed -> Change Subtasks Checkboxes
@@ -686,6 +683,15 @@ function updateParentCheckboxes(task) {
         t = parentTaskDefinition;  // move up a level
     }
     calcSectionStats(task.id.split("_")[0]);
+    saveData();
+}
+
+function toggleCollapseSubtasks(task) {
+    const parentHeaderDiv = document.getElementById(task.id).closest(".parent-task-header");
+    const startedCollapsed = (parentHeaderDiv.ariaExpanded !== "true"); // whether the section was collapsed before `toggleCollapseSubtasks` was called
+    parentHeaderDiv.ariaExpanded = startedCollapsed; // if it was collapsed before, it should now be expanded
+    parentHeaderDiv.parentNode.querySelector(".subtask-collapsible").classList.toggle("collapsed", !startedCollapsed);
+    checklistData.collapsedParentTasks[task.id] = !startedCollapsed;
     saveData();
 }
 
@@ -1236,18 +1242,12 @@ function loadData() {
     if (savedData) {
         try {
             const parsedData = JSON.parse(savedData);
-            if (parsedData && typeof parsedData === 'object') {
-                checklistData.progress = parsedData.progress || {};
-                checklistData.lastSaved = parsedData.lastSaved || null;
-                checklistData.lastDailyReset = parsedData.lastDailyReset || null;
-                checklistData.lastWeeklyReset = parsedData.lastWeeklyReset || null;
-                checklistData.hiddenTasks = parsedData.hiddenTasks || {};
-                checklistData.skippedTasks = parsedData.skippedTasks || {};
-                checklistData.manuallyHiddenSections = parsedData.manuallyHiddenSections || {};
-                checklistData.lastTaskResetTimes = parsedData.lastTaskResetTimes || {};
-                checklistData.notificationPreferences = parsedData.notificationPreferences || {};
-                checklistData.notificationsSent = parsedData.notificationsSent || {};
-                checklistData.hideCompletedTasks = parsedData.hideCompletedTasks || false;
+            if (parsedData && typeof parsedData === "object") {
+                for (const key of Object.keys(checklistData)) {
+                    if (key in parsedData) {
+                        checklistData[key] = parsedData[key];
+                    }
+                }
             } else { console.warn("Invalid data format found in localStorage. Starting fresh."); }
         } catch (e) {
             console.error("Error parsing saved data:", e);
