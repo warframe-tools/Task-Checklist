@@ -648,6 +648,40 @@ body:not(.hide-completed-tasks) .list-stats .stats-completed /* hide completed w
     }
 }
 
+.incomplete-count {
+    font-size: 65%;
+    font-weight: 600;
+    background-color: var(--text-header);
+    color: var(--bg-content);
+    border-radius: 1em;
+    display: grid;
+    padding: 0;
+    margin: 0;
+    grid-template-columns: 0fr;
+    transform: scale(0, 0);
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    & > div {
+        min-width: 0;
+    }
+    .parent-task-header[aria-expanded="false"] & {
+        grid-template-columns: 1fr;
+        transform: scale(1, 1);
+        opacity: 1;
+        padding: 0 0.4em;
+        margin-left: 0.25em;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        transition:
+            grid-template-columns 0.2s ease,
+            transform 0.2s ease,
+            opacity 0.2s ease,
+            padding 0.2s ease,
+            margin 0.2s ease;
+    }
+}
+
 #hidden-tasklist {
     ul {
         list-style: none;

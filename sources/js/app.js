@@ -558,12 +558,14 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         parentHeaderDiv.appendChild(taskDescription);
 
         // Collapse Button
-        const collapseIcon = document.createElement("div");
-        collapseIcon.setAttribute('class', 'collapse-icon');
-        collapseIcon.innerHTML = svgIcons.collapseIcon;
+        const collapseButton = document.createElement("button");
+        collapseButton.type = "button";
+        collapseButton.classList.add("collapse-btn");
+        collapseButton.innerHTML = svgIcons.collapseIcon;
+        collapseButton.innerHTML += '<div class="incomplete-count"><div>X</div></div>';
 
         parentHeaderDiv.appendChild(controlsContainer);
-        parentHeaderDiv.appendChild(collapseIcon);
+        parentHeaderDiv.appendChild(collapseButton);
         taskItem.appendChild(parentHeaderDiv);
 
         // Subtasks
@@ -586,13 +588,15 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         subtaskCollapsible.appendChild(subtaskList)
         taskItem.appendChild(subtaskCollapsible);
 
+        updateIncompleteSubtaskCount(task, taskItem);
+
         // On Click -> Collapse/Expand
         parentHeaderDiv.addEventListener("click", (e) => {
-            if (e.target !== checkbox && !checkbox.contains(e.target) && !controlsContainer.contains(e.target) && !collapseIcon.contains(e.target) ) {
+            if (e.target !== checkbox && !checkbox.contains(e.target) && !controlsContainer.contains(e.target) && !collapseButton.contains(e.target) ) {
                 toggleCollapseSubtasks(task);
             }
         });
-        collapseIcon.addEventListener("click", (e) => {
+        collapseButton.addEventListener("click", (e) => {
             e.stopPropagation();
             toggleCollapseSubtasks(task);
         });
@@ -638,6 +642,7 @@ function checkboxChangeAction(task) {
                 // allow for nested subtasks of arbitrary depth)
                 subCheckbox.dispatchEvent(new CustomEvent("change", {detail: currentlyChecked}));
             });
+            updateIncompleteSubtaskCount(task);
         } else {
             // Update parent task checkboxes and stats
             updateParentCheckboxes(task);
@@ -693,6 +698,16 @@ function toggleCollapseSubtasks(task) {
     parentHeaderDiv.parentNode.querySelector(".subtask-collapsible").classList.toggle("collapsed", !startedCollapsed);
     checklistData.collapsedParentTasks[task.id] = !startedCollapsed;
     saveData();
+    updateIncompleteSubtaskCount(task);
+}
+
+function updateIncompleteSubtaskCount(task, queryFrom=document) {
+    if (task.subtasks) {
+        const element = queryFrom.querySelector(`#${task.id} ~ .collapse-btn .incomplete-count > div`);
+        const unchecked = queryFrom.querySelectorAll(`input[data-parent-id="${task.id}"]:not(:checked, :indeterminate, .hidden-task *)`)
+        element.innerText = unchecked.length;
+        element.parentElement.title = `${unchecked.length} incomplete subtasks of ${task.title}`;
+    }
 }
 
 function taskDialogHeaderSetup(task, dialog) {

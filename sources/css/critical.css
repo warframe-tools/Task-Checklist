@@ -242,14 +242,21 @@ h1 {
 }
 
 /* --- Collapsible Section Basics --- */
-.collapse-icon {
-    width: 1rem; height: 1rem;
-    transition: transform 0.3s ease-in-out;
+.collapse-btn {
     flex-shrink: 0;
-    margin-left: 0.5rem;
+    margin-left: 0.5em;
+    border: none;
+    display: flex;
+    align-items: center;
+    svg {
+        height: 1.25em;
+        width: 1.25em;
+        padding: 0.125em;
+        transition: transform 0.3s ease-in-out;
+    }
 }
-.section-toggle[aria-expanded="false"] .collapse-icon,
-.parent-task-header[aria-expanded="false"] .collapse-icon {
+.section-toggle[aria-expanded="false"] .collapse-btn svg,
+.parent-task-header[aria-expanded="false"] .collapse-btn svg {
     transform: rotate(-90deg);
 }
 .section-content, .subtask-collapsible {
