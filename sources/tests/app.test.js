@@ -54,3 +54,18 @@ describe("displayOtherTaskCountdown({period, duration, ref, observesDst})", () =
         expect(document.querySelector(".other-countdown").textContent).toEqual(countdown);
     })
 });
+
+describe("getTaskById", () => {
+    test.for([
+        ["daily_login", "LotusFlower.png"], // daily
+        ["weekly_kahl_garrison", "GarrisonIcon.png"], // weeklu
+        ["other_grandmother_tokens", "syndicates/IconEntrati.png"], // other
+        ["daily_world_syndicate_hex", "syndicates/HexIcon.png"], // 2nd level daily
+        ["weekly_netracells", "NetraRequiemIcon.png"], // 2nd level weekly
+        ["daily_kim_hex_parent", "KIM/RetroPfpG.png"], // both a parent and child
+        ["daily_kim_kaya", "KIM/RetroPfpH.png"], // 3rd level task
+        ["fake_task_id", undefined]
+    ])("%s", ([id, icon]) => {
+        expect(app.getTaskById(id)?.icon).toEqual(icon);
+    })
+});

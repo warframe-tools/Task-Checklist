@@ -49,22 +49,6 @@ import tasks from "./tasks.json" with {type: "json"};
 import cycles from "./cycles.json" with {type: "json"};
 import moreInfo from "./moreInfo.js";
 
-function _prepTasks() {
-    function prep(period) {
-        return (task) => {
-            if (task.ref) { // alternate ref tasks need a period for countdown and reset to work correctly
-                task.period = period;
-            }
-            if (task.id in moreInfo) {
-                task.moreInfo = moreInfo[task.id];
-            }
-        }
-    }
-    tasks.daily.forEach(prep("1d"));
-    tasks.weekly.forEach(prep("7d"));
-}
-_prepTasks();
-
 // --- DOM Elements (defined after DOMContentLoaded) ---
 let bodyElement, themeToggleButton, hamburgerButton, optionsMenu, resetDailyButton, resetWeeklyButton, resetButton,
     unhideTasksButton, lastSavedTimestampElement, saveStatusElement, sectionToggles, dailyResetTimeElement,
@@ -125,6 +109,63 @@ function initializeDOMElements() {
         }
     });
 }
+
+/**
+ * For each task in the task tree, in the order they are defined, call the given
+ * `callback` function with the task definition object as a parameter.
+ */
+function forEachTask(callback) {
+    let stack = [];
+    for (const section in tasks) {
+        for (let i = 0; i < tasks[section].length; i++) {
+            // top-level tasks are not pushed in reverse order because they're immediately popped
+            stack.push(tasks[section][i]);
+            while (stack.length) {
+                const t = stack.pop();
+                callback(t); // do the thing
+                if (t.subtasks) {
+                    for (let i = t.subtasks.length - 1; i >= 0 ; i--) {
+                        // subtasks are pushed in reverse order so that they're popped in the correct order
+                        stack.push(t.subtasks[i]);
+                    }
+                }
+            }
+        }
+    }
+}
+
+export function getTaskById(id) {
+    let task = undefined;
+    forEachTask((t) => {
+        if (t.id === id) {
+            task = t;
+        }
+    });
+    return task;
+}
+
+function prepTasks() {
+    forEachTask((task) => {
+        task.section = task.id.split("_")[0];
+
+        if (["daily", "weekly"].includes(task.section)) {
+            if (task.ref) { // alternate ref tasks need a period for countdown and reset to work correctly
+                task.period = (task.section === "daily") ? "1d" : "7d";
+            }
+        }
+
+        if (task.id in moreInfo) {
+            task.moreInfo = moreInfo[task.id];
+        }
+
+        if (task.subtasks) {
+            for (const subtask of task.subtasks) {
+                subtask.parentId = task.id;
+            }
+        }
+    });
+}
+prepTasks();
 
 function displayError(message) {
     if (!errorDisplayElement || !errorMessageElement) { return; }
@@ -347,8 +388,7 @@ function runAutoResets() {
 }
 
 function otherTaskReset(task) {
-    const section = task.id.split("_")[0];
-    if (["daily", "weekly"].includes(section) && !task.ref) { // daily and weekly tasks with an alternate ref are handled as "other" tasks
+    if (["daily", "weekly"].includes(task.section) && !task.ref) { // daily and weekly tasks with an alternate ref are handled as "other" tasks
         return false;
     } else if (!task.period) {
         console.error(`[${task.id}] other_* tasks MUST specify a "period"`);
@@ -575,16 +615,15 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         const subtaskList = document.createElement("ul");
         subtaskList.id = `${task.id}-subtasks`;
         subtaskList.classList.add("subtask-list");
-        if (task.subtasks && Array.isArray(task.subtasks)) {
-            task.subtasks.forEach((subtask) => {
-                subtask.parentId = task.id;
-                const subtaskIsChecked = checklistData.progress[subtask.id] || false;
-                const subtaskItem = createChecklistItem(subtask, subtaskIsChecked, true);
-                subtaskList.appendChild(subtaskItem);
-            });
-            subtaskList.appendChild(makeSectionStats(task.id));
-            calcSectionStats(task.id, subtaskList);
-        }
+
+        task.subtasks.forEach((subtask) => {
+            const subtaskIsChecked = checklistData.progress[subtask.id] || false;
+            const subtaskItem = createChecklistItem(subtask, subtaskIsChecked, true);
+            subtaskList.appendChild(subtaskItem);
+        });
+        subtaskList.appendChild(makeSectionStats(task.id));
+        calcSectionStats(task.id, subtaskList);
+
         subtaskCollapsible.appendChild(subtaskList)
         taskItem.appendChild(subtaskCollapsible);
 
@@ -648,7 +687,7 @@ function checkboxChangeAction(task) {
             updateParentCheckboxes(task);
         }
 
-        calcSectionStats(task.id.split("_")[0]);
+        calcSectionStats(task.section);
         saveData();
     }
 }
@@ -679,15 +718,15 @@ function updateParentCheckboxes(task) {
 
             const parentCheckbox = document.getElementById(parentTaskDefinition.id);
             const parentContainer = parentCheckbox ? parentCheckbox.closest(".parent-task-container") : null;
-            const parentTextSpan = parentContainer ? parentContainer.querySelector(".parent-task-header .task-description") : null;
+            const parentDescription = parentContainer ? parentContainer.querySelector(".parent-task-header .task-description") : null;
 
             if (parentCheckbox) { parentCheckbox.checked = allSubtasksDone; }
-            if (parentTextSpan) { parentTextSpan.classList.toggle("checked", allSubtasksDone); }
+            if (parentDescription) { parentDescription.classList.toggle("checked", allSubtasksDone); }
         }
 
         t = parentTaskDefinition;  // move up a level
     }
-    calcSectionStats(task.id.split("_")[0]);
+    calcSectionStats(task.section);
     saveData();
 }
 
@@ -879,35 +918,6 @@ function makeInfoLine(task, appendTo) {
     }
 }
 
-function getTaskById(id) {
-    for (const group in tasks) {
-        for (const task of tasks[group]) {
-            if (task.id === id) {
-                return task;
-            }
-            const subtaskFound = _getSubtaskById(task, id);
-            if (subtaskFound) {
-                return subtaskFound;
-            }
-        }
-    }
-}
-
-function _getSubtaskById(task, id) {
-    if ("subtasks" in task) {
-        for (const subtask of task.subtasks) {
-            if (subtask.id === id) {
-                return subtask;
-            }
-            const subtaskFound = _getSubtaskById(subtask, id);
-            if (subtaskFound) {
-                return subtaskFound;
-            }
-        }
-    }
-    return undefined;
-}
-
 function populateSection(section) {
     const sectionElement = document.querySelector(`#${section}-tasks-content ul`);
     const taskList = tasks[section];
@@ -1044,18 +1054,17 @@ function showHiddenTasksAction(parent, taskList, stat) {
 
 function hiddenTasksButtonAction(taskElement, task, stat) {
     return () => {
-        const section = task.id.split("_")[0];
         taskElement.classList.add("hidden-task"); // unhiding the task hides it from the hidden task list
 
         if (stat === "completed") {
             document.getElementById(task.id).dispatchEvent(new CustomEvent("change", { detail: false }));
-            populateSection(section);
+            populateSection(task.section);
         } else {
             checklistData[C.TASKLIST_STAT_PROPERTIES[stat]][task.id] = false;
             document.getElementById(task.id).closest(".task-item").classList.remove("hidden-task");
             updateParentCheckboxes(task);
             if (task.parentId) { calcSectionStats(task.parentId); }
-            calcSectionStats(section);
+            calcSectionStats(task.section);
         }
 
         saveData();
