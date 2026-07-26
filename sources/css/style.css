@@ -665,7 +665,7 @@ body:not(.hide-completed-tasks) .list-stats .stats-completed /* hide completed w
     & > div {
         min-width: 0;
     }
-    .parent-task-header[aria-expanded="false"] & {
+    .parent-task-header[aria-expanded="false"] &:not([data-count="0"]) {
         grid-template-columns: 1fr;
         transform: scale(1, 1);
         opacity: 1;

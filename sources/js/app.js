@@ -467,7 +467,8 @@ function showNotification(title, body) {
     }
 }
 
-function createChecklistItem(task, isChecked, isSubtask = false) {
+function createChecklistItem(task) {
+    const isChecked = checklistData.progress[task.id] || false;
     const isAvailable = calcTaskTimes(task, new Date()).isAvailable;
 
     const listItem = document.createElement("li");
@@ -480,14 +481,14 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     }
 
     // Checkbox
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
     checkbox.id = task.id;
     checkbox.checked = isChecked;
     if (!isAvailable) {
         checkbox.indeterminate = true;
     }
-    if (isSubtask) {
+    if (task.parentId) {
         checkbox.dataset.parentId = task.parentId;
     }
 
@@ -534,7 +535,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
     makeInfoLine(task, taskDescription);
 
     // Hide/Notif Controls
-    const controlsContainer = document.createElement('div');
+    const controlsContainer = document.createElement("div");
 
     // Notif Button
     if (task.id.startsWith("other_")) {
@@ -617,9 +618,7 @@ function createChecklistItem(task, isChecked, isSubtask = false) {
         subtaskList.classList.add("subtask-list");
 
         task.subtasks.forEach((subtask) => {
-            const subtaskIsChecked = checklistData.progress[subtask.id] || false;
-            const subtaskItem = createChecklistItem(subtask, subtaskIsChecked, true);
-            subtaskList.appendChild(subtaskItem);
+            subtaskList.appendChild(createChecklistItem(subtask));
         });
         subtaskList.appendChild(makeSectionStats(task.id));
         calcSectionStats(task.id, subtaskList);
@@ -717,8 +716,8 @@ function updateParentCheckboxes(task) {
             checklistData.progress[parentTaskDefinition.id] = allSubtasksDone;
 
             const parentCheckbox = document.getElementById(parentTaskDefinition.id);
-            const parentContainer = parentCheckbox ? parentCheckbox.closest(".parent-task-container") : null;
-            const parentDescription = parentContainer ? parentContainer.querySelector(".parent-task-header .task-description") : null;
+            const parentContainer = parentCheckbox?.closest(".parent-task-container");
+            const parentDescription = parentContainer?.querySelector(".parent-task-header .task-description");
 
             if (parentCheckbox) { parentCheckbox.checked = allSubtasksDone; }
             if (parentDescription) { parentDescription.classList.toggle("checked", allSubtasksDone); }
@@ -745,6 +744,7 @@ function updateIncompleteSubtaskCount(task, queryFrom=document) {
         const element = queryFrom.querySelector(`#${task.id} ~ .collapse-btn .incomplete-count > div`);
         const unchecked = queryFrom.querySelectorAll(`input[data-parent-id="${task.id}"]:not(:checked, :indeterminate, .hidden-task *)`)
         element.innerText = unchecked.length;
+        element.parentElement.dataset.count = unchecked.length;
         element.parentElement.title = `${unchecked.length} incomplete subtasks of ${task.title}`;
     }
 }
@@ -888,11 +888,11 @@ function makeInfoLine(task, appendTo) {
         // Info Line
         if (hasInfoLine) {
             if (task.npc && task.terminal) {console.warn(`[${task.id}] Tasks should specify only one of [npc, terminal].`);}
-            const infoLine = document.createElement('div');
-            infoLine.classList.add('info-line');
+            const infoLine = document.createElement("div");
+            infoLine.classList.add("info-line");
             let infoLineHTML = "";
             infoLineHTML += makeInfoLineItem(task, "location", "Location", svgIcons.locationIcon);
-            infoLineHTML = infoLineHTML.replace('Base of Operations', C.BASE_OF_OPERATIONS_TOOLTIP);
+            infoLineHTML = infoLineHTML.replace("Base of Operations", C.BASE_OF_OPERATIONS_TOOLTIP);
             infoLineHTML += makeInfoLineItem(task, "npc", "NPC", svgIcons.npcIcon);
             infoLineHTML += makeInfoLineItem(task, "terminal", "Terminal", svgIcons.terminalIcon);
             infoLineHTML += makeInfoLineItem(task, "prereq", "Requirements", svgIcons.prereqIcon);
@@ -920,23 +920,28 @@ function makeInfoLine(task, appendTo) {
 
 function populateSection(section) {
     const sectionElement = document.querySelector(`#${section}-tasks-content ul`);
-    const taskList = tasks[section];
 
     if (!sectionElement) {
         console.error("Section element not found for population:", sectionElement);
         return;
     }
-    sectionElement.innerHTML = '';
-    taskList.forEach((task) => {
-        const isChecked = checklistData.progress[task.id] || false;
-        const listItem = createChecklistItem(task, isChecked);
-        sectionElement.appendChild(listItem);
+    sectionElement.innerHTML = "";
+    tasks[section].forEach((task) => {
+        sectionElement.appendChild(createChecklistItem(task));
     });
     sectionElement.appendChild(makeSectionStats(section));
     calcSectionStats(section);
-    if (sectionElement.parentElement && sectionElement.parentElement.id) {
-        updateSectionControls(sectionElement.parentElement.id);
-    }
+
+    let updatedParents = new Set();
+    forEachTask((task) => {
+        if (task.section === section && task.parentId && !task.subtasks && !updatedParents.has(task.parentId)) {
+            // if the task is a non-root leaf node in the current section, and the first among its siblings
+            updateParentCheckboxes(task);
+            updatedParents.add(task.parentId);
+        }
+    });
+
+    updateSectionControls(sectionElement.parentElement?.id);
 }
 
 /**
