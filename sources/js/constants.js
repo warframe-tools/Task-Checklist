@@ -7,3 +7,21 @@ export const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR;
 export const SERVER_TIMEZONE = "America/Toronto";  // used for determining Daylight Saving Time
 
 export const BASE_OF_OPERATIONS_TOOLTIP = '<span class="tooltip" title="Orbiter, Drifter\'s Camp, or Backroom">Base of Operations</span>';
+
+export const TASKLIST_STAT_NAMES = {
+    "completed": "Completed",
+    "skipped": "Skipped",
+    "hidden": "Hidden",
+};
+
+export const TASKLIST_STAT_PROPERTIES = {
+    "completed": "progress",
+    "skipped": "skippedTasks",
+    "hidden": "hiddenTasks"
+};
+
+export const SECTION_NAMES = {
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "other": "Other",
+};

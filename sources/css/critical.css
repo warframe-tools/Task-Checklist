@@ -132,6 +132,10 @@ body.light-mode {
     padding: 0;
 }
 
+:where(button) {
+    cursor: pointer;
+}
+
 /* --- Base Body Styles --- */
 body {
     font-family: 'Inter', sans-serif;
@@ -196,7 +200,7 @@ h1 {
         font-size: 1.75rem;
     }
 }
-h2 {
+#checklist-container h2 {
     color: var(--text-header);
     cursor: pointer;
     display: flex;
@@ -210,14 +214,15 @@ h2 {
     margin-bottom: 0.25rem;
     border-bottom: 1px solid var(--border-color);
 }
-h2 > span:first-of-type {
+#checklist-container h2 > span:first-of-type {
     flex-grow: 1;
 }
-h2 .reset-time-local {
+#checklist-container h2 .reset-time-local {
     font-size: 0.75rem;
     font-weight: 400;
     color: var(--text-secondary);
     margin-left: 0.5rem;
+    font-variant-numeric: tabular-nums;
 }
 .app-description {
     color: var(--text-secondary);
@@ -237,14 +242,21 @@ h2 .reset-time-local {
 }
 
 /* --- Collapsible Section Basics --- */
-.collapse-icon {
-    width: 1rem; height: 1rem;
-    transition: transform 0.3s ease-in-out;
+.collapse-btn {
     flex-shrink: 0;
-    margin-left: 0.5rem;
+    margin-left: 0.5em;
+    border: none;
+    display: flex;
+    align-items: center;
+    svg {
+        height: 1.25em;
+        width: 1.25em;
+        padding: 0.125em;
+        transition: transform 0.3s ease-in-out;
+    }
 }
-.section-toggle[aria-expanded="false"] .collapse-icon,
-.parent-task-header[aria-expanded="false"] .collapse-icon {
+.section-toggle[aria-expanded="false"] .collapse-btn svg,
+.parent-task-header[aria-expanded="false"] .collapse-btn svg {
     transform: rotate(-90deg);
 }
 .section-content, .subtask-collapsible {

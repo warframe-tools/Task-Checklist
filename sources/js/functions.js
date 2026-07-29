@@ -11,9 +11,42 @@ export function modulo(n, d) {
     return ((n % d) + d) % d;
 }
 
+export function newChecklistData() {
+    return {
+        progress: {},
+        lastSaved: null,
+        lastDailyReset: null,
+        lastWeeklyReset: null,
+        hiddenTasks: {},
+        skippedTasks: {},
+        manuallyHiddenSections: {},
+        lastTaskResetTimes: {},
+        notificationPreferences: {},
+        notificationsSent: {},
+        hideCompletedTasks: false,
+        collapsedParentTasks: {},
+    };
+}
+
 const taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
 export function iconURL(iconName) {
     return taskIcons["../img/icons/" + iconName];
+}
+
+/** returns a new element of the icon of the given task, or null if it doesn't have one
+ */
+export function makeTaskIcon(task) {
+    if (task.icon) {
+        const icon = document.createElement("img");
+        icon.src = iconURL(`tasks/${task.icon}`);
+        icon.classList.add("task-icon");
+        if (!task.noIconFilter) {
+            icon.classList.add("icon-filter");
+        }
+        return icon;
+    } else {
+        return null;
+    }
 }
 
 export function makeCycleIcon(cycleData) {
@@ -182,4 +215,20 @@ export function calcTaskTimes(task, date) {
 export function factionIcon(name) {
     const src = iconURL(`tasks/syndicates/${name}`);
     return `<img class="icon-filter inline-icon" src="${src}">`;
+}
+
+/**
+ * Generate a "section stats" element, which shows things like number of hidden tasks in a section or subtask list
+ *
+ * @param parent - what task list to count stats on. This can be the name of a section, or the id of a task with subtasks.
+ * @returns a new DOM Element. Does not insert it into the document.
+ */
+export function makeSectionStats(parent) {
+    const statsContainer = document.createElement("li");
+    statsContainer.classList.add("list-stats");
+    statsContainer.id = `stats_${parent}`;
+    const statsBox = document.createElement("div");
+    statsBox.innerHTML = "...";
+    statsContainer.appendChild(statsBox);
+    return statsContainer;
 }

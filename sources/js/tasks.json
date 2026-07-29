@@ -2,40 +2,46 @@
     "daily": [
         {
             "id": "daily_login",
-            "text": "Log in: Collect the daily login reward.",
+            "title": "Log in",
+            "text": "Collect the daily login reward.",
             "icon": "LotusFlower.png"
         },
         {
             "id": "daily_craft_forma",
-            "text": "Crafting (Forma): Start building a new Forma (and collect finished ones).",
+            "title": "Crafting (Forma)",
+            "text": "Start building a new Forma (and collect finished ones).",
             "icon": "IconBuild.png",
             "location": "Base of Operations",
             "terminal": "Foundry"
         },
         {
             "id": "daily_craft_other",
-            "text": "Crafting (Other): Craft other daily resources/items using reusable blueprints (check Foundry/companion app).",
+            "title": "Crafting (Other)",
+            "text": "Craft other daily resources/items using reusable blueprints (check Foundry/companion app).",
             "icon": "IconBuild.png",
             "location": "Base of Operations",
             "terminal": "Foundry"
         },
         {
             "id": "daily_first_win_bonus",
-            "text": "Daily First Win Bonus: Get double base credit reward on your first mission.",
+            "title": "Daily First Win Bonus",
+            "text": "Get double base credit reward on your first mission.",
             "icon": "DoubleCreditEvent.png",
             "location": "Base of Operations",
             "terminal": "Navigation"
         },
         {
             "id": "daily_syndicate_gain",
-            "text": "Faction Syndicates: Gain daily standing cap with your pledged Syndicate(s).",
+            "title": "Faction Syndicates",
+            "text": "Gain daily standing cap with your pledged Syndicate(s).",
             "icon": "ReputationSmall.png",
             "prereq": "Mastery Rank 3",
             "info": "Gain affinity in any mission to increase faction standing"
         },
         {
             "id": "daily_syndicate_spend",
-            "text": "Faction Syndicates: If maxed on standing, spend it (Relic packs, Vosfor packs, etc.).",
+            "title": "Faction Syndicates",
+            "text": "If maxed on standing, spend it (Relic packs, Vosfor packs, etc.).",
             "icon": "ReputationSmall.png",
             "location": "Base of Operations/Any Relay",
             "terminal": "Syndicates",
@@ -43,81 +49,82 @@
         },
         {
             "id": "daily_world_syndicate_parent",
-            "text": "World Syndicates (Standing)",
+            "title": "World Syndicates",
+            "text": "Gain standing.",
             "icon": "ReputationSmall.png",
             "subtasks": [
                 {
                     "id": "daily_world_syndicate_simaris",
-                    "text": "Cephalon Simaris",
+                    "title": "Cephalon Simaris",
                     "icon": "syndicates/IconSimaris.png",
                     "location": "Any Relay"
                 },
                 {
                     "id": "daily_world_syndicate_ostron",
-                    "text": "Ostron",
+                    "title": "Ostron",
                     "icon": "syndicates/IconCetusElder.png",
                     "location": "Cetus, Earth",
                     "prereq": "Saya's Vigil"
                 },
                 {
                     "id": "daily_world_syndicate_quills",
-                    "text": "The Quills",
+                    "title": "The Quills",
                     "icon": "syndicates/TheQuillsSigil.png",
                     "location": "Cetus, Earth",
                     "prereq": "The War Within"
                 },
                 {
                     "id": "daily_world_syndicate_solaris",
-                    "text": "Solaris United",
+                    "title": "Solaris United",
                     "icon": "syndicates/SolarisUnited1.png",
                     "location": "Fortuna, Venus",
                     "prereq": "Vox Solaris (Quest)"
                 },
                 {
                     "id": "daily_world_syndicate_vox",
-                    "text": "Vox Solaris",
+                    "title": "Vox Solaris",
                     "icon": "syndicates/IconSolaris.png",
                     "location": "Fortuna, Venus",
                     "prereq": "The War Within"
                 },
                 {
                     "id": "daily_world_syndicate_ventkids",
-                    "text": "Ventkids",
+                    "title": "Ventkids",
                     "icon": "syndicates/FactionVentKidz.png",
                     "location": "Fortuna, Venus",
                     "prereq": "Vox Solaris (Quest)"
                 },
                 {
                     "id": "daily_world_syndicate_entrati",
-                    "text": "Entrati",
+                    "title": "Entrati",
                     "icon": "syndicates/IconEntrati.png",
                     "location": "Necralisk, Deimos",
                     "prereq": "Heart of Deimos"
                 },
                 {
                     "id": "daily_world_syndicate_necraloid",
-                    "text": "Necraloid",
+                    "title": "Necraloid",
                     "icon": "syndicates/Loid.png",
                     "location": "Necralisk, Deimos",
                     "prereq": "The War Within"
                 },
                 {
                     "id": "daily_world_syndicate_holdfasts",
-                    "text": "The Holdfasts",
+                    "title": "The Holdfasts",
                     "icon": "syndicates/TheHoldfastsIcon.png",
                     "location": "Chrysalith, Zariman",
                     "prereq": "Angels of the Zariman"
                 },
                 {
                     "id": "daily_world_syndicate_cavia",
-                    "text": "Cavia",
+                    "title": "Cavia",
                     "icon": "syndicates/FactionSigilCavia.png",
                     "location": "Sanctum Anatomica, Deimos",
                     "prereq": "Whispers in the Walls"
                 },
                 {
                     "id": "daily_world_syndicate_hex",
-                    "text": "The Hex",
+                    "title": "The Hex",
                     "icon": "syndicates/HexIcon.png",
                     "location": "Höllvania Central Mall",
                     "prereq": "The Hex (Quest)"
@@ -126,7 +133,8 @@
         },
         {
             "id": "daily_sortie",
-            "text": "Sortie: Complete the 3 daily Sortie missions.",
+            "title": "Sortie",
+            "text": "Complete the 3 daily Sortie missions.",
             "icon": "Sortie.png",
             "location": "Base of Operations",
             "terminal": "Navigation",
@@ -136,63 +144,66 @@
         },
         {
             "id": "daily_focus",
-            "text": "Focus: Max out daily Focus gain (e.g., via Sanctuary Onslaught).",
+            "title": "Focus",
+            "text": "Max out daily Focus gain (e.g., via Sanctuary Onslaught).",
             "icon": "FocusLensFocus.png",
             "prereq": "The Second Dream"
         },
         {
             "id": "daily_steel_path",
-            "text": "Steel Path Incursions: Complete daily Steel Path missions for Steel Essence.",
+            "title": "Steel Path Incursions",
+            "text": "Complete daily Steel Path missions for Steel Essence.",
             "icon": "SteelEssenceIcon.png",
             "prereq": "Steel Path unlocked"
         },
         {
             "id": "daily_kim_parent",
-            "text": "KIM: complete daily chats with protoframes",
+            "title": "KIM",
+            "text": "complete daily chats with protoframes",
             "location": "Base of Operations",
             "terminal": "POM-2 PC",
             "icon": "Computer.png",
             "subtasks": [
                 {
                     "id": "daily_kim_hex_parent",
-                    "text": "The Hex",
+                    "title": "The Hex",
                     "prereq": "The Hex (Quest)",
                     "icon": "KIM/RetroPfpG.png",
                     "noIconFilter": true,
                     "subtasks": [
                         {
                             "id": "daily_kim_arthur",
-                            "text": "Broadsword (Arthur)",
+                            "title": "Broadsword (Arthur)",
                             "icon": "KIM/RetroPfpA.png",
                             "noIconFilter": true
                         },
                         {
                             "id": "daily_kim_eleanor",
-                            "text": "Salem (Eleanor)",
+                            "title": "Salem (Eleanor)",
                             "icon": "KIM/RetroPfpE.png",
                             "noIconFilter": true
                         },
                         {
                             "id": "daily_kim_lettie",
-                            "text": "Belladona ~{@ (Lettie)",
+                            "title": "Belladona ~{@ (Lettie)",
                             "icon": "KIM/RetroPfpB.png",
                             "noIconFilter": true
                         },
                         {
                             "id": "daily_kim_amir",
-                            "text": "H16h V0l7463 (Amir)",
+                            "title": "H16h V0l7463 (Amir)",
                             "icon": "KIM/RetroPfpC.png",
                             "noIconFilter": true
                         },
                         {
                             "id": "daily_kim_aoi",
-                            "text": "xX GLIMMER Xx (Aoi)",
+                            "title": "xX GLIMMER Xx (Aoi)",
                             "icon": "KIM/RetroPfpD.png",
                             "noIconFilter": true
                         },
                         {
                             "id": "daily_kim_quincy",
-                            "text": "Soldja1Shot1kil (Quincy)",
+                            "title": "Soldja1Shot1kil (Quincy)",
                             "icon": "KIM/RetroPfpF.png",
                             "noIconFilter": true
                         }
@@ -200,28 +211,28 @@
                 },
                 {
                     "id": "daily_kim_roundtable_parent",
-                    "text": "The Roundtable",
+                    "title": "The Roundtable",
                     "prereq": "The Hex (Quest) Finale",
                     "icon": "KIM/RetroPfpM.png",
                     "noIconFilter": true,
                     "subtasks": [
                         {
                             "id": "daily_kim_flare",
-                            "text": "Liminus_Star (Flare)",
+                            "title": "Liminus_Star (Flare)",
                             "icon": "KIM/RetroPfpJ.png",
                             "noIconFilter": true,
                             "prereq": "Rank 4 The Hex"
                         },
                         {
                             "id": "daily_kim_minerva_velimir",
-                            "text": "MomToxicated & PapaPolar (Minerva & Velimir)",
+                            "title": "MomToxicated & PapaPolar (Minerva & Velimir)",
                             "icon": "KIM/RetroPfpI.png",
                             "noIconFilter": true,
                             "prereq": "Rank 5 The Hex"
                         },
                         {
                             "id": "daily_kim_kaya",
-                            "text": "KOLTrial_5115 (Kaya)",
+                            "title": "KOLTrial_5115 (Kaya)",
                             "icon": "KIM/RetroPfpH.png",
                             "noIconFilter": true,
                             "prereq": "Rank 5 The Hex"
@@ -230,26 +241,26 @@
                 },
                 {
                     "id": "daily_kim_devils_triad_parent",
-                    "text": "The Devil's Triad",
+                    "title": "The Devil's Triad",
                     "prereq": "The Old Peace",
                     "icon" : "KIM/Tau_RetroPfpA.png",
                     "noIconFilter": true,
                     "subtasks": [
                         {
                             "id": "daily_kim_marie",
-                            "text": "Marie",
+                            "title": "Marie",
                             "icon": "KIM/Tau_RetroPfpB.png",
                             "noIconFilter": true
                         },
                         {
                             "id": "daily_kim_roathe",
-                            "text": "Roathe",
+                            "title": "Roathe",
                             "icon": "KIM/Tau_RetroPfpD.png",
                             "noIconFilter": true
                         },
                         {
                             "id": "daily_kim_lyon",
-                            "text": "Lyon",
+                            "title": "Lyon",
                             "icon": "KIM/Tau_RetroPfpC.png",
                             "noIconFilter": true,
                             "prereq": "\"Liked\" by Marie"
@@ -260,12 +271,13 @@
         },
         {
             "id": "daily_vendors",
-            "text": "Vendors",
+            "title": "Vendors",
             "icon": "Market.png",
             "subtasks": [
                 {
                     "id": "daily_acrithis",
-                    "text": "Acrithis: Check daily Arcane and Captura offering.",
+                    "title": "Acrithis",
+                    "text": "Check daily Arcane and Captura offering.",
                     "icon": "Acrithis.png",
                     "location": "Duviri/Dormizone",
                     "npc": "Acrithis",
@@ -273,7 +285,8 @@
                 },
                 {
                     "id": "daily_ticker_crew",
-                    "text": "Ticker: Check available railjack crew to hire.",
+                    "title": "Ticker",
+                    "text": "Check available railjack crew to hire.",
                     "icon": "IconCommand.png",
                     "location": "Fortuna, Venus",
                     "npc": "Ticker",
@@ -281,7 +294,8 @@
                 },
                 {
                     "id": "daily_marie",
-                    "text": "Marie: Purchase Tektolyst mods, arcanes, and Perita/Descendia resources.",
+                    "title": "Marie",
+                    "text": "Purchase Tektolyst mods, arcanes, and Perita/Descendia resources.",
                     "icon": "Wisp.png",
                     "location": "La Cathédrale (Sanctum Anatomica, Deimos)",
                     "npc": "Marie",
@@ -293,24 +307,28 @@
     "weekly": [
         {
             "id": "weekly_nightwave_complete",
-            "text": "Nightwave: Complete relevant weekly Nightwave missions.",
+            "title": "Nightwave",
+            "text": "Complete relevant weekly Nightwave missions.",
             "icon": "NightwaveIconSimple.png"
         },
         {
             "id": "weekly_nightwave_spend",
-            "text": "Nightwave (Spend): Spend Nightwave credits if needed (Aura mods, Catalysts/Reactors, etc.).",
+            "title": "Nightwave (Spend)",
+            "text": "Spend Nightwave credits if needed (Aura mods, Catalysts/Reactors, etc.).",
             "icon": "NightwaveIconSimple.png"
         },
         {
             "id": "weekly_ayatan",
-            "text": "Ayatan Treasure Hunt: Complete Maroo's weekly mission for an Ayatan Sculpture",
+            "title": "Ayatan Treasure Hunt",
+            "text": "Complete Maroo's weekly mission for an Ayatan Sculpture",
             "icon": "Maroo.png",
             "location": "Maroo's Bazaar, Mars",
             "npc": "Maroo"
         },
         {
             "id": "weekly_clem",
-            "text": "Help Clem: Help Clem with his weekly survival, or he will die.",
+            "title": "Help Clem",
+            "text": "Help Clem with his weekly survival, or he will die.",
             "icon": "HelpClem_.png",
             "location": "Any Relay",
             "npc": "Darvo",
@@ -318,7 +336,8 @@
         },
         {
             "id": "weekly_kahl_garrison",
-            "text": "Break Narmer: Complete Kahl's weekly mission for Stock.",
+            "title": "Break Narmer",
+            "text": "Complete Kahl's weekly mission for Stock.",
             "icon": "GarrisonIcon.png",
             "location": "Drifter's Camp, Earth",
             "npc": "Kahl",
@@ -326,7 +345,8 @@
         },
         {
             "id": "weekly_archon_hunt",
-            "text": "Archon Hunt: Complete the weekly Archon Hunt for a guaranteed Archon Shard.",
+            "title": "Archon Hunt",
+            "text": "Complete the weekly Archon Hunt for a guaranteed Archon Shard.",
             "icon": "IconNarmer.png",
             "location": "Base of Operations",
             "terminal": "Navigation",
@@ -334,7 +354,8 @@
         },
         {
             "id": "weekly_duviri_circuit",
-            "text": "Duviri Circuit (Normal): Check weekly Warframe options & run Circuit if desired.",
+            "title": "Duviri Circuit (Normal)",
+            "text": "Check weekly Warframe options & run Circuit if desired.",
             "icon": "IconDuviriCategory256.png",
             "location": "Base of Operations/Dormizone",
             "terminal": "Navigation",
@@ -342,7 +363,8 @@
         },
         {
             "id": "weekly_duviri_circuit_sp",
-            "text": "Duviri Circuit (Steel Path): Check weekly Incarnon Adapters & run Circuit if desired.",
+            "title": "Duviri Circuit (Steel Path)",
+            "text": "Check weekly Incarnon Adapters & run Circuit if desired.",
             "icon": "IconDuviriCategory256.png",
             "location": "Base of Operations/Dormizone",
             "terminal": "Navigation",
@@ -350,12 +372,14 @@
         },
         {
             "id": "weekly_search_pulses",
-            "text": "Search Pulses: Use 5 weekly search pulses on Netracells and Archimedeas.",
+            "title": "Search Pulses",
+            "text": "Use 5 weekly search pulses on Netracells and Archimedeas.",
             "icon": "MagnifyingGlassIcon.png",
             "subtasks": [
                 {
                     "id": "weekly_netracells",
-                    "text": "Netracells: Complete up to 5 weekly Netracell missions for Archon Shard chances.",
+                    "title": "Netracells",
+                    "text": "Complete up to 5 weekly Netracell missions for Archon Shard chances.",
                     "icon": "NetraRequiemIcon.png",
                     "location": "Sanctum Anatomica, Deimos",
                     "npc": "Tagfer",
@@ -364,7 +388,8 @@
                 },
                 {
                     "id": "weekly_eda",
-                    "text": "Elite Deep Archimedea: Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame).",
+                    "title": "Elite Deep Archimedea",
+                    "text": "Attempt weekly Elite Deep Archimedea for high Archon Shard chances (very endgame).",
                     "icon": "Necraloid.png",
                     "location": "Sanctum Anatomica, Deimos",
                     "npc": "Necraloid",
@@ -373,7 +398,8 @@
                 },
                 {
                     "id": "weekly_eta",
-                    "text": "Elite Temporal Archimedea: Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame).",
+                    "title": "Elite Temporal Archimedea",
+                    "text": "Attempt weekly Elite Temporal Archimedea for high Archon Shard chances (very endgame).",
                     "icon": "Kaya_.png",
                     "location": "Höllvania Central Mall",
                     "npc": "Kaya Velasco",
@@ -384,7 +410,8 @@
         },
         {
             "id": "weekly_calendar",
-            "text": "1999 Calendar: Complete weekly Calendar tasks.",
+            "title": "1999 Calendar",
+            "text": "Complete weekly Calendar tasks.",
             "icon": "Computer.png",
             "location": "Base of Operations",
             "terminal": "POM-2 PC",
@@ -392,7 +419,8 @@
         },
         {
             "id": "weekly_invigorations",
-            "text": "Helminth: Use weekly Invigorations.",
+            "title": "Helminth",
+            "text": "Use weekly Invigorations.",
             "icon": "IconHelminth.png",
             "location": "Base of Operations",
             "npc": "Helminth",
@@ -400,21 +428,24 @@
         },
         {
             "id": "weekly_descendia",
-            "text": "The Descendia (Normal): Weekly Tower gamemode for various resources.",
+            "title": "The Descendia (Normal)",
+            "text": "Weekly Tower gamemode for various resources.",
             "icon": "Heat_d.png",
             "location": "Dark Refractory (Base of Operations)",
             "terminal": "Navigation"
         },
         {
             "id": "weekly_descendia_sp",
-            "text": "The Descendia (Steel Path): Weekly Tower gamemode for various resources.",
+            "title": "The Descendia (Steel Path)",
+            "text": "Weekly Tower gamemode for various resources.",
             "icon": "Heat_d.png",
             "location": "Dark Refractory (Base of Operations)",
             "terminal": "Navigation"
         },
         {
             "id": "weekly_clan_initiative",
-            "text": "Clan Weekly Initiatives: Earn rewards by playing with clan members.",
+            "title": "Clan Weekly Initiatives",
+            "text": "Earn rewards by playing with clan members.",
             "icon": "Friends.png",
             "location": "Any Mission*",
             "terminal": "Menu &#x1F782; Communication &#x1F782; Clan",
@@ -422,12 +453,13 @@
         },
         {
             "id": "weekly_vendors",
-            "text": "Vendors",
+            "title": "Vendors",
             "icon": "Market.png",
             "subtasks": [
                 {
                     "id": "weekly_iron_wake",
-                    "text": "Paladino: Trade Riven Slivers.",
+                    "title": "Paladino",
+                    "text": "Trade Riven Slivers.",
                     "icon": "IconOmegaMod256.png",
                     "location": "Iron Wake, Earth",
                     "npc": "Paladino",
@@ -435,7 +467,8 @@
                 },
                 {
                     "id": "weekly_yonta",
-                    "text": "Archimedean Yonta: Buy weekly Kuva with Voidplumes.",
+                    "title": "Archimedean Yonta",
+                    "text": "Buy weekly Kuva with Voidplumes.",
                     "icon": "Yonta.png",
                     "location": "Chrysalith, Zariman",
                     "npc": "Yonta",
@@ -443,7 +476,8 @@
                 },
                 {
                     "id": "weekly_acrithis",
-                    "text": "Acrithis: Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed). Buy Kuva with Scuttler Husks.",
+                    "title": "Acrithis",
+                    "text": "Check wares and spend Pathos Clamps if desired (Catalysts/Reactors recommended if needed). Buy Kuva with Scuttler Husks.",
                     "icon": "Acrithis.png",
                     "location": "Duviri/Dormizone",
                     "npc": "Acrithis",
@@ -451,7 +485,8 @@
                 },
                 {
                     "id": "weekly_teshin",
-                    "text": "Teshin (Steel Path): Check Teshin's Steel Essence shop (especially for Umbra Forma rotation every 8 weeks).",
+                    "title": "Teshin (Steel Path)",
+                    "text": "Check Teshin's Steel Essence shop (especially for Umbra Forma rotation every 8 weeks).",
                     "icon": "SteelEssenceIcon.png",
                     "location": "Any Relay",
                     "npc": "Teshin",
@@ -459,7 +494,8 @@
                 },
                 {
                     "id": "weekly_bird3",
-                    "text": "Bird 3: Buy the weekly Archon Shard for 30k Cavia Standing.",
+                    "title": "Bird 3",
+                    "text": "Buy the weekly Archon Shard for 30k Cavia Standing.",
                     "icon": "Bird3.png",
                     "location": "Sanctum Anatomica, Deimos",
                     "npc": "Bird 3",
@@ -467,7 +503,8 @@
                 },
                 {
                     "id": "weekly_kaya",
-                    "text": "Kaya: Trade Pix Chips for Arcanes.",
+                    "title": "Kaya",
+                    "text": "Trade Pix Chips for Arcanes.",
                     "icon": "Kaya_.png",
                     "location": "Höllvania Central Mall",
                     "npc": "Kaya Velasco",
@@ -475,7 +512,8 @@
                 },
                 {
                     "id": "weekly_nightcap",
-                    "text": "Nightcap: Trade Fergolyte for Kuva and Ayatan Sculpture.",
+                    "title": "Nightcap",
+                    "text": "Trade Fergolyte for Kuva and Ayatan Sculpture.",
                     "icon": "MysteryShroom256_d.png",
                     "location": "Fortuna, Venus",
                     "npc": "Nightcap",
@@ -483,7 +521,8 @@
                 },
                 {
                     "id": "weekly_zorba",
-                    "text": "Aspirant Zorba: Trade Atramentum for Kuva.",
+                    "title": "Aspirant Zorba",
+                    "text": "Trade Atramentum for Kuva.",
                     "icon": "ZorbaQuickAccessIcon.png",
                     "location": "Any Relay",
                     "npc": "Aspirant Zorba",
@@ -491,7 +530,8 @@
                 },
                 {
                     "id": "weekly_hunhow",
-                    "text": "Hunhow: Trade Emerald &amp; Crimson Talents for Kuva.",
+                    "title": "Hunhow",
+                    "text": "Trade Emerald &amp; Crimson Talents for Kuva.",
                     "icon": "MarkedForDeathStalker.png",
                     "location": "Pontis Tower, Uranus",
                     "npc": "Hunhow",
@@ -503,7 +543,8 @@
     "other": [
         {
             "id": "other_baro",
-            "text": "Baro Ki'Teer: Check Baro Ki'Teer's inventory and purchase desired items with Ducats (trade Prime parts for Ducats).",
+            "title": "Baro Ki'Teer",
+            "text": "Check Baro Ki'Teer's inventory and purchase desired items with Ducats (trade Prime parts for Ducats).",
             "icon": "IconPrimeParts.png",
             "location": "Relay with Symbol",
             "npc": "Baro Ki'Teer",
@@ -514,7 +555,8 @@
         },
         {
             "id": "other_grandmother_tokens",
-            "text": "Mend the Family: Purchase Family Tokens from Grandmother.",
+            "title": "Mend the Family",
+            "text": "Purchase Family Tokens from Grandmother.",
             "icon": "syndicates/IconEntrati.png",
             "location": "Necralisk, Deimos",
             "prereq": "Heart of Deimos",
@@ -523,7 +565,7 @@
         },
         {
             "id": "other_yonta_voidplumes",
-            "text": "Trade for Voidplumes",
+            "title": "Trade for Voidplumes",
             "icon": "Yonta.png",
             "location": "Chrysalith, Zariman",
             "npc": "Yonta",
@@ -533,7 +575,7 @@
         },
         {
             "id": "other_loid_voca",
-            "text": "Trade for Voca",
+            "title": "Trade for Voca",
             "icon": "MiniMapCaviaVendor_.png",
             "location": "Sanctum Anatomica, Deimos",
             "npc": "Loid",
@@ -543,7 +585,8 @@
         },
         {
             "id": "other_glast",
-            "text": "Tenet Weapons: Check Ergo Glast's shop for good valence bonuses.",
+            "title": "Tenet Weapons",
+            "text": "Check Ergo Glast's shop for good valence bonuses.",
             "icon": "ErgoGlast.png",
             "location": "Any Relay",
             "npc": "Ergo Glast",
@@ -553,7 +596,8 @@
         },
         {
             "id": "other_eleanor",
-            "text": "Coda Weapons: Check Eleanor's shop for good valence bonuses.",
+            "title": "Coda Weapons",
+            "text": "Check Eleanor's shop for good valence bonuses.",
             "icon": "Nyx.png",
             "location": "Höllvania Central Mall",
             "npc": "Eleanor Nightingale",
