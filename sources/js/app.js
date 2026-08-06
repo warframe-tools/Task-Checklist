@@ -34,7 +34,7 @@ const dailyBackgroundImageIds = [
     "bg-image-4",
     // Add more IDs if you add more background image divs in HTML
 ];
-export const APP_VERSION = "5.3";
+export const APP_VERSION = "5.3.1";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0, 7);
 const WARFRAME_VERSION = "43.0.8";
@@ -406,15 +406,16 @@ function otherTaskReset(task) {
     const lastResetTime = checklistData.lastTaskResetTimes[task.id] || 0;
     const lastResetCycleNumber = calcCycleNumber(task, lastResetTime);
 
-    if (checklistData.progress[task.id] && !calcTaskTimes(task, now).isAvailable) {
+    if (!calcTaskTimes(task, now).isAvailable && (checklistData.progress[task.id] || !document.getElementById(task.id)?.indeterminate)) {
         // Uncheck unavailable task
         checklistData.progress[task.id] = false;
+        console.log(`${task.id} is now unavailalbe`);
         didReset = true;
     }
 
     if (cycleNumber > lastResetCycleNumber) {
         // Reset task
-        if (checklistData.progress[task.id] || checklistData.skippedTasks[task.id]) {
+        if (checklistData.progress[task.id] || checklistData.skippedTasks[task.id] || task.duration) {
             checklistData.progress[task.id] = false;
             checklistData.skippedTasks[task.id] = false;
             console.log(`Resetting task: ${task.id}`);
