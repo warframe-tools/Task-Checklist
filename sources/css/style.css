@@ -3,11 +3,11 @@
 
 /* --- Background Image Styles --- */
 /* Paths are relative to this style.css file (e.g., if style.css is in sources/css/ and images are in sources/img/) */
-#bg-image-0 { background-image: url('../img/garuda-fortuna.webp'); }
-#bg-image-1 { background-image: url('../img/gara-eidolon.webp'); }
-#bg-image-2 { background-image: url('../img/heart-of-deimos-warframe.webp'); }
-#bg-image-3 { background-image: url('../img/duviri.webp'); }
-#bg-image-4 { background-image: url('../img/perita.webp'); }
+#bg-image-0 { background-image: url("../img/garuda-fortuna.webp"); }
+#bg-image-1 { background-image: url("../img/gara-eidolon.webp"); }
+#bg-image-2 { background-image: url("../img/heart-of-deimos-warframe.webp"); }
+#bg-image-3 { background-image: url("../img/duviri.webp"); }
+#bg-image-4 { background-image: url("../img/perita.webp"); }
 /* Add more #bg-image-X rules if you have more images */
 
 .daily-background-image {
@@ -31,7 +31,6 @@
 #checklist-container h2:hover {
     background-color: var(--section-header-hover-bg);
 }
-.task-description { color: var(--text-label); }
 
 #save-info {
     margin-top: 1rem;
@@ -43,7 +42,7 @@
     margin-top: 0.25rem;
 }
 #save-status {
-    color: rgb(22 163 74 / 1);
+    color: rgb(22 163 74 / 100%);
     opacity: 0;
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -118,6 +117,7 @@ a.git-hash-text {
     margin-bottom: 0.25rem;
 }
 .task-description {
+    color: var(--text-label);
     flex: 1 1 0%;
     margin-left: 0.5rem;
     cursor: pointer;
@@ -160,7 +160,7 @@ a.git-hash-text {
     opacity: 1;
 }
 .section-is-hidden-by-user {
-    display: none !important;
+    display: none;
 }
 .hide-section-button {
     background-color: var(--hide-section-btn-bg);
@@ -188,15 +188,15 @@ a.git-hash-text {
     font-variant-numeric: tabular-nums;
 }
 
-
 /* --- Interactive Elements (Using Variables) --- */
 input[type="checkbox"] {
-    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    appearance: none;
     width: 1.25rem;
     height: 1.25rem;
     margin: 0.125rem 0.5rem 0.125rem 0;
     border: 2px solid var(--checkbox-border);
-    border-radius: 0.25rem; cursor: pointer;
+    border-radius: 0.25rem;
+    cursor: pointer;
     position: relative;
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
     background-color: var(--checkbox-bg);
@@ -248,35 +248,34 @@ input[type="checkbox"]:indeterminate::after {
     cursor: pointer;
     line-height: 1.5;
 }
-/* Specific Button Colors (Default State) */
-#reset-daily-button:not(.confirming) { background-color: #3b82f6; border-color: #3b82f6; color: white;}
-#reset-daily-button:not(.confirming):hover { background-color: #2563eb; border-color: #2563eb; color: white;}
-#reset-weekly-button:not(.confirming) { background-color: #14b8a6; border-color: #14b8a6; color: white;}
-#reset-weekly-button:not(.confirming):hover { background-color: #0d9488; border-color: #0d9488; color: white;}
-#reset-button:not(.confirming) { background-color: #ef4444; border-color: #ef4444; color: white;}
-#reset-button:not(.confirming):hover { background-color: #dc2626; border-color: #dc2626; color: white;}
-#unhide-tasks-button:not(.confirming) { background-color: #8b5cf6; border-color: #8b5cf6; color: white; }
+/* Specific Button Colors (Default State) */ /* stylelint-disable declaration-block-single-line-max-declarations, @stylistic/block-opening-brace-space-before */
+#reset-daily-button:not(.confirming)        { background-color: #3b82f6; border-color: #3b82f6; color: white; }
+#reset-daily-button:not(.confirming):hover  { background-color: #2563eb; border-color: #2563eb; color: white; }
+#reset-weekly-button:not(.confirming)       { background-color: #14b8a6; border-color: #14b8a6; color: white; }
+#reset-weekly-button:not(.confirming):hover { background-color: #0d9488; border-color: #0d9488; color: white; }
+#reset-button:not(.confirming)              { background-color: #ef4444; border-color: #ef4444; color: white; }
+#reset-button:not(.confirming):hover        { background-color: #dc2626; border-color: #dc2626; color: white; }
+#unhide-tasks-button:not(.confirming)       { background-color: #8b5cf6; border-color: #8b5cf6; color: white; }
 #unhide-tasks-button:not(.confirming):hover { background-color: #7c3aed; border-color: #7c3aed; color: white; }
-
+/* stylelint-enable declaration-block-single-line-max-declarations, @stylistic/block-opening-brace-space-before */
 
 /* Confirmation State Styling (Applies to all reset buttons) */
 .menu-btn.confirming {
     background-color: var(--confirm-bg);
     border-color: var(--confirm-bg);
-    color: var(--confirm-text) !important;
+    color: var(--confirm-text);
 }
 .menu-btn.confirming:hover {
     background-color: var(--confirm-hover-bg);
     border-color: var(--confirm-hover-bg);
 }
 
-
 /* Theme Toggle Button Specifics (Non-critical hover states) */
-#theme-toggle-button:hover, #hamburger-button:hover {
+#theme-toggle-button:hover,
+#hamburger-button:hover {
     background-color: var(--theme-toggle-hover-bg);
     border-color: var(--theme-toggle-hover-border);
 }
-
 
 /* Error Display (Non-critical hover states for buttons) */
 #error-copy-button {
@@ -290,13 +289,15 @@ input[type="checkbox"]:indeterminate::after {
 }
 #error-copy-button:hover { background-color: var(--error-button-hover-bg); }
 #error-close-button {
-    background: none; border: none;
+    background: none;
+    border: none;
     color: var(--error-text);
-    font-size: 1.5rem; line-height: 1;
+    font-size: 1.5rem;
+    line-height: 1;
     padding: 0 0.5rem;
     opacity: 0.7;
 }
- #error-close-button:hover { opacity: 1; }
+#error-close-button:hover { opacity: 1; }
 
 /* Hamburger Menu (Non-critical hover states) */
 .menu-close-button:hover {
@@ -340,7 +341,7 @@ dialog hr {
     dialog {
         --dialog-anim-duration: 0.15s;
         --dialog-anim-easing: ease-out;
-        transition: transform var(--dialog-anim-duration) cubic-bezier(.25,1,.5,1),
+        transition: transform var(--dialog-anim-duration) cubic-bezier(0.25, 1, 0.5, 1),
                     opacity var(--dialog-anim-duration) var(--dialog-anim-easing),
                     display var(--dialog-anim-duration) allow-discrete,
                     overlay var(--dialog-anim-duration) allow-discrete;
@@ -369,7 +370,6 @@ dialog hr {
         backdrop-filter: none;
     }
 }
-
 
 /* Task Icons */
 .task-icon {
@@ -403,7 +403,9 @@ body:not(.light-mode) img.icon-filter {
     overflow: hidden;
 }
 @media (prefers-reduced-motion: no-preference) {
-    .task-info-expander { transition: grid-template-rows 200ms; /* https://css-tricks.com/css-grid-can-do-auto-height-transitions/ */ }
+    .task-info-expander {
+        transition: grid-template-rows 0.2s; /* https://css-tricks.com/css-grid-can-do-auto-height-transitions/ */
+    }
 }
 .task-item .checked .task-info-expander {
     grid-template-rows: 0fr;
@@ -418,6 +420,7 @@ body:not(.light-mode) img.icon-filter {
     font-size: 90%;
     color: color-mix(in hsl, var(--text-label) 50%, var(--text-secondary) 50%);
     margin-left: 0.5em;
+    /* eslint-disable-next-line css/use-baseline -- (text-indent: hanging; baseline 2026) only relevant on very narrow screens for only a small effect  */
     text-indent: calc(var(--current-cycle-svg-size) + var(--task-info-expander-svg-mr)) hanging;
 }
 .cycle-icon {
@@ -448,7 +451,8 @@ body:not(.light-mode) img.icon-filter {
     color: var(--text-label);
 }
 
-#cycle-schedule, #more-info {
+#cycle-schedule,
+#more-info {
     table {
         margin: auto;
     }
@@ -458,7 +462,8 @@ body:not(.light-mode) img.icon-filter {
         text-decoration: underline var(--menu-panel-border) 1px;
         text-underline-offset: 0.25em;
     }
-    th::before, th::after {
+    th::before, /* eslint-disable-line css/no-invalid-properties -- eslint bug workaround */
+    th::after {
         content: "\00a0\00a0\00a0\00a0"; /* some no-break spaces added so the underline extends a bit on both sides */
     }
     :is(th, td):not(:last-child) {
@@ -467,7 +472,8 @@ body:not(.light-mode) img.icon-filter {
     td {
         vertical-align: top;
     }
-    th, td:not(:has(.cycle-icon)) {
+    th,
+    td {
         text-align: center;
     }
     td:has(.cycle-icon) {
@@ -488,15 +494,13 @@ body:not(.light-mode) img.icon-filter {
 
 /* More Info */
 #more-info {
-    p:not(:last-child):not(:has(+ :is(ul, table))), table {
+    p:not(:last-child, :has(+ :is(ul, table))),  /* eslint-disable-line css/no-invalid-properties -- eslint bug workaround */
+    table {
         margin-bottom: 1em;
     }
     ul {
         list-style: "\2212   " outside;
         padding-left: 2em;
-    }
-    th, td {
-        text-align: center;
     }
     a {
         color: var(--link-color);
@@ -526,7 +530,7 @@ body:not(.light-mode) img.icon-filter {
     content: "|";
     margin: 0 0.5em;
 }
-.info-line > span > span {
+.info-line > span > span { /* stylelint-disable-line no-descending-specificity -- the complained-about selector cannot match the same element as this */
     /* keep the info line icon on the same line as the first word of the info line item.
      * e.g.: {prereq_icon}[NO_BREAK]Mastery[BREAK_OK]Rank[BREAK_OK]3 */
     white-space: nowrap;
@@ -553,10 +557,10 @@ body:not(.light-mode) img.icon-filter {
 }
 @media (prefers-reduced-motion: no-preference) {
     .task-expander {
-        transition: grid-template-rows 200ms;
+        transition: grid-template-rows 0.2s;
     }
     .task-expander > .task-item {
-        transition: margin 200ms;
+        transition: margin 0.2s;
     }
 }
 
@@ -565,28 +569,28 @@ body.hide-completed-tasks .task-expander:has(> .task-item > .checked),
 body.hide-completed-tasks .task-expander:has(> .parent-task-container > .parent-task-header > .checked) {
     grid-template-rows: 0fr;
     @media (prefers-reduced-motion: no-preference) {
-        transition: grid-template-rows 200ms 5s;
+        transition: grid-template-rows 0.2s 5s;
     }
     @media (prefers-reduced-motion: reduce) {
         transition: grid-template-rows 0s 5s;
     }
 
     &::after {
-        background-color: color(from var(--checkbox-checked-bg) srgb r g b / 0.25);
+        background-color: color(from var(--checkbox-checked-bg) srgb r g b / 25%);
         width: 0;
     }
 }
 body.hide-completed-tasks .task-expander > .task-item:has(> .checked) {
     margin: 0;
     @media (prefers-reduced-motion: no-preference) {
-        transition: margin 200ms 5s;
+        transition: margin 0.2s 5s;
     }
     @media (prefers-reduced-motion: reduce) {
         transition: margin 0s 5s;
     }
 }
 /* countdown bar */
-.task-expander {
+.task-expander { /* stylelint-disable-line no-descending-specificity -- better to group blocks by function than split them up by specificity */
     position: relative;
 }
 .task-expander::after {
@@ -612,16 +616,14 @@ body.hide-completed-tasks .task-expander > .task-item:has(> .checked) {
 .list-stats > div {
     overflow: hidden;
     display: flex;
+    margin-bottom: 0.5em;
 }
 body.hide-completed-tasks .list-stats:has(> div > button[data-count]:not([data-count="0"])), /* with autohide, show when any stat is nonzero */
 body:not(.hide-completed-tasks) .list-stats:has(> div > button:not(.stats-completed)[data-count]:not([data-count="0"])) /* without autohide, show when any stat except completed is nonzero */ {
     grid-template-rows: 1fr;
 }
 @media (prefers-reduced-motion: no-preference) {
-    .list-stats { transition: grid-template-rows 200ms; }
-}
-.list-stats > div {
-    margin-bottom: 0.5em;
+    .list-stats { transition: grid-template-rows 0.2s; }
 }
 .list-stats > div > button[data-count="0"], /* hide stat when equal to 0 */
 body:not(.hide-completed-tasks) .list-stats .stats-completed /* hide completed when autohide is off */ {

@@ -27,26 +27,26 @@ import * as svgIcons from "./icons.js";
 // --- Configuration ---
 // Array of background div IDs (must match IDs in sources/index.html)
 const dailyBackgroundImageIds = [
-    'bg-image-0',
-    'bg-image-1',
-    'bg-image-2',
-    'bg-image-3',
-    'bg-image-4',
+    "bg-image-0",
+    "bg-image-1",
+    "bg-image-2",
+    "bg-image-3",
+    "bg-image-4",
     // Add more IDs if you add more background image divs in HTML
 ];
 export const APP_VERSION = "5.3";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
-const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0,7);
+const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0, 7);
 const WARFRAME_VERSION = "43.0.8";
-const THEME_STORAGE_KEY = 'warframeChecklistTheme';
+const THEME_STORAGE_KEY = "warframeChecklistTheme";
 
 // only update DATA_STORAGE_KEY when the data storage format changes
 // in a backwards-incompatible way (this should be *very* rare)
 const DATA_STORAGE_KEY = "warframeChecklistData_format1";
 
 // --- Task Data ---
-import tasks from "./tasks.json" with {type: "json"};
-import cycles from "./cycles.json" with {type: "json"};
+import tasks from "./tasks.json" with { type: "json" };
+import cycles from "./cycles.json" with { type: "json" };
 import moreInfo from "./moreInfo.js";
 
 // --- DOM Elements (defined after DOMContentLoaded) ---
@@ -62,7 +62,7 @@ const confirmState = {
     all: { timeout: null, isConfirming: false },
     daily: { timeout: null, isConfirming: false },
     weekly: { timeout: null, isConfirming: false },
-    unhide: { timeout: null, isConfirming: false }
+    unhide: { timeout: null, isConfirming: false },
 };
 
 let checklistData = newChecklistData();
@@ -115,7 +115,7 @@ function initializeDOMElements() {
  * `callback` function with the task definition object as a parameter.
  */
 function forEachTask(callback) {
-    let stack = [];
+    const stack = [];
     for (const section in tasks) {
         for (let i = 0; i < tasks[section].length; i++) {
             // top-level tasks are not pushed in reverse order because they're immediately popped
@@ -124,9 +124,9 @@ function forEachTask(callback) {
                 const t = stack.pop();
                 callback(t); // do the thing
                 if (t.subtasks) {
-                    for (let i = t.subtasks.length - 1; i >= 0 ; i--) {
+                    for (let j = t.subtasks.length - 1; j >= 0; j--) { /* eslint-disable-line max-depth */
                         // subtasks are pushed in reverse order so that they're popped in the correct order
-                        stack.push(t.subtasks[i]);
+                        stack.push(t.subtasks[j]);
                     }
                 }
             }
@@ -178,7 +178,7 @@ function displayError(message) {
 function hideError() {
     if (!errorDisplayElement) { return; }
     errorDisplayElement.classList.remove("visible");
-    errorMessageElement.textContent = '';
+    errorMessageElement.textContent = "";
     if (errorCopyButton) { errorCopyButton.textContent = "Copy"; }
 }
 
@@ -210,16 +210,16 @@ function copyErrorToClipboard() {
 function applyTheme(theme) {
     if (!bodyElement || !themeToggleButton) { return; }
 
-    if (theme === 'light') {
-        bodyElement.classList.add('light-mode');
+    if (theme === "light") {
+        bodyElement.classList.add("light-mode");
     } else {
-        bodyElement.classList.remove('light-mode');
+        bodyElement.classList.remove("light-mode");
     }
     currentTheme = theme;
 }
 
 function handleThemeToggle() {
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    const newTheme = currentTheme === "light" ? "dark" : "light";
     applyTheme(newTheme);
     try {
         localStorage.setItem(THEME_STORAGE_KEY, newTheme);
@@ -235,10 +235,10 @@ function loadThemePreference() {
         return;
     }
 
-    if (bodyElement.classList.contains('light-mode')) {
-        currentTheme = 'light';
+    if (bodyElement.classList.contains("light-mode")) {
+        currentTheme = "light";
     } else {
-        currentTheme = 'dark';
+        currentTheme = "dark";
     }
     try {
         const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
@@ -261,8 +261,8 @@ function updateLastSavedDisplay(timestamp) {
 function showSaveStatus() {
     if (!saveStatusElement) { return; }
     clearTimeout(saveStatusTimeout);
-    saveStatusElement.style.opacity = '1';
-    saveStatusTimeout = setTimeout(() => { saveStatusElement.style.opacity = '0'; }, 1500);
+    saveStatusElement.style.opacity = "1";
+    saveStatusTimeout = setTimeout(() => { saveStatusElement.style.opacity = "0"; }, 1500);
 }
 
 function setDailyBackground() {
@@ -275,14 +275,14 @@ function setDailyBackground() {
     const dayOfYear = getUTCDayOfYear(now);
     const imageIndex = dayOfYear % backgroundDivs.length;
 
-    console.log(`Setting daily background to show div: ${backgroundDivs[imageIndex] ? backgroundDivs[imageIndex].id : 'N/A'} (Index: ${imageIndex})`);
+    console.log(`Setting daily background to show div: ${backgroundDivs[imageIndex] ? backgroundDivs[imageIndex].id : "N/A"} (Index: ${imageIndex})`);
 
     backgroundDivs.forEach((div, index) => {
         if (div) { // Ensure div exists
             if (index === imageIndex) {
-                div.style.display = 'block';
+                div.style.display = "block";
             } else {
-                div.style.display = 'none';
+                div.style.display = "none";
             }
         }
     });
@@ -320,8 +320,8 @@ function displayLocalResetTimes() {
         tasks.other.forEach((task) => displayOtherTaskCountdown(task));
     } catch (e) {
         console.error("Error calculating or displaying local reset times:", e);
-        if (dailyResetTimeElement) { dailyResetTimeElement.innerHTML = `(Resets 00:00 UTC)`; }
-        if (weeklyResetTimeElement) { weeklyResetTimeElement.innerHTML = `(Resets Mon 00:00 UTC)`; }
+        if (dailyResetTimeElement) { dailyResetTimeElement.innerHTML = "(Resets 00:00 UTC)"; }
+        if (weeklyResetTimeElement) { weeklyResetTimeElement.innerHTML = "(Resets Mon 00:00 UTC)"; }
     }
 }
 
@@ -331,6 +331,7 @@ export function displayOtherTaskCountdown(task) {
 
     const now = new Date();
     const taskTimes = calcTaskTimes(task, now);
+    const cycleNumber = calcCycleNumber(task, now);
 
     if (task.duration) { // intermittently available task (e.g., Baro)
         const leaveNotifId = `${task.id}/departure`;
@@ -339,7 +340,7 @@ export function displayOtherTaskCountdown(task) {
             const diff = taskTimes.thisCycleLeaveTimestamp - now.getTime();
             resetTimer.innerHTML = `(Available for <span class="tooltip" title="${new Date(taskTimes.thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
 
-            // Leaving soon notification (Arrival notification is handled in runAutoResets, the same as always available tasks)
+            // Leaving soon notification (Arrival notification is handled in otherTaskReset, the same as always available tasks)
             if (diff < C.MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifId] !== cycleNumber) {
                 showNotification(`${task.title} Leaving Soon!`, `Approximately ${Math.round(diff / C.MILLISECONDS_PER_MINUTE)} minutes remaining.`);
                 checklistData.notificationsSent[leaveNotifId] = cycleNumber;
@@ -347,7 +348,7 @@ export function displayOtherTaskCountdown(task) {
             }
         } else { // task not available
             resetTimer.innerHTML = `(Available in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
-            if (checklistData.notificationsSent[leaveNotifId]) {delete checklistData.notificationsSent[leaveNotifId];}
+            if (checklistData.notificationsSent[leaveNotifId]) { delete checklistData.notificationsSent[leaveNotifId]; }
         }
     } else { // always available task
         resetTimer.innerHTML = `(Resets in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
@@ -360,7 +361,7 @@ function runAutoResets() {
     const todayUTCString = getUTCDateString(now);
 
     const lastDailyResetDate = checklistData.lastDailyReset ? new Date(checklistData.lastDailyReset) : null;
-    let lastDailyResetUTCString = lastDailyResetDate ? getUTCDateString(lastDailyResetDate) : null;
+    const lastDailyResetUTCString = lastDailyResetDate ? getUTCDateString(lastDailyResetDate) : null;
     if (!lastDailyResetUTCString || lastDailyResetUTCString !== todayUTCString) {
         console.log(`Performing daily auto-reset (UTC). Today: ${todayUTCString}, Last Reset: ${lastDailyResetUTCString}`);
         resetSection("daily", false);
@@ -395,7 +396,7 @@ function otherTaskReset(task) {
         return false;
     }
     if (!task.ref) {
-        console.warn(`[${task.id}] other_* tasks SHOULD specify a "ref". The default ref of 0 ("1970-01-01T00:00:00Z") will be used otherwise.`)
+        console.warn(`[${task.id}] other_* tasks SHOULD specify a "ref". The default ref of 0 ("1970-01-01T00:00:00Z") will be used otherwise.`);
     }
 
     let didReset = false;
@@ -467,7 +468,7 @@ function showNotification(title, body) {
     }
 }
 
-function createChecklistItem(task) {
+function createChecklistItem(task) { /* eslint-disable-line complexity, max-lines-per-function */
     const isChecked = checklistData.progress[task.id] || false;
     const isAvailable = calcTaskTimes(task, new Date()).isAvailable;
 
@@ -566,7 +567,7 @@ function createChecklistItem(task) {
     let skipTooltip;
     if (isAvailable) {
         let when = "this cycle";
-        if (task.id.startsWith("daily_")) { when = "today"; }
+        if (task.id.startsWith("daily_")) { when = "today"; } /* eslint-disable-line @stylistic/brace-style */
         else if (task.id.startsWith("weekly_")) { when = "this week"; }
         skipTooltip = `Skip task ${when}: ${task.title}`;
     } else {
@@ -623,14 +624,14 @@ function createChecklistItem(task) {
         subtaskList.appendChild(makeSectionStats(task.id));
         calcSectionStats(task.id, subtaskList);
 
-        subtaskCollapsible.appendChild(subtaskList)
+        subtaskCollapsible.appendChild(subtaskList);
         taskItem.appendChild(subtaskCollapsible);
 
         updateIncompleteSubtaskCount(task, taskItem);
 
         // On Click -> Collapse/Expand
         parentHeaderDiv.addEventListener("click", (e) => {
-            if (e.target !== checkbox && !checkbox.contains(e.target) && !controlsContainer.contains(e.target) && !collapseButton.contains(e.target) ) {
+            if (e.target !== checkbox && !checkbox.contains(e.target) && !controlsContainer.contains(e.target) && !collapseButton.contains(e.target)) {
                 toggleCollapseSubtasks(task);
             }
         });
@@ -641,8 +642,7 @@ function createChecklistItem(task) {
 
         // Checkbox Changed -> Change Subtasks Checkboxes
         checkbox.addEventListener("change", checkboxChangeAction(task));
-
-    } else { //no subtasks
+    } else { // no subtasks
         taskItem.appendChild(checkbox);
         if (task.icon) { taskItem.appendChild(icon); }
         taskItem.appendChild(taskDescription);
@@ -678,7 +678,7 @@ function checkboxChangeAction(task) {
                 // don't know about the checkbox status of the originating event. So we attach that status to the
                 // `detail` of a CustomEvent, which takes priority over the local status. (Recursive firings like this
                 // allow for nested subtasks of arbitrary depth)
-                subCheckbox.dispatchEvent(new CustomEvent("change", {detail: currentlyChecked}));
+                subCheckbox.dispatchEvent(new CustomEvent("change", { detail: currentlyChecked }));
             });
             updateIncompleteSubtaskCount(task);
         } else {
@@ -688,28 +688,28 @@ function checkboxChangeAction(task) {
 
         calcSectionStats(task.section);
         saveData();
-    }
+    };
 }
 
 function hideOrSkipTaskAction(task, skip) {
     return (event) => {
         event.stopPropagation();
-        if (skip) { checklistData.skippedTasks[task.id] = true; }
+        if (skip) { checklistData.skippedTasks[task.id] = true; } /* eslint-disable-line @stylistic/brace-style */
         else { checklistData.hiddenTasks[task.id] = true; }
         const taskItem = event.target.closest(".task-item");
         taskItem.classList.add("hidden-task");
         updateParentCheckboxes(task);
         updateSectionControls(taskItem.closest("section").id);
         saveData(false);
-    }
+    };
 }
 
 function updateParentCheckboxes(task) {
     let t = task;
-    while (t.parentId) {  // walk up the task tree
+    while (t.parentId) { // walk up the task tree
         calcSectionStats(t.parentId);
 
-        let parentTaskDefinition = getTaskById(t.parentId);
+        const parentTaskDefinition = getTaskById(t.parentId);
 
         if (parentTaskDefinition && parentTaskDefinition.subtasks) {
             const allSubtasksDone = parentTaskDefinition.subtasks.every((st) => (checklistData.progress[st.id] || checklistData.hiddenTasks[st.id] || checklistData.skippedTasks[st.id]));
@@ -723,7 +723,7 @@ function updateParentCheckboxes(task) {
             if (parentDescription) { parentDescription.classList.toggle("checked", allSubtasksDone); }
         }
 
-        t = parentTaskDefinition;  // move up a level
+        t = parentTaskDefinition; // move up a level
     }
     calcSectionStats(task.section);
     saveData();
@@ -739,10 +739,10 @@ function toggleCollapseSubtasks(task) {
     updateIncompleteSubtaskCount(task);
 }
 
-function updateIncompleteSubtaskCount(task, queryFrom=document) {
+function updateIncompleteSubtaskCount(task, queryFrom = document) {
     if (task.subtasks) {
         const element = queryFrom.querySelector(`#${task.id} ~ .collapse-btn .incomplete-count > div`);
-        const unchecked = queryFrom.querySelectorAll(`input[data-parent-id="${task.id}"]:not(:checked, :indeterminate, .hidden-task *)`)
+        const unchecked = queryFrom.querySelectorAll(`input[data-parent-id="${task.id}"]:not(:checked, :indeterminate, .hidden-task *)`);
         element.innerText = unchecked.length;
         element.parentElement.dataset.count = unchecked.length;
         element.parentElement.title = `${unchecked.length} incomplete subtasks of ${task.title}`;
@@ -752,7 +752,7 @@ function updateIncompleteSubtaskCount(task, queryFrom=document) {
 function taskDialogHeaderSetup(task, dialog) {
     dialog.querySelector(":scope header .task-title").innerHTML = task?.title || "";
 
-    let taskIcon = dialog.querySelector(":scope .menu-title img.task-icon");
+    const taskIcon = dialog.querySelector(":scope .menu-title img.task-icon");
     taskIcon.className = "task-icon"; // remove possible `icon-filter` from previous opening
     taskIcon.src = "";
     if (task?.icon) {
@@ -774,7 +774,7 @@ function showScheduleAction(task, period, cycleIndex, isAvailable) {
         thead.innerHTML = "";
         tbody.innerHTML = "";
 
-        let header = `<tr><th>Date</th>`;
+        let header = "<tr><th>Date</th>";
         for (const column of cycles[task.id].columns) {
             header += `<th>${column.name}</th>`;
         }
@@ -810,7 +810,7 @@ function showScheduleAction(task, period, cycleIndex, isAvailable) {
             tbody.innerHTML += row;
         }
         scheduleDialog.showModal();
-    }
+    };
 }
 
 function showMoreInfoAction(task) {
@@ -818,10 +818,10 @@ function showMoreInfoAction(task) {
         taskDialogHeaderSetup(task, moreInfoDialog);
         document.getElementById("more-info-content").innerHTML = task.moreInfo;
         moreInfoDialog.showModal();
-    }
+    };
 }
 
-function makeInfoLine(task, appendTo) {
+function makeInfoLine(task, appendTo) { /* eslint-disable-line max-lines-per-function */
     const hasCycle = Object.hasOwn(cycles, task.id);
     const hasInfoLine = ["location", "npc", "terminal", "prereq", "info", "moreInfo"].some((prop) => task[prop]);
 
@@ -849,14 +849,12 @@ function makeInfoLine(task, appendTo) {
                 if (ref.getUTCDay() !== 1) {
                     console.warn(`${task.id} cycle ref ${cycles[task.id].ref} is not a Monday`);
                 }
-            }
-            else if (task.id.startsWith("daily_")) {
+            } else if (task.id.startsWith("daily_")) {
                 prefix = "Today";
                 period = C.MILLISECONDS_PER_DAY;
-            }
-            else {
+            } else {
                 prefix = "Current&nbsp;Cycle";
-                if (!isAvailable) {prefix = "Next&nbsp;Cycle";}
+                if (!isAvailable) { prefix = "Next&nbsp;Cycle"; }
                 period = parseDuration(task.period);
             }
 
@@ -887,7 +885,7 @@ function makeInfoLine(task, appendTo) {
 
         // Info Line
         if (hasInfoLine) {
-            if (task.npc && task.terminal) {console.warn(`[${task.id}] Tasks should specify only one of [npc, terminal].`);}
+            if (task.npc && task.terminal) { console.warn(`[${task.id}] Tasks should specify only one of [npc, terminal].`); }
             const infoLine = document.createElement("div");
             infoLine.classList.add("info-line");
             let infoLineHTML = "";
@@ -932,7 +930,7 @@ function populateSection(section) {
     sectionElement.appendChild(makeSectionStats(section));
     calcSectionStats(section);
 
-    let updatedParents = new Set();
+    const updatedParents = new Set();
     forEachTask((task) => {
         if (task.section === section && task.parentId && !task.subtasks && !updatedParents.has(task.parentId)) {
             // if the task is a non-root leaf node in the current section, and the first among its siblings
@@ -950,7 +948,7 @@ function populateSection(section) {
  * @param parent - what task list to count stats on. This can be the name of a section, or the id of a task with subtasks.
  * @param queryFrom - DOM element to find the stats box in. Defaults to `document`. Override this if the element is not inserted into the document yet.
  */
-function calcSectionStats(parent, queryFrom=document) {
+function calcSectionStats(parent, queryFrom = document) {
     let taskList;
     if (parent.includes("_")) {
         taskList = getTaskById(parent).subtasks;
@@ -959,15 +957,15 @@ function calcSectionStats(parent, queryFrom=document) {
     }
     const statsBox = queryFrom.querySelector(`#stats_${parent} > div`);
 
-    let stats = {
+    const stats = {
         completed: 0,
         skipped: 0,
-        hidden: 0
-    }
+        hidden: 0,
+    };
     for (const task of taskList) {
-        if (checklistData.progress[task.id])     { stats.completed++; }
+        if (checklistData.progress[task.id]) { stats.completed++; }
         if (checklistData.skippedTasks[task.id]) { stats.skipped++; }
-        if (checklistData.hiddenTasks[task.id])  { stats.hidden++; }
+        if (checklistData.hiddenTasks[task.id]) { stats.hidden++; }
     }
 
     statsBox.innerHTML = "";
@@ -975,8 +973,8 @@ function calcSectionStats(parent, queryFrom=document) {
     const statIcons = {
         completed: "✔",
         skipped: svgIcons.skipIcon,
-        hidden: svgIcons.hideIcon
-    }
+        hidden: svgIcons.hideIcon,
+    };
 
     for (const stat in stats) {
         const statButton = document.createElement("button");
@@ -1054,7 +1052,7 @@ function showHiddenTasksAction(parent, taskList, stat) {
         }
 
         hiddenTasksDialog.showModal();
-    }
+    };
 }
 
 function hiddenTasksButtonAction(taskElement, task, stat) {
@@ -1078,7 +1076,7 @@ function hiddenTasksButtonAction(taskElement, task, stat) {
         if (!hiddenTasksDialog.querySelector("li > :not(.hidden-task)")) {
             hiddenTasksDialog.close();
         }
-    }
+    };
 }
 
 function resetSpecificButtonState(buttonElement, defaultText, stateKey) {
@@ -1087,7 +1085,7 @@ function resetSpecificButtonState(buttonElement, defaultText, stateKey) {
     confirmState[stateKey].timeout = null;
     confirmState[stateKey].isConfirming = false;
     buttonElement.textContent = defaultText;
-    buttonElement.classList.remove('confirming');
+    buttonElement.classList.remove("confirming");
     console.log(`Button ${buttonElement.id} state reverted.`);
 }
 
@@ -1101,10 +1099,12 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
         Object.keys(confirmState).forEach((key) => {
             if (key !== confirmKey && confirmState[key].isConfirming) {
                 let btnElement, btnText;
-                if (key === 'all') { btnElement = resetButton; btnText = 'Reset All Checks'; }
-                else if (key === 'daily') { btnElement = resetDailyButton; btnText = 'Reset Daily Checks'; }
-                else if (key === 'weekly') { btnElement = resetWeeklyButton; btnText = 'Reset Weekly Checks'; }
-                else if (key === 'unhide') { btnElement = unhideTasksButton; btnText = 'Unhide All Tasks'; }
+                /* eslint-disable @stylistic/max-statements-per-line, @stylistic/brace-style */
+                if (key === "all") { btnElement = resetButton; btnText = "Reset All Checks"; }
+                else if (key === "daily") { btnElement = resetDailyButton; btnText = "Reset Daily Checks"; }
+                else if (key === "weekly") { btnElement = resetWeeklyButton; btnText = "Reset Weekly Checks"; }
+                else if (key === "unhide") { btnElement = unhideTasksButton; btnText = "Unhide All Tasks"; }
+                /* eslint-enable @stylistic/max-statements-per-line, @stylistic/brace-style */
                 if (btnElement) {
                     resetSpecificButtonState(btnElement, btnText, key);
                 }
@@ -1118,8 +1118,8 @@ function handleResetConfirmation(buttonElement, confirmKey, defaultText, resetAc
         resetSpecificButtonState(buttonElement, defaultText, confirmKey);
     } else {
         confirmState[confirmKey].isConfirming = true;
-        buttonElement.textContent = 'Are you Sure?';
-        buttonElement.classList.add('confirming');
+        buttonElement.textContent = "Are you Sure?";
+        buttonElement.classList.add("confirming");
         clearTimeout(confirmState[confirmKey].timeout);
 
         confirmState[confirmKey].timeout = setTimeout(() => {
@@ -1138,7 +1138,7 @@ function resetAllAction() {
     console.log("Checklist reset complete.");
 }
 
-function resetSection(section, resetAltRefTasks=false) {
+function resetSection(section, resetAltRefTasks = false) {
     const validSections = ["daily", "weekly"];
     if (!validSections.includes(section)) {
         console.error("Section '%s' is not a valid section name: %s", section, validSections);
@@ -1160,7 +1160,7 @@ function resetSection(section, resetAltRefTasks=false) {
     tasks[section].forEach(resetTask);
 
     const now = new Date().toISOString();
-    if (section === "daily") { checklistData.lastDailyReset = now; }
+    if (section === "daily") { checklistData.lastDailyReset = now; } /* eslint-disable-line @stylistic/brace-style */
     else if (section === "weekly") { checklistData.lastWeeklyReset = now; }
     saveData();
     if (didReset) {
@@ -1178,17 +1178,17 @@ function resetWeeklyAction() {
 }
 
 function handleSectionToggle(event) {
-    const header = event.target.closest('.section-toggle');
+    const header = event.target.closest(".section-toggle");
     if (!header) { return; }
 
-    const contentId = header.getAttribute('aria-controls');
+    const contentId = header.getAttribute("aria-controls");
     const contentDiv = document.getElementById(contentId);
     if (!contentDiv) { return; }
 
-    const isExpanded = header.getAttribute('aria-expanded') === 'true';
-    header.setAttribute('aria-expanded', !isExpanded);
-    contentDiv.classList.toggle('collapsed', isExpanded);
-    console.log(`Toggled section ${contentId} to ${!isExpanded ? 'expanded' : 'collapsed'}`);
+    const isExpanded = header.getAttribute("aria-expanded") === "true";
+    header.setAttribute("aria-expanded", !isExpanded);
+    contentDiv.classList.toggle("collapsed", isExpanded);
+    console.log(`Toggled section ${contentId} to ${isExpanded ? "collapsed" : "expanded"}`);
 }
 
 function unhideAllAction() {
@@ -1208,35 +1208,35 @@ function updateSectionControls(sectionElementId) {
     const sectionElement = document.getElementById(sectionElementId);
     if (!sectionElement) { return; }
 
-    const hideSectionButton = sectionElement.querySelector('.hide-section-button');
+    const hideSectionButton = sectionElement.querySelector(".hide-section-button");
     if (!hideSectionButton) { return; }
 
     if (checklistData.manuallyHiddenSections[sectionElementId]) {
-        sectionElement.classList.add('section-is-hidden-by-user');
-        hideSectionButton.classList.remove('visible');
+        sectionElement.classList.add("section-is-hidden-by-user");
+        hideSectionButton.classList.remove("visible");
         return;
     } else {
-        sectionElement.classList.remove('section-is-hidden-by-user');
+        sectionElement.classList.remove("section-is-hidden-by-user");
     }
 
-    const contentUl = sectionElement.querySelector('.section-content ul');
+    const contentUl = sectionElement.querySelector(".section-content ul");
     if (!contentUl) {
-        hideSectionButton.classList.remove('visible');
+        hideSectionButton.classList.remove("visible");
         return;
     }
 
-    const allTaskItems = Array.from(contentUl.querySelectorAll('li.task-item'));
+    const allTaskItems = Array.from(contentUl.querySelectorAll("li.task-item"));
     if (allTaskItems.length === 0) {
-        hideSectionButton.classList.remove('visible');
+        hideSectionButton.classList.remove("visible");
         return;
     }
 
     const allTasksIndividuallyHidden = allTaskItems.every((item) => item.classList.contains("hidden-task"));
 
     if (allTasksIndividuallyHidden) {
-        hideSectionButton.classList.add('visible');
+        hideSectionButton.classList.add("visible");
     } else {
-        hideSectionButton.classList.remove('visible');
+        hideSectionButton.classList.remove("visible");
     }
 }
 
@@ -1259,7 +1259,7 @@ function saveData(showStatus = true) {
     } catch (e) {
         console.error("Error saving data to localStorage:", e);
         let userMessage = "Could not save progress.";
-        if (e.name === 'QuotaExceededError' || (e.code && (e.code === 22 || e.code === 1014))) {
+        if (e.name === "QuotaExceededError" || (e.code && (e.code === 22 || e.code === 1014))) {
             userMessage = "Could not save progress. Browser storage might be full.";
         }
         displayError(userMessage);
@@ -1273,7 +1273,7 @@ function loadData() {
             const parsedData = JSON.parse(savedData);
             if (parsedData && typeof parsedData === "object") {
                 for (const key of Object.keys(checklistData)) {
-                    if (key in parsedData) {
+                    if (key in parsedData) { /* eslint-disable-line max-depth */
                         checklistData[key] = parsedData[key];
                     }
                 }
@@ -1286,7 +1286,7 @@ function loadData() {
     }
 }
 
-export function loadAndInitializeApp() {
+export function loadAndInitializeApp() { /* eslint-disable-line max-lines-per-function */
     initializeDOMElements();
     hideError();
     loadThemePreference();
@@ -1299,7 +1299,7 @@ export function loadAndInitializeApp() {
     updateLastSavedDisplay(checklistData.lastSaved);
 
     // Setup event listeners
-    if (appVersionElement) { appVersionElement.textContent = APP_VERSION; }
+    if (appVersionElement) { appVersionElement.textContent = APP_VERSION; } /* eslint-disable-line @stylistic/brace-style */
     else { console.error("App version element not found!"); }
 
     if (gitHashElement) {
@@ -1307,8 +1307,9 @@ export function loadAndInitializeApp() {
         gitHashElement.href = `https://github.com/warframe-tools/Task-Checklist/tree/${GIT_COMMIT_HASH_LONG}`;
     } else { console.error("git hash element not found!"); }
 
-    if (wfVersionElement) { wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`; }
-    else { console.error("Warframe version element not found!"); }
+    if (wfVersionElement) {
+        wfVersionElement.textContent = `Warframe Version ${WARFRAME_VERSION}`;
+    } else { console.error("Warframe version element not found!"); }
 
     if (hideCompletedToggle) {
         hideCompletedToggle.addEventListener("change", (event) => {
@@ -1318,59 +1319,64 @@ export function loadAndInitializeApp() {
         });
         hideCompletedToggle.checked = checklistData.hideCompletedTasks;
         bodyElement.classList.toggle("hide-completed-tasks", checklistData.hideCompletedTasks);
-    }
-    else { console.error("Hide Completed Toggle not found!"); }
+    } else { console.error("Hide Completed Toggle not found!"); }
 
-    if (resetDailyButton) { resetDailyButton.addEventListener('click', () => handleResetConfirmation(resetDailyButton, 'daily', 'Reset Daily Checks', resetDailyAction)); }
-    else { console.error("Reset Daily button element not found!"); }
+    if (resetDailyButton) {
+        resetDailyButton.addEventListener("click", () => handleResetConfirmation(resetDailyButton, "daily", "Reset Daily Checks", resetDailyAction));
+    } else { console.error("Reset Daily button element not found!"); }
 
-    if (resetWeeklyButton) { resetWeeklyButton.addEventListener('click', () => handleResetConfirmation(resetWeeklyButton, 'weekly', 'Reset Weekly Checks', resetWeeklyAction)); }
-    else { console.error("Reset Weekly button element not found!"); }
+    if (resetWeeklyButton) {
+        resetWeeklyButton.addEventListener("click", () => handleResetConfirmation(resetWeeklyButton, "weekly", "Reset Weekly Checks", resetWeeklyAction));
+    } else { console.error("Reset Weekly button element not found!"); }
 
-    if (resetButton) { resetButton.addEventListener('click', () => handleResetConfirmation(resetButton, 'all', 'Reset All Checks', resetAllAction)); }
-    else { console.error("Reset All button element not found!"); }
+    if (resetButton) {
+        resetButton.addEventListener("click", () => handleResetConfirmation(resetButton, "all", "Reset All Checks", resetAllAction));
+    } else { console.error("Reset All button element not found!"); }
 
-    if (unhideTasksButton) { unhideTasksButton.addEventListener('click', () => handleResetConfirmation(unhideTasksButton, 'unhide', 'Unhide All Tasks', unhideAllAction)); }
-    else { console.error("Unhide Tasks button not found!");}
+    if (unhideTasksButton) {
+        unhideTasksButton.addEventListener("click", () => handleResetConfirmation(unhideTasksButton, "unhide", "Unhide All Tasks", unhideAllAction));
+    } else { console.error("Unhide Tasks button not found!"); }
 
 
-    if (themeToggleButton) { themeToggleButton.addEventListener('click', handleThemeToggle); }
-    else { console.error("Theme toggle button not found!"); }
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener("click", handleThemeToggle);
+    } else { console.error("Theme toggle button not found!"); }
 
-    if (hamburgerButton) { hamburgerButton.addEventListener('click', () => {optionsMenu.showModal();}); }
-    else { console.error("Hamburger button not found!"); }
+    if (hamburgerButton) {
+        hamburgerButton.addEventListener("click", () => { optionsMenu.showModal(); });
+    } else { console.error("Hamburger button not found!"); }
 
     sectionToggles.forEach((toggle) => {
         toggle.addEventListener("click", handleSectionToggle);
     });
 
     try {
-        document.getElementById('checklist-container').addEventListener('click', function(event) {
-            if (event.target.classList.contains('hide-section-button')) {
+        document.getElementById("checklist-container").addEventListener("click", (event) => {
+            if (event.target.classList.contains("hide-section-button")) {
                 const sectionId = event.target.dataset.sectionId;
                 if (sectionId) {
                     const sectionElement = document.getElementById(sectionId);
                     if (sectionElement) {
                         checklistData.manuallyHiddenSections[sectionId] = true;
-                        sectionElement.classList.add('section-is-hidden-by-user');
-                        event.target.classList.remove('visible');
+                        sectionElement.classList.add("section-is-hidden-by-user");
+                        event.target.classList.remove("visible");
                         saveData(false);
                         console.log(`Section ${sectionId} manually hidden.`);
                     }
                 }
             }
         });
-    } catch (e) {
+    } catch {
         console.error("Checklist container not found!");
     }
 
 
     if (errorCloseButton) {
-        errorCloseButton.addEventListener('click', hideError);
+        errorCloseButton.addEventListener("click", hideError);
     } else { console.error("Error close button not found!"); }
 
     if (errorCopyButton) {
-        errorCopyButton.addEventListener('click', copyErrorToClipboard);
+        errorCopyButton.addEventListener("click", copyErrorToClipboard);
     } else { console.error("Error copy button not found!"); }
 
     for (const dialog of document.getElementsByTagName("dialog")) {
@@ -1398,7 +1404,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
         loadAndInitializeApp();
         startCountdown();
-    } catch(error) {
+    } catch (error) {
         console.error("Critical Error during app.js initialization:", error);
         const errDisp = document.getElementById("error-display");
         const errMsg = document.getElementById("error-message");

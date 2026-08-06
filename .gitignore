@@ -8,6 +8,9 @@
 /.vite/
 /.coverage/
 
+.eslintcache
+.stylelintcache
+
 # Log files
 *.log
 npm-debug.log*
