@@ -28,7 +28,7 @@ export function newChecklistData() {
     };
 }
 
-const taskIcons = import.meta.glob("../img/icons/**/*.png", {eager: true, query: '?url', import: 'default'});
+const taskIcons = import.meta.glob("../img/icons/**/*.png", { eager: true, query: "?url", import: "default" });
 export function iconURL(iconName) {
     return taskIcons["../img/icons/" + iconName];
 }
@@ -51,7 +51,7 @@ export function makeTaskIcon(task) {
 
 export function makeCycleIcon(cycleData) {
     if (cycleData.icon) {
-        const src = iconURL(`cycles/${cycleData.icon}`)
+        const src = iconURL(`cycles/${cycleData.icon}`);
         let classList = "cycle-icon";
         if (cycleData.iconFilter) {
             classList += " icon-filter";
@@ -63,12 +63,15 @@ export function makeCycleIcon(cycleData) {
 }
 
 export function formatTimestamp(timestamp) {
-    if (!timestamp) return 'Never';
+    if (!timestamp) { return "Never"; }
     try {
         const date = new Date(timestamp);
-        if (isNaN(date.getTime())) return 'Invalid Date';
-        return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-    } catch (e) { console.error("Error formatting timestamp:", e); return 'Error'; }
+        if (isNaN(date.getTime())) { return "Invalid Date"; }
+        return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+    } catch (e) {
+        console.error("Error formatting timestamp:", e);
+        return "Error";
+    }
 }
 
 export function getMostRecentMondayMidnightUTC() {
@@ -91,8 +94,8 @@ export function getNextDailyMidnightUTC() {
 
 export function getUTCDateString(dateObj) {
     const year = dateObj.getUTCFullYear();
-    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
-    const day = dateObj.getUTCDate().toString().padStart(2, '0');
+    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = dateObj.getUTCDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
 }
 
@@ -113,7 +116,7 @@ export function formatCountdown(ms) {
     ms %= C.MILLISECONDS_PER_MINUTE;
     const seconds = Math.floor(ms / C.MILLISECONDS_PER_SECOND);
 
-    const pad = (num) => String(num).padStart(2, '0');
+    function pad(num) { return String(num).padStart(2, "0"); }
 
     if (days > 0) {
         return `${days}d ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
@@ -127,16 +130,16 @@ export function formatCountdown(ms) {
  * Case insensitive. Integers only.
  */
 export function parseDuration(str) {
-    if (!str || typeof str !== "string") {return undefined;}
+    if (!str || typeof str !== "string") { return undefined; }
 
     const map = {
         "d": C.MILLISECONDS_PER_DAY,
         "h": C.MILLISECONDS_PER_HOUR,
         "m": C.MILLISECONDS_PER_MINUTE,
-        "s": C.MILLISECONDS_PER_SECOND
+        "s": C.MILLISECONDS_PER_SECOND,
     };
     return str.toLowerCase().matchAll(/((\d+)([a-z]))/g).toArray().reduce((acc, curr) => {
-        const n = parseInt(curr[2]);
+        const n = parseInt(curr[2], 10);
         let mult;
         if (Object.hasOwn(map, curr[3])) {
             mult = map[curr[3]];
@@ -150,10 +153,10 @@ export function parseDuration(str) {
 
 /** returns whether the given date is in Daylight Saving Time in the named timezone */
 export function isDst(date, timezone) {
-    if (typeof date === "undefined" || Number.isNaN(date)) {return undefined;}
-    if (typeof date === "number" || typeof date === "string") {date = new Date(date);}
+    if (typeof date === "undefined" || Number.isNaN(date)) { return undefined; }
+    if (typeof date === "number" || typeof date === "string") { date = new Date(date); }
 
-    const dateFormat = Intl.DateTimeFormat("en-CA", {timeZone: timezone, timeZoneName: "shortOffset"});
+    const dateFormat = Intl.DateTimeFormat("en-CA", { timeZone: timezone, timeZoneName: "shortOffset" });
 
     function wholeHourOffset(d) {
         // returns the whole hour part of the UTC offset as an integer.
@@ -165,7 +168,7 @@ export function isDst(date, timezone) {
     const year = date.getUTCFullYear();
     const janOffset = wholeHourOffset(new Date(Date.UTC(year, 0, 1)));
     const julOffset = wholeHourOffset(new Date(Date.UTC(year, 6, 1)));
-    if (janOffset === julOffset) {return false;}
+    if (janOffset === julOffset) { return false; }
     const currentOffset = wholeHourOffset(date);
     const dstOffset = Math.max(janOffset, julOffset);
     return currentOffset === dstOffset;
@@ -202,14 +205,14 @@ export function calcTaskTimes(task, date) {
     let thisCycleLeaveTimestamp = prevResetTimestamp + parseDuration(task.duration);
 
     if (task.observesDst) {
-        if (isDst(nextResetTimestamp, C.SERVER_TIMEZONE))      {nextResetTimestamp      -= C.MILLISECONDS_PER_HOUR;}
-        if (isDst(thisCycleLeaveTimestamp, C.SERVER_TIMEZONE)) {thisCycleLeaveTimestamp -= C.MILLISECONDS_PER_HOUR;}
+        if (isDst(nextResetTimestamp, C.SERVER_TIMEZONE)) { nextResetTimestamp -= C.MILLISECONDS_PER_HOUR; }
+        if (isDst(thisCycleLeaveTimestamp, C.SERVER_TIMEZONE)) { thisCycleLeaveTimestamp -= C.MILLISECONDS_PER_HOUR; }
     }
 
     let isAvailable = true;
-    if (task.duration) {isAvailable = (date.getTime() < thisCycleLeaveTimestamp);}
+    if (task.duration) { isAvailable = (date.getTime() < thisCycleLeaveTimestamp); }
 
-    return {nextResetTimestamp, thisCycleLeaveTimestamp, isAvailable};
+    return { nextResetTimestamp, thisCycleLeaveTimestamp, isAvailable };
 }
 
 export function factionIcon(name) {

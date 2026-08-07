@@ -2,10 +2,10 @@ import { describe, expect, test } from "vitest";
 import Ajv from "ajv/dist/2020";
 import addFormats from "ajv-formats";
 
-import tasks from "../js/tasks.json" with {type: "json"};
-import tasks_schema from "./tasks.schema.json" with {type: "json"};
-import cycles from "../js/cycles.json" with {type: "json"};
-import cycles_schema from "./cycles.schema.json" with {type: "json"};
+import tasks from "../js/tasks.json" with { type: "json" };
+import tasks_schema from "./tasks.schema.json" with { type: "json" };
+import cycles from "../js/cycles.json" with { type: "json" };
+import cycles_schema from "./cycles.schema.json" with { type: "json" };
 import moreInfo from "../js/moreInfo";
 
 const ajv = new Ajv({ allErrors: true });
@@ -17,7 +17,7 @@ const validate_cycles_schema = ajv.compile(cycles_schema);
 describe("valildate task definitions", () => {
     test.for([
         ["tasks", validate_tasks_schema, tasks],
-        ["cycles", validate_cycles_schema, cycles]
+        ["cycles", validate_cycles_schema, cycles],
     ])("validate %s against schema", ([which, validation_function, data]) => {
         const valid = validation_function(data);
         if (!valid) { console.error(validation_function.errors); }
@@ -26,8 +26,8 @@ describe("valildate task definitions", () => {
     });
 
     // flatten the nested tree of [sub]tasks into an array
-    let stack = [];
-    let flatTasks = [];
+    const stack = [];
+    const flatTasks = [];
     for (const section in tasks) {
         for (const t of tasks[section]) {
             stack.push(t);
@@ -46,7 +46,7 @@ describe("valildate task definitions", () => {
     const task_ids = flatTasks.map((t) => t.id);
 
     test("verify unique task ids", () => {
-        let used_ids = [];
+        const used_ids = [];
         for (const id of task_ids) {
             expect(used_ids, "task ids must be unique").not.toContain(id);
             used_ids.push(id);
@@ -58,7 +58,7 @@ describe("valildate task definitions", () => {
     describe("verify equal `order` lengths", () => {
         test.for(cycle_keys_for_test)("%s", ([task_id]) => {
             for (const col of cycles[task_id].columns) {
-                expect(col.order.length, "column lengths are not equal").toEqual(cycles[task_id].columns[0].order.length)
+                expect(col.order.length, "column lengths are not equal").toEqual(cycles[task_id].columns[0].order.length);
             }
         });
     });

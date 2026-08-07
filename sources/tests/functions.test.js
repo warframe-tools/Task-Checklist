@@ -47,7 +47,7 @@ describe("Daylight Saving Time", () => {
         ["2025-10-05T01:59:59+10:30", "Australia/Lord_Howe", false], // just before start
         ["2025-10-05T02:00:00+10:30", "Australia/Lord_Howe", true], // just after start
         ["2025-10-05T03:00:00+11:00", "Australia/Lord_Howe", true], // just after start
-    ])(`isDst(%s, %s) -> %o`, ([d, tz, expected]) => {
+    ])("isDst(%s, %s) -> %o", ([d, tz, expected]) => {
         expect(isDst(new Date(d), tz)).toBe(expected);
         expect(isDst(new Date(d).getTime(), tz)).toBe(expected);
         expect(isDst(d, tz)).toBe(expected);
@@ -63,8 +63,8 @@ describe("parseDuration", () => {
         ["12h", 43_200_000],
         ["14d", 1_209_600_000],
         ["2d3H10M12s", 184_212_000],
-        ["1m, 359h 1d 3d, 5m6s   4h", 1_652_766_000]
-    ])(`parseDuration(%s) -> %i`, ([d, expected]) => {
+        ["1m, 359h 1d 3d, 5m6s   4h", 1_652_766_000],
+    ])("parseDuration(%s) -> %i", ([d, expected]) => {
         expect(parseDuration(d)).toEqual(expected);
     });
 
@@ -75,8 +75,8 @@ describe("parseDuration", () => {
     test.for([
         ["1s 10n", 1, 1000],
         ["10y5w2d3h8x10m12s13g", 4, 184_212_000],
-        ["1m, 359h 9p1d 3d, 5m6s   4h\t1234v", 2, 1_652_766_000]
-    ])(`parseDuration(%s) warn %i`, ([d, warnings, expected]) => {
+        ["1m, 359h 9p1d 3d, 5m6s   4h\t1234v", 2, 1_652_766_000],
+    ])("parseDuration(%s) warn %i", ([d, warnings, expected]) => {
         const consoleWarn = vi.spyOn(console, "warn");
         expect(parseDuration(d)).toEqual(expected);
         expect(consoleWarn).toHaveBeenCalledTimes(warnings);

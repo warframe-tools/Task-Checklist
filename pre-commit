@@ -1,0 +1,50 @@
+#!/bin/bash
+# This is a git pre-commit hook to check for linting errors.
+# Copy or symlink this file into .git/hooks/ to install it.
+
+if [[ -t 1 && -z "$NO_COLOR" ]]; then
+	color="--color"
+else
+	color="--no-color"
+fi
+
+if [[ pre-commit -nt .git/hooks/pre-commit ]]; then
+	echo "The pre-commit hook version distributed by the repository is newer than the installed version. You may wish to update."
+	stat -c "repository: %y : %n" pre-commit
+	stat -c "installed:  %y : %n" .git/hooks/pre-commit
+	echo
+fi
+
+# Redirect output to stderr.
+exec 1>&2
+
+# Run commands in the background and redirect their output to new file descriptors
+exec 3< <(npm run -s test -- run --silent --reporter=minimal --bail=1 $color 2>&1); test_pid=$!
+exec 4< <(npm run -s lint:js -- $color 2>&1); js_pid=$!
+exec 5< <(npm run -s lint:css -- $color 2>&1); css_pid=$!
+
+# Wait for commands to complete and capture their exit codes
+wait $test_pid; test_exit=$?
+wait $js_pid; js_exit=$?
+wait $css_pid; css_exit=$?
+
+if [[ $test_exit != 0 || $js_exit != 0 || $css_exit != 0 ]]; then
+	msg="Fix errors before committing, or skip this check with --no-verify"
+	echo -e "$msg\n" # this message is for the Commit button in the vscode ui
+	if [[ $test_exit != 0 ]]; then
+		echo "----- Vitest report - (exit code $test_exit) --------------"
+		cat <&3
+		echo -e "Only the first failing test is reported. Run \`npm run test\` to check for more.\n"
+	fi
+	if [[ $js_exit != 0 ]]; then
+		echo "----- ESLint report - (exit code $js_exit) --------------"
+		cat <&4
+	fi
+	if [[ $css_exit != 0 ]]; then
+		echo "----- Stylelint report - (exit code $css_exit) -----------"
+		cat <&5
+	fi
+	echo -e "--------------------------------------------------\n"
+	echo "$msg" # this message is for if you're committing on a terminal
+	exit 1
+fi
