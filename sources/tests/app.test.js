@@ -9,7 +9,7 @@ beforeEach(() => {
 
 afterEach(() => {
     vi.useRealTimers();
-})
+});
 
 describe("displayOtherTaskCountdown({period, duration, ref, observesDst})", () => {
     beforeEach(() => {
@@ -50,9 +50,9 @@ describe("displayOtherTaskCountdown({period, duration, ref, observesDst})", () =
         ["14d", "2d", "2022-12-30T09:00:00-05:00", true, "2024-11-03T09:00:00-05:00", "(Available in 12d 00:00:00)"],
     ])("(%s, %s, %s, %s) @ %s -> %s", ([period, duration, ref, observesDst, date, countdown]) => {
         vi.setSystemTime(date);
-        app.displayOtherTaskCountdown({id: "other_test", period, duration, ref, observesDst});
+        app.displayOtherTaskCountdown({ id: "other_test", period, duration, ref, observesDst });
         expect(document.querySelector(".other-countdown").textContent).toEqual(countdown);
-    })
+    });
 });
 
 describe("getTaskById", () => {
@@ -64,8 +64,8 @@ describe("getTaskById", () => {
         ["weekly_netracells", "NetraRequiemIcon.png"], // 2nd level weekly
         ["daily_kim_hex_parent", "KIM/RetroPfpG.png"], // both a parent and child
         ["daily_kim_kaya", "KIM/RetroPfpH.png"], // 3rd level task
-        ["fake_task_id", undefined]
+        ["fake_task_id", undefined],
     ])("%s", ([id, icon]) => {
         expect(app.getTaskById(id)?.icon).toEqual(icon);
-    })
+    });
 });

@@ -12,6 +12,6 @@ describe("check version numbers", () => {
     test("SECURITY.md", () => {
         const security = readFileSync(path.resolve(__dirname, "../../SECURITY.md"), "utf-8");
         const major = security.match(/\| Version \| Supported\s*\|[\r\n]*\| -* \| -* \|[\r\n]*\| (\d+)\.x\.x/)[1];
-        expect(major, "SECURITY.md version number does not match app.js APP_VERSION major version number").toEqual(APP_VERSION.split(".")[0])
+        expect(major, "SECURITY.md version number does not match app.js APP_VERSION major version number").toEqual(APP_VERSION.split(".")[0]);
     });
 });

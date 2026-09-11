@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
     cacheDir: "../.vite",
 
     plugins: [
-        mode === "release" ? viteSingleFile({removeViteModuleLoader: true}) : null,
+        mode === "release" ? viteSingleFile({ removeViteModuleLoader: true }) : null,
     ],
 
     build: {
@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => ({
         restoreMocks: true,
         coverage: {
             reportsDirectory: "../.coverage",
-            exclude: ["img/", "*.json"]
-        }
-    }
+            exclude: ["img/", "*.json"],
+        },
+    },
 }));
