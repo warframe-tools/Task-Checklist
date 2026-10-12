@@ -34,10 +34,10 @@ const dailyBackgroundImageIds = [
     "bg-image-4",
     // Add more IDs if you add more background image divs in HTML
 ];
-export const APP_VERSION = "5.3.2";
+export const APP_VERSION = "5.3.3";
 const GIT_COMMIT_HASH_LONG = import.meta.env.VITE_GIT_COMMIT_HASH;
 const GIT_COMMIT_HASH = GIT_COMMIT_HASH_LONG.slice(0, 7);
-const WARFRAME_VERSION = "43.5.4";
+const WARFRAME_VERSION = "44.1.1";
 const THEME_STORAGE_KEY = "warframeChecklistTheme";
 
 // only update DATA_STORAGE_KEY when the data storage format changes
@@ -299,7 +299,7 @@ function displayLocalResetTimes() {
         const nextDailyResetTimestamp = getNextDailyMidnightUTC();
         const dailyDiff = nextDailyResetTimestamp - now;
         if (dailyResetTimeElement) {
-            dailyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextDailyResetTimestamp).toString()}">${formatCountdown(dailyDiff)}</span>)`;
+            dailyResetTimeElement.innerHTML = `(Resets in <span title="${new Date(nextDailyResetTimestamp).toString()}">${formatCountdown(dailyDiff)}</span>)`;
         }
 
         // Weekly
@@ -309,7 +309,7 @@ function displayLocalResetTimes() {
         }
         const weeklyDiff = nextWeeklyResetTimestamp - now;
         if (weeklyResetTimeElement) {
-            weeklyResetTimeElement.innerHTML = `(Resets in <span class="tooltip" title="${new Date(nextWeeklyResetTimestamp).toString()}">${formatCountdown(weeklyDiff)}</span>)`;
+            weeklyResetTimeElement.innerHTML = `(Resets in <span title="${new Date(nextWeeklyResetTimestamp).toString()}">${formatCountdown(weeklyDiff)}</span>)`;
         }
 
         // Other
@@ -336,7 +336,7 @@ export function displayOtherTaskCountdown(task) {
 
         if (taskTimes.isAvailable) {
             const diff = taskTimes.thisCycleLeaveTimestamp - now.getTime();
-            resetTimer.innerHTML = `(Available for <span class="tooltip" title="${new Date(taskTimes.thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
+            resetTimer.innerHTML = `(Available for <span title="${new Date(taskTimes.thisCycleLeaveTimestamp).toString()}">${formatCountdown(diff)}</span>)`;
 
             // Leaving soon notification (Arrival notification is handled in otherTaskReset, the same as always available tasks)
             if (diff < C.MILLISECONDS_PER_HOUR && checklistData.notificationPreferences[task.id] && checklistData.notificationsSent[leaveNotifId] !== resetCount) {
@@ -345,11 +345,11 @@ export function displayOtherTaskCountdown(task) {
                 saveData(false);
             }
         } else { // task not available
-            resetTimer.innerHTML = `(Available in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
+            resetTimer.innerHTML = `(Available in <span title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
             if (checklistData.notificationsSent[leaveNotifId]) { delete checklistData.notificationsSent[leaveNotifId]; }
         }
     } else { // always available task
-        resetTimer.innerHTML = `(Resets in <span class="tooltip" title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
+        resetTimer.innerHTML = `(Resets in <span title="${new Date(taskTimes.nextResetTimestamp).toString()}">${formatCountdown(taskTimes.nextResetTimestamp - now.getTime())}</span>)`;
     }
 }
 
@@ -891,7 +891,7 @@ function makeInfoLine(task, appendTo) { /* eslint-disable-line max-lines-per-fun
             currentCycle.innerHTML += makeCycleIcon(cycleData);
 
             const cycleText = document.createElement("span");
-            cycleText.textContent = cycleData.text;
+            cycleText.innerHTML = cycleData.text;
             currentCycle.appendChild(cycleText);
 
             const showSchedule = document.createElement("button");

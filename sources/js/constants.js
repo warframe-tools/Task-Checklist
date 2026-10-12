@@ -6,7 +6,7 @@ export const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR;
 
 export const SERVER_TIMEZONE = "America/Toronto"; // used for determining Daylight Saving Time
 
-export const BASE_OF_OPERATIONS_TOOLTIP = '<span class="tooltip" title="Orbiter, Drifter\'s Camp, or Backroom">Base of Operations</span>';
+export const BASE_OF_OPERATIONS_TOOLTIP = '<span title="Orbiter, Drifter\'s Camp, or Backroom">Base of Operations</span>';
 
 export const TASKLIST_STAT_NAMES = {
     "completed": "Completed",

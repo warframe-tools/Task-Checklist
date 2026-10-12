@@ -231,7 +231,7 @@
                         },
                         {
                             "id": "daily_kim_minerva_velimir",
-                            "title": "MomToxicated & PapaPolar (Minerva & Velimir)",
+                            "title": "MomToxicated &amp; PapaPolar (Minerva &amp; Velimir)",
                             "icon": "KIM/RetroPfpI.png",
                             "noIconFilter": true,
                             "prereq": "Rank 5 The Hex"
@@ -303,7 +303,7 @@
                     "icon": "IconCommand.png",
                     "location": "Fortuna, Venus",
                     "npc": "Ticker",
-                    "prereq": "Rising Tide & Command Intrinsics 1"
+                    "prereq": "Rising Tide &amp; Command Intrinsics 1"
                 },
                 {
                     "id": "daily_marie",
@@ -368,7 +368,7 @@
         {
             "id": "weekly_duviri_circuit",
             "title": "Duviri Circuit (Normal)",
-            "text": "Check weekly Warframe options & run Circuit if desired.",
+            "text": "Check weekly Warframe options &amp; run Circuit if desired.",
             "icon": "IconDuviriCategory256.png",
             "location": "Base of Operations/Dormizone",
             "terminal": "Navigation",
@@ -377,11 +377,11 @@
         {
             "id": "weekly_duviri_circuit_sp",
             "title": "Duviri Circuit (Steel Path)",
-            "text": "Check weekly Incarnon Adapters & run Circuit if desired.",
+            "text": "Check weekly Incarnon Adapters &amp; run Circuit if desired.",
             "icon": "IconDuviriCategory256.png",
             "location": "Base of Operations/Dormizone",
             "terminal": "Navigation",
-            "prereq": "Steel Path unlocked & The Duviri Paradox"
+            "prereq": "Steel Path unlocked &amp; The Duviri Paradox"
         },
         {
             "id": "weekly_search_pulses",
@@ -422,6 +422,25 @@
             ]
         },
         {
+            "id": "weekly_cryobells",
+            "title": "Cryobells",
+            "text": "Harvest 3 Cryobells from Yuvan Peak.",
+            "icon": "Melica.png",
+            "location": "Yuvan Peak, Earth",
+            "prereq": "Angels of the Zariman &amp; Whispers in the Walls",
+            "info": "Up to 6 Cryobells can be owned at a time"
+        },
+        {
+            "id": "weekly_icebind",
+            "title": "The Icebind",
+            "text": "Spend Cryobells to run six-player Icebind missions.",
+            "icon": "Melica.png",
+            "location": "Yuvan Peak, Earth",
+            "npc": "Cephalon Melica",
+            "prereq": "Angels of the Zariman, Whispers in the Walls, &amp unlocked <span title=\"Elite Deep Archimedea\">EDA</span> or <span title=\"Elite Temporal Archimedea\">ETA</span>",
+            "info":"Costs 1 Cryobell per player per successful mission"
+        },
+        {
             "id": "weekly_calendar",
             "title": "1999 Calendar",
             "text": "Complete weekly Calendar tasks.",
@@ -444,16 +463,16 @@
             "title": "The Descendia (Normal)",
             "text": "Weekly Tower gamemode for various resources.",
             "icon": "Heat_d.png",
-            "location": "Dark Refractory (Base of Operations)",
-            "terminal": "Navigation"
+            "location": "Base of Operations or Sanctum Anatomica, Deimos",
+            "terminal": "Dark Refractory"
         },
         {
             "id": "weekly_descendia_sp",
             "title": "The Descendia (Steel Path)",
             "text": "Weekly Tower gamemode for various resources.",
             "icon": "Heat_d.png",
-            "location": "Dark Refractory (Base of Operations)",
-            "terminal": "Navigation"
+            "location": "Base of Operations or Sanctum Anatomica, Deimos",
+            "terminal": "Dark Refractory"
         },
         {
             "id": "weekly_oops_all_eximus",
@@ -558,6 +577,15 @@
                     "location": "Pontis Tower, Uranus",
                     "npc": "Hunhow",
                     "prereq": "Jade Shadows: Constellations"
+                },
+                {
+                    "id": "weekly_melica",
+                    "title": "Cephalon Melica",
+                    "text": "Trade Entropic Kuva for Kuva.",
+                    "icon": "Melica.png",
+                    "location": "Yuvan Peak, Earth",
+                    "npc": "Cephalon Melica",
+                    "prereq": "Angels of the Zariman &amp; Whispers in the Walls"
                 }
             ]
         }

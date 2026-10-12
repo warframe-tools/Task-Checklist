@@ -27,6 +27,11 @@
     cursor: pointer;
 }
 
+[title] { /* has tooltip */
+    text-decoration: underline dotted;
+    cursor: pointer;
+}
+
 /* --- Content Box Element Styling (Non-Critical Parts) --- */
 #checklist-container h2:hover {
     background-color: var(--section-header-hover-bg);
@@ -541,10 +546,6 @@ body:not(.light-mode) img.icon-filter {
 }
 .info-line svg path {
     fill: var(--text-secondary);
-}
-.tooltip {
-    text-decoration: underline dotted;
-    cursor: pointer;
 }
 
 /* Hidden task animation */
