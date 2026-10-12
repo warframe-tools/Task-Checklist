@@ -32,6 +32,15 @@ If you encounter a bug, graphical glitch, or something isn't working as expected
 
 **Create a Pull Request:** Do you have a feature you would like added, or a task that you would like added that could benefit other Tenno? Fork the repository, and create a pull request!
 
+### Coding Style
+
+This project uses [ESLint](https://eslint.org/) and [Stylelint](https://stylelint.io/) to enforce a consistent coding style.
+A GitHub workflow will check your code automatically when you push changes or create a pull request.
+You can also run the checks locally with `npm run lint`, and [a git pre-commit hook is provided](./pre-commit) that you can install.
+Extensions may also be available for your editor.
+
+### AI Policy
+
 You must disclose any use of AI that went in to preparing your pull request by **both**:
 
 1.  Marking the appropriate box in the pull request template, *and*
