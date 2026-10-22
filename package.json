@@ -37,7 +37,7 @@
     "@stylistic/eslint-plugin": "^5.10.0",
     "@stylistic/stylelint-config": "^5.0.0",
     "@vitest/coverage-v8": "^5.0.0",
-    "@vitest/ui": "^5.0.0",
+    "@vitest/ui": "^5.0.5",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "eslint": "^10.8.0",
