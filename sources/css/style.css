@@ -325,6 +325,18 @@ input[type="checkbox"]:indeterminate::after {
     display: flex;
     align-items: start;
 }
+#options-menu .language-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+#language-select {
+    color: var(--text-label);
+    background-color: var(--bg-content);
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.25rem;
+}
 
 /* Dialogs */
 dialog {
