@@ -4,6 +4,7 @@
 
 import * as C from "./constants.js";
 import { factionIcon } from "./functions.js";
+import { localizeMoreInfo } from "./i18n.js";
 
 const factions = `<p>The Faction Syndicates are
                  ${factionIcon("FactionSigilRebels.png")}Steel Meridian,
@@ -14,7 +15,7 @@ const factions = `<p>The Faction Syndicates are
                  and ${factionIcon("FactionSigilChurch.png")}New Loka.</p>
                  <p>Pledge your loyalty to a faction syndicate at the Syndicates console in your ${C.BASE_OF_OPERATIONS_TOOLTIP}.</p>`;
 
-export default {
+const english = {
     daily_first_win_bonus: `<p>Your first completed mission after the daily reset gives double <em>base credit rewards</em>. This only applies to the end-of-mission bonus, and does <strong>not</strong> apply to credits picked up in the mission.</p>
     <p>It also does <strong>not</strong> apply to the following mission types and locations:</p>
     <ul>
@@ -72,3 +73,6 @@ export default {
     <p><strong>Note:</strong> You can use the "Clan Only" matchmaking option to join squads with your Clan or Alliance members, but playing with Alliance members does <em>not</em> give bonus Vault resources or reward progress.</p>
     <p>* Descendia missions do not contribute to Clan Weekly Initiatives.</p>`,
 };
+
+// the translation (if there is one for the current language) replaces the whole object
+export default localizeMoreInfo({ factionIcon, baseOfOperations: C.BASE_OF_OPERATIONS_TOOLTIP }) ?? english;

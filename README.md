@@ -118,3 +118,12 @@ This is an unofficial fan-made tool. Warframe and all related assets are the int
 ## License
 
 This project is licensed under the **GNU General Public License v3.0 (GPLv3)**. See the [LICENSE](https://github.com/warframe-tools/Task-Checklist?tab=GPL-3.0-1-ov-file) file for details.
+
+## Languages
+
+The interface is available in English (default) and Russian. The language is picked from the browser settings on first
+visit and can be changed in the options menu (☰). English text is used as the lookup key, so anything without a
+translation simply shows in English.
+
+To add a language, create `sources/js/locales/<code>.js` (use `ru.js` as a template), then register it in
+`LOCALES` and `LANGUAGE_NAMES` in `sources/js/i18n.js`. Use the game's official localization for in-game terms.

@@ -6,6 +6,7 @@
  */
 
 import * as C from "./constants.js";
+import { t, getLocaleTag } from "./i18n.js";
 
 export function modulo(n, d) {
     return ((n % d) + d) % d;
@@ -63,15 +64,23 @@ export function makeCycleIcon(cycleData) {
 }
 
 export function formatTimestamp(timestamp) {
-    if (!timestamp) { return "Never"; }
+    if (!timestamp) { return t("Never"); }
     try {
         const date = new Date(timestamp);
-        if (isNaN(date.getTime())) { return "Invalid Date"; }
-        return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+        if (isNaN(date.getTime())) { return t("Invalid Date"); }
+        return date.toLocaleString(getLocaleTag(), { dateStyle: "medium", timeStyle: "short" });
     } catch (e) {
         console.error("Error formatting timestamp:", e);
-        return "Error";
+        return t("Error");
     }
+}
+
+/** Formats a timestamp as a full local date and time, for tooltips. */
+export function formatDateLong(timestamp) {
+    const date = new Date(timestamp);
+    const localeTag = getLocaleTag();
+    if (!localeTag) { return date.toString(); }
+    return date.toLocaleString(localeTag, { dateStyle: "full", timeStyle: "long" });
 }
 
 export function getMostRecentMondayMidnightUTC() {
@@ -119,7 +128,7 @@ export function formatCountdown(ms) {
     function pad(num) { return String(num).padStart(2, "0"); }
 
     if (days > 0) {
-        return `${days}d ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        return `${days}${t("d")} ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
     }
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
